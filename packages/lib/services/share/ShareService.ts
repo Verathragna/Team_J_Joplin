@@ -87,6 +87,27 @@ export default class ShareService {
 
 		return this.api_;
 	}
+	public async createNoteInSharedFolder(folderId: string, noteData: Partial<Note & { share_id?: string; is_shared?: number }>): Promise<Note> {
+		const folder = await Folder.load(folderId);
+		if (!folder) throw new Error(`No such folder: ${folderId}`);
+
+		if (folder.share_id) {
+			noteData.share_id = folder.share_id;
+			noteData.is_shared = 1; // Set is_shared flag
+		} else {
+			noteData.is_shared = 0; // Not shared if there's no share_id
+		}
+
+		const newNote = await Note.save(noteData);
+		return newNote;
+	}
+	public async createNote(noteData: Partial<Note & { share_id?: string; is_shared?: number }>, folderId?: string): Promise<Note> {
+		if (folderId) {
+			return this.createNoteInSharedFolder(folderId, noteData);
+		}
+		return Note.save(noteData);
+	}
+
 
 	public async shareFolder(folderId: string): Promise<ApiShare> {
 		const folder = await Folder.load(folderId);
