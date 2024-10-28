@@ -948,6 +948,12 @@ class AppComponent extends React.Component {
 				throw error;
 			}
 
+			const url = await Linking.getInitialURL();
+			if (url !== null && isCallbackUrl(url)) {
+				logger.info('received initial callback url: ', url);
+				this.callbackUrl = url;
+			}
+
 			const loadedSensorInfo = await sensorInfo();
 			this.setState({ sensorInfo: loadedSensorInfo });
 
