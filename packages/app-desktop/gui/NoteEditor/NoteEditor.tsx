@@ -51,6 +51,9 @@ import { MarkupLanguage } from '@joplin/renderer';
 import useScrollWhenReadyOptions from './utils/useScrollWhenReadyOptions';
 import useScheduleSaveCallbacks from './utils/useScheduleSaveCallbacks';
 import WarningBanner from './WarningBanner/WarningBanner';
+import { PluginStates } from '@joplin/lib/services/plugins/reducer';
+import { ContainerType } from '@joplin/lib/services/plugins/WebviewController';
+import UserWebview from '../../services/plugins/UserWebview';
 const debounce = require('debounce');
 
 const commands = [
@@ -387,6 +390,17 @@ function NoteEditor(props: NoteEditorProps) {
 		);
 	}
 
+	const getPluginEditorView = (plugins: PluginStates) => {
+		for (const [, pluginState] of Object.entries(plugins)) {
+			for (const [, view] of Object.entries(pluginState.views)) {
+				if (view.type === 'webview' && view.containerType === ContainerType.Editor && view.opened) return { editorPlugin: pluginState, editorView: view };
+			}
+		}
+		return { editorPlugin: null, editorView: null };
+	};
+
+	const { editorPlugin, editorView } = getPluginEditorView(props.plugins);
+
 	const searchMarkers = useSearchMarkers(showLocalSearch, localSearchMarkerOptions, props.searches, props.selectedSearchId, props.highlightedWords);
 
 	const editorProps: NoteBodyEditorProps = {
@@ -433,16 +447,18 @@ function NoteEditor(props: NoteEditorProps) {
 
 	let editor = null;
 
-	if (props.bodyEditor === 'TinyMCE') {
-		editor = <TinyMCE {...editorProps}/>;
-	} else if (props.bodyEditor === 'PlainText') {
-		editor = <PlainEditor {...editorProps}/>;
-	} else if (props.bodyEditor === 'CodeMirror5') {
-		editor = <CodeMirror5 {...editorProps}/>;
-	} else if (props.bodyEditor === 'CodeMirror6') {
-		editor = <CodeMirror6 {...editorProps}/>;
-	} else {
-		throw new Error(`Invalid editor: ${props.bodyEditor}`);
+	if (!editorPlugin) {
+		if (props.bodyEditor === 'TinyMCE') {
+			editor = <TinyMCE {...editorProps}/>;
+		} else if (props.bodyEditor === 'PlainText') {
+			editor = <PlainEditor {...editorProps}/>;
+		} else if (props.bodyEditor === 'CodeMirror5') {
+			editor = <CodeMirror5 {...editorProps}/>;
+		} else if (props.bodyEditor === 'CodeMirror6') {
+			editor = <CodeMirror6 {...editorProps}/>;
+		} else {
+			throw new Error(`Invalid editor: ${props.bodyEditor}`);
+		}
 	}
 
 	const noteRevisionViewer_onBack = useCallback(() => {
@@ -568,6 +584,23 @@ function NoteEditor(props: NoteEditorProps) {
 		}
 	}
 
+	const renderPluginEditor = () => {
+		if (!editorPlugin) return null;
+
+		const html = props.pluginHtmlContents[editorPlugin.id]?.[editorView.id] ?? '';
+
+		return <UserWebview
+			key={editorView.id}
+			viewId={editorView.id}
+			themeId={props.themeId}
+			html={html}
+			scripts={editorView.scripts}
+			pluginId={editorPlugin.id}
+			borderBottom={true}
+			fitToContent={false}
+		/>;
+	};
+
 	if (formNote.encryption_applied || !formNote.id || !effectiveNoteId) {
 		return renderNoNotes(styles.root);
 	}
@@ -592,6 +625,7 @@ function NoteEditor(props: NoteEditorProps) {
 				{renderSearchInfo()}
 				<div style={{ display: 'flex', flex: 1, paddingLeft: theme.editorPaddingLeft, maxHeight: '100%', minHeight: '0' }}>
 					{editor}
+					{renderPluginEditor()}
 				</div>
 				<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
 					{renderSearchBar()}
@@ -636,6 +670,7 @@ const mapStateToProps = (state: AppState) => {
 		watchedResources: state.watchedResources,
 		highlightedWords: state.highlightedWords,
 		plugins: state.pluginService.plugins,
+		pluginHtmlContents: state.pluginService.pluginHtmlContents,
 		toolbarButtonInfos: toolbarButtonUtils.commandsToToolbarButtons([
 			'historyBackward',
 			'historyForward',

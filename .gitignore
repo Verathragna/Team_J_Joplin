@@ -1171,6 +1171,7 @@ packages/lib/services/plugins/api/JoplinPlugins.js
 packages/lib/services/plugins/api/JoplinSettings.js
 packages/lib/services/plugins/api/JoplinViews.js
 packages/lib/services/plugins/api/JoplinViewsDialogs.js
+packages/lib/services/plugins/api/JoplinViewsEditor.js
 packages/lib/services/plugins/api/JoplinViewsMenuItems.js
 packages/lib/services/plugins/api/JoplinViewsMenus.js
 packages/lib/services/plugins/api/JoplinViewsNoteList.js

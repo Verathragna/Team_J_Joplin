@@ -8,6 +8,7 @@ import { PluginViewState } from './reducer';
 export enum ContainerType {
 	Panel = 'panel',
 	Dialog = 'dialog',
+	Editor = 'editor',
 }
 
 export interface Options {
