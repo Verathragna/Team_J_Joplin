@@ -311,6 +311,8 @@ packages/app-desktop/gui/NoteEditor/utils/useFormNote.js
 packages/app-desktop/gui/NoteEditor/utils/useMarkupToHtml.js
 packages/app-desktop/gui/NoteEditor/utils/useMessageHandler.js
 packages/app-desktop/gui/NoteEditor/utils/useNoteSearchBar.js
+packages/app-desktop/gui/NoteEditor/utils/usePluginEditorView.test.js
+packages/app-desktop/gui/NoteEditor/utils/usePluginEditorView.js
 packages/app-desktop/gui/NoteEditor/utils/usePluginServiceRegistration.js
 packages/app-desktop/gui/NoteEditor/utils/useScheduleSaveCallbacks.js
 packages/app-desktop/gui/NoteEditor/utils/useScrollWhenReadyOptions.js

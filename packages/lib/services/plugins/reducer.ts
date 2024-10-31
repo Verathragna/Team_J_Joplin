@@ -28,7 +28,7 @@ interface PluginContentScriptStates {
 	[type: string]: PluginContentScriptState[];
 }
 
-interface PluginState {
+export interface PluginState {
 	id: string;
 	contentScripts: PluginContentScriptStates;
 	views: PluginViewStates;

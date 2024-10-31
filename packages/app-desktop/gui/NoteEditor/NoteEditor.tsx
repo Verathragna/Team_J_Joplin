@@ -32,7 +32,6 @@ import { itemIsReadOnly } from '@joplin/lib/models/utils/readOnly';
 const { themeStyle } = require('@joplin/lib/theme');
 const { substrWithEllipsis } = require('@joplin/lib/string-utils');
 import NoteSearchBar from '../NoteSearchBar';
-import { reg } from '@joplin/lib/registry';
 import Note from '@joplin/lib/models/Note';
 import Folder from '@joplin/lib/models/Folder';
 import NoteRevisionViewer from '../NoteRevisionViewer';
@@ -51,10 +50,12 @@ import { MarkupLanguage } from '@joplin/renderer';
 import useScrollWhenReadyOptions from './utils/useScrollWhenReadyOptions';
 import useScheduleSaveCallbacks from './utils/useScheduleSaveCallbacks';
 import WarningBanner from './WarningBanner/WarningBanner';
-import { PluginStates } from '@joplin/lib/services/plugins/reducer';
-import { ContainerType } from '@joplin/lib/services/plugins/WebviewController';
 import UserWebview from '../../services/plugins/UserWebview';
+import Logger from '@joplin/utils/Logger';
+import usePluginEditorView from './utils/usePluginEditorView';
 const debounce = require('debounce');
+
+const logger = Logger.create('NoteEditor');
 
 const commands = [
 	require('./commands/showRevisions'),
@@ -176,7 +177,7 @@ function NoteEditor(props: NoteEditorProps) {
 			// trigger onChange events, for example the textarea might be cleared.
 			// We need to ignore these events, otherwise the note is going to be saved
 			// with an invalid body.
-			reg.logger().debug('Skipping change event because the component is unmounted');
+			logger.debug('Skipping change event because the component is unmounted');
 			return;
 		}
 
@@ -390,16 +391,7 @@ function NoteEditor(props: NoteEditorProps) {
 		);
 	}
 
-	const getPluginEditorView = (plugins: PluginStates) => {
-		for (const [, pluginState] of Object.entries(plugins)) {
-			for (const [, view] of Object.entries(pluginState.views)) {
-				if (view.type === 'webview' && view.containerType === ContainerType.Editor && view.opened) return { editorPlugin: pluginState, editorView: view };
-			}
-		}
-		return { editorPlugin: null, editorView: null };
-	};
-
-	const { editorPlugin, editorView } = getPluginEditorView(props.plugins);
+	const { editorPlugin, editorView } = usePluginEditorView(props.plugins);
 
 	const searchMarkers = useSearchMarkers(showLocalSearch, localSearchMarkerOptions, props.searches, props.selectedSearchId, props.highlightedWords);
 
