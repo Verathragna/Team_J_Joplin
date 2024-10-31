@@ -391,7 +391,7 @@ function NoteEditor(props: NoteEditorProps) {
 		);
 	}
 
-	const { editorPlugin, editorView } = usePluginEditorView(props.plugins);
+	const { editorPlugin, editorView } = usePluginEditorView(props.plugins, props['plugins.shownEditorViewIds']);
 
 	const searchMarkers = useSearchMarkers(showLocalSearch, localSearchMarkerOptions, props.searches, props.selectedSearchId, props.highlightedWords);
 
@@ -663,6 +663,7 @@ const mapStateToProps = (state: AppState) => {
 		highlightedWords: state.highlightedWords,
 		plugins: state.pluginService.plugins,
 		pluginHtmlContents: state.pluginService.pluginHtmlContents,
+		'plugins.shownEditorViewIds': state.settings['plugins.shownEditorViewIds'] || [],
 		toolbarButtonInfos: toolbarButtonUtils.commandsToToolbarButtons([
 			'historyBackward',
 			'historyForward',

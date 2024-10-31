@@ -58,6 +58,7 @@ export interface NoteEditorProps {
 	syncUserId: string;
 	searchResults: ProcessResultsRow[];
 	pluginHtmlContents: PluginHtmlContents;
+	'plugins.shownEditorViewIds': string[];
 }
 
 export interface NoteBodyEditorRef {

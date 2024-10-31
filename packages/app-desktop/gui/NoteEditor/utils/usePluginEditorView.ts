@@ -1,29 +1,13 @@
 import { useMemo } from 'react';
-import { ContainerType } from '@joplin/lib/services/plugins/WebviewController';
-import { PluginState, PluginStates, PluginViewState } from '@joplin/lib/services/plugins/reducer';
-import Logger from '@joplin/utils/Logger';
+import { PluginStates } from '@joplin/lib/services/plugins/reducer';
+import getActivePluginEditorView from '@joplin/lib/services/plugins/utils/getActivePluginEditorView';
 
-const logger = Logger.create('usePluginEditorView');
-
-interface Output {
-	editorPlugin: PluginState;
-	editorView: PluginViewState;
-}
-
-export default (plugins: PluginStates) => {
+export default (plugins: PluginStates, shownEditorViewIds: string[]) => {
 	return useMemo(() => {
-		let output: Output = { editorPlugin: null, editorView: null };
-		for (const [, pluginState] of Object.entries(plugins)) {
-			for (const [, view] of Object.entries(pluginState.views)) {
-				if (view.type === 'webview' && view.containerType === ContainerType.Editor && view.opened) {
-					if (output.editorPlugin) {
-						logger.warn(`More than one editor plugin are enabled for this note. Enabled plugin: ${output.editorPlugin.id}. Ignored plugin: ${pluginState.id}`);
-					} else {
-						output = { editorPlugin: pluginState, editorView: view };
-					}
-				}
-			}
+		const { editorPlugin, editorView } = getActivePluginEditorView(plugins);
+		if (editorView) {
+			if (!shownEditorViewIds.includes(editorView.id)) return { editorPlugin: null, editorView: null };
 		}
-		return output;
-	}, [plugins]);
+		return { editorPlugin, editorView };
+	}, [plugins, shownEditorViewIds]);
 };

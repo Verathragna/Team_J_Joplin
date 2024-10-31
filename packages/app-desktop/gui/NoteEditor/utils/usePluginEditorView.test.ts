@@ -43,7 +43,7 @@ describe('usePluginEditorView', () => {
 		};
 
 		{
-			const test = renderHook(() => usePluginEditorView(pluginStates));
+			const test = renderHook(() => usePluginEditorView(pluginStates, ['view-1']));
 			expect(test.result.current.editorPlugin.id).toBe('1');
 			expect(test.result.current.editorView.id).toBe('view-1');
 			test.unmount();
@@ -51,7 +51,7 @@ describe('usePluginEditorView', () => {
 
 		{
 			pluginStates['1'].views['view-1'].opened = false;
-			const test = renderHook(() => usePluginEditorView(pluginStates));
+			const test = renderHook(() => usePluginEditorView(pluginStates, ['view-1']));
 			expect(test.result.current.editorPlugin).toBeFalsy();
 			test.unmount();
 		}
@@ -79,7 +79,7 @@ describe('usePluginEditorView', () => {
 		};
 
 		{
-			const test = renderHook(() => usePluginEditorView(pluginStates));
+			const test = renderHook(() => usePluginEditorView(pluginStates, ['view-1']));
 			expect(test.result.current.editorPlugin.id).toBe('1');
 			expect(test.result.current.editorView.id).toBe('view-1');
 			test.unmount();

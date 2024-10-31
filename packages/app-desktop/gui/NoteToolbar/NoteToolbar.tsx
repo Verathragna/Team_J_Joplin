@@ -7,6 +7,8 @@ import stateToWhenClauseContext from '../../services/commands/stateToWhenClauseC
 const { connect } = require('react-redux');
 import { buildStyle } from '@joplin/lib/theme';
 import { _ } from '@joplin/lib/locale';
+import getActivePluginEditorView from '@joplin/lib/services/plugins/utils/getActivePluginEditorView';
+import { AppState } from '../../app.reducer';
 
 interface NoteToolbarProps {
 	themeId: number;
@@ -42,17 +44,23 @@ function NoteToolbar(props: NoteToolbarProps) {
 
 const toolbarButtonUtils = new ToolbarButtonUtils(CommandService.instance());
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state: AppState) => {
 	const whenClauseContext = stateToWhenClauseContext(state);
 
+	const { editorPlugin } = getActivePluginEditorView(state.pluginService.plugins);
+
+	const commands = [
+		'showSpellCheckerMenu',
+		'editAlarm',
+		'toggleVisiblePanes',
+		'showNoteProperties',
+	];
+
+	if (editorPlugin) commands.push('toggleEditorPlugin');
+
 	return {
-		toolbarButtonInfos: toolbarButtonUtils.commandsToToolbarButtons([
-			'showSpellCheckerMenu',
-			'editAlarm',
-			'toggleVisiblePanes',
-			'showNoteProperties',
-		].concat(pluginUtils.commandNamesFromViews(state.pluginService.plugins, 'noteToolbar')), whenClauseContext),
+		toolbarButtonInfos: toolbarButtonUtils.commandsToToolbarButtons(commands
+			.concat(pluginUtils.commandNamesFromViews(state.pluginService.plugins, 'noteToolbar')), whenClauseContext),
 	};
 };
 
