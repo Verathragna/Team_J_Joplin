@@ -9,7 +9,7 @@ const logger = Logger.create('toggleEditorPlugin');
 export const declaration: CommandDeclaration = {
 	name: 'toggleEditorPlugin',
 	label: () => _('Toggle editor plugin'),
-	iconName: 'fas fa-sync',
+	iconName: 'fas fa-eye',
 };
 
 export const runtime = (): CommandRuntime => {
