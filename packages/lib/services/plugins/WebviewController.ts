@@ -231,4 +231,12 @@ export default class WebviewController extends ViewController {
 	public set fitToContent(fitToContent: boolean) {
 		this.setStoreProp('fitToContent', fitToContent);
 	}
+
+	// ---------------------------------------------
+	// Specific to editors
+	// ---------------------------------------------
+
+	public async setActive(active: boolean): Promise<void> {
+		this.setStoreProp('opened', active);
+	}
 }

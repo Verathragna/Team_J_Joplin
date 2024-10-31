@@ -15,7 +15,7 @@ export default (plugins: PluginStates) => {
 		for (const [, view] of Object.entries(pluginState.views)) {
 			if (view.type === 'webview' && view.containerType === ContainerType.Editor && view.opened) {
 				if (output.editorPlugin) {
-					logger.warn(`More than one editor plugin are enabled for this note. Enabled plugin: ${output.editorPlugin.id}. Ignored plugin: ${pluginState.id}`);
+					logger.warn(`More than one editor plugin are active for this note. Active plugin: ${output.editorPlugin.id}. Ignored plugin: ${pluginState.id}`);
 				} else {
 					output = { editorPlugin: pluginState, editorView: view };
 				}
