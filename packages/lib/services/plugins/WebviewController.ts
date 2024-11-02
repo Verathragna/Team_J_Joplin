@@ -239,4 +239,11 @@ export default class WebviewController extends ViewController {
 	public async setActive(active: boolean): Promise<void> {
 		this.setStoreProp('opened', active);
 	}
+
+	public async isVisible(): Promise<boolean> {
+		if (!this.storeView.opened) return false;
+		const shownEditorViewIds: string[] = this.store.getState().settings['plugins.shownEditorViewIds'];
+		return shownEditorViewIds.includes(this.handle);
+	}
+
 }

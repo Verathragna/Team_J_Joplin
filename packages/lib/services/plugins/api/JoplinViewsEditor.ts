@@ -92,4 +92,13 @@ export default class JoplinViewsEditors {
 		return this.controller(handle).visible;
 	}
 
+	/**
+	 * Tells whether the editor is effectively visible or not. If the editor is inactive, this will
+	 * return `false`. If the editor is active and the user has switched to it, it will return
+	 * `true`. Otherwise it will return `false`.
+	 */
+	public async isVisible(handle: ViewHandle): Promise<boolean> {
+		return this.controller(handle).isVisible();
+	}
+
 }

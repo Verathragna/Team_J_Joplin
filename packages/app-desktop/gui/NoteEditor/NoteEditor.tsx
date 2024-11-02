@@ -88,6 +88,9 @@ function NoteEditor(props: NoteEditorProps) {
 
 	const effectiveNoteId = useEffectiveNoteId(props);
 
+	const { editorPlugin, editorView } = usePluginEditorView(props.plugins, props['plugins.shownEditorViewIds']);
+	const builtInEditorVisible = !editorPlugin;
+
 	const { formNote, setFormNote, isNewNote, resourceInfos } = useFormNote({
 		syncStarted: props.syncStarted,
 		decryptionStarted: props.decryptionStarted,
@@ -97,6 +100,7 @@ function NoteEditor(props: NoteEditorProps) {
 		editorRef: editorRef,
 		onBeforeLoad: formNote_beforeLoad,
 		onAfterLoad: formNote_afterLoad,
+		builtInEditorVisible,
 	});
 	setFormNoteRef.current = setFormNote;
 	const formNoteRef = useRef<FormNote>();
@@ -391,8 +395,6 @@ function NoteEditor(props: NoteEditorProps) {
 		);
 	}
 
-	const { editorPlugin, editorView } = usePluginEditorView(props.plugins, props['plugins.shownEditorViewIds']);
-
 	const searchMarkers = useSearchMarkers(showLocalSearch, localSearchMarkerOptions, props.searches, props.selectedSearchId, props.highlightedWords);
 
 	const editorProps: NoteBodyEditorProps = {
@@ -439,7 +441,7 @@ function NoteEditor(props: NoteEditorProps) {
 
 	let editor = null;
 
-	if (!editorPlugin) {
+	if (builtInEditorVisible) {
 		if (props.bodyEditor === 'TinyMCE') {
 			editor = <TinyMCE {...editorProps}/>;
 		} else if (props.bodyEditor === 'PlainText') {

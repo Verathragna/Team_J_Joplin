@@ -31,6 +31,7 @@ export interface HookDependencies {
 	editorRef: any;
 	onBeforeLoad(event: OnLoadEvent): void;
 	onAfterLoad(event: OnLoadEvent): void;
+	builtInEditorVisible: boolean;
 }
 
 type MapFormNoteCallback = (previousFormNote: FormNote)=> FormNote;
@@ -68,13 +69,14 @@ function resourceInfosChanged(a: ResourceInfos, b: ResourceInfos): boolean {
 
 export default function useFormNote(dependencies: HookDependencies) {
 	const {
-		syncStarted, decryptionStarted, noteId, isProvisional, titleInputRef, editorRef, onBeforeLoad, onAfterLoad,
+		syncStarted, decryptionStarted, noteId, isProvisional, titleInputRef, editorRef, onBeforeLoad, onAfterLoad, builtInEditorVisible,
 	} = dependencies;
 
 	const [formNote, setFormNote] = useState<FormNote>(defaultFormNote());
 	const [isNewNote, setIsNewNote] = useState(false);
 	const prevSyncStarted = usePrevious(syncStarted);
 	const prevDecryptionStarted = usePrevious(decryptionStarted);
+	const prevBuiltInEditorVisible = usePrevious<boolean>(builtInEditorVisible);
 	const previousNoteId = usePrevious(formNote.id);
 	const [resourceInfos, setResourceInfos] = useState<ResourceInfos>({});
 
@@ -199,6 +201,14 @@ export default function useFormNote(dependencies: HookDependencies) {
 		prevDecryptionStarted, decryptionStarted,
 		refreshFormNote,
 	]);
+
+	// When switching from the plugin editor to the built-in editor, we refresh the note since the
+	// plugin may have modified it via the data API.
+	useEffect(() => {
+		if (prevBuiltInEditorVisible !== builtInEditorVisible && builtInEditorVisible) {
+			refreshFormNote();
+		}
+	}, [builtInEditorVisible, prevBuiltInEditorVisible, refreshFormNote]);
 
 	useEffect(() => {
 		if (!noteId) {
