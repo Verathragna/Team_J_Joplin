@@ -14,6 +14,11 @@ const customCssFilePath = (Setting: typeof SettingType, filename: string): strin
 	return `${Setting.value('rootProfileDir')}/${filename}`;
 };
 
+export enum CameraDirection {
+	Back,
+	Front,
+}
+
 const builtInMetadata = (Setting: typeof SettingType) => {
 	const platform = shim.platformName();
 	const mobilePlatform = shim.mobilePlatform();
@@ -641,6 +646,18 @@ const builtInMetadata = (Setting: typeof SettingType) => {
 			storage: SettingStorage.File,
 			isGlobal: true,
 		},
+		'editor.autocompleteMarkup': {
+			value: true,
+			advanced: true,
+			type: SettingItemType.Bool,
+			public: true,
+			section: 'note',
+			appTypes: [AppType.Desktop, AppType.Mobile],
+			label: () => _('Autocomplete Markdown and HTML'),
+			description: () => _('Enables Markdown list continuation, auto-closing HTML tags, and other markup autocompletions.'),
+			storage: SettingStorage.File,
+			isGlobal: true,
+		},
 		'notes.columns': {
 			value: defaultListColumns(),
 			public: false,
@@ -926,6 +943,18 @@ const builtInMetadata = (Setting: typeof SettingType) => {
 		'markdown.plugin.insert': { storage: SettingStorage.File, isGlobal: true, value: false, type: SettingItemType.Bool, section: 'markdownPlugins', public: true, appTypes: [AppType.Mobile, AppType.Desktop], label: () => `${_('Enable ++insert++ syntax')}${wysiwygYes}` },
 		'markdown.plugin.multitable': { storage: SettingStorage.File, isGlobal: true, value: false, type: SettingItemType.Bool, section: 'markdownPlugins', public: true, appTypes: [AppType.Mobile, AppType.Desktop], label: () => `${_('Enable multimarkdown table extension')}${wysiwygNo}` },
 
+		// For now, applies only to the Markdown viewer
+		'renderer.fileUrls': {
+			storage: SettingStorage.File,
+			isGlobal: true,
+			value: false,
+			type: SettingItemType.Bool,
+			section: 'markdownPlugins',
+			public: true,
+			appTypes: [AppType.Desktop],
+			label: () => `${_('Enable file:// URLs for images and videos')}${wysiwygYes}`,
+		},
+
 		// Tray icon (called AppIndicator) doesn't work in Ubuntu
 		// http://www.webupd8.org/2017/04/fix-appindicator-not-working-for.html
 		// Might be fixed in Electron 18.x but no non-beta release yet. So for now
@@ -1126,8 +1155,7 @@ const builtInMetadata = (Setting: typeof SettingType) => {
 			description: () => 'If the data on the sync target is correct but your local data is not, you can use this button to clear your local data and force re-downloading everything from the sync target. As your local data will be deleted first, it is recommended to export your data as JEX first. Application will have to be restarted',
 		},
 
-
-		autoUpdateEnabled: { value: true, type: SettingItemType.Bool, storage: SettingStorage.File, isGlobal: true, section: 'application', public: false, appTypes: [AppType.Desktop], label: () => _('Automatically check for updates') },
+		autoUpdateEnabled: { value: true, type: SettingItemType.Bool, storage: SettingStorage.File, isGlobal: true, section: 'application', public: platform !== 'linux', appTypes: [AppType.Desktop], label: () => _('Automatically check for updates') },
 		'autoUpdate.includePreReleases': { value: false, type: SettingItemType.Bool, section: 'application', storage: SettingStorage.File, isGlobal: true, public: true, appTypes: [AppType.Desktop], label: () => _('Get pre-releases when checking for updates'), description: () => _('See the pre-release page for more details: %s. Restart app (quit app from system tray) to start getting them', 'https://joplinapp.org/help/about/prereleases') },
 
 		'autoUploadCrashDumps': {
@@ -1424,7 +1452,7 @@ const builtInMetadata = (Setting: typeof SettingType) => {
 		'welcome.wasBuilt': { value: false, type: SettingItemType.Bool, public: false },
 		'welcome.enabled': { value: true, type: SettingItemType.Bool, public: false },
 
-		'camera.type': { value: 0, type: SettingItemType.Int, public: false, appTypes: [AppType.Mobile] },
+		'camera.type': { value: CameraDirection.Back, type: SettingItemType.Int, public: false, appTypes: [AppType.Mobile] },
 		'camera.ratio': { value: '4:3', type: SettingItemType.String, public: false, appTypes: [AppType.Mobile] },
 
 		'spellChecker.enabled': { value: true, type: SettingItemType.Bool, isGlobal: true, storage: SettingStorage.File, public: false },
@@ -1576,6 +1604,20 @@ const builtInMetadata = (Setting: typeof SettingType) => {
 			isGlobal: true,
 		},
 
+		'featureFlag.linuxKeychain': {
+			value: false,
+			type: SettingItemType.Bool,
+			public: true,
+			storage: SettingStorage.File,
+			appTypes: [AppType.Desktop],
+			label: () => 'Enable keychain support',
+			description: () => 'This is an experimental setting to enable keychain support on Linux',
+			show: () => shim.isLinux(),
+			section: 'general',
+			isGlobal: true,
+			advanced: true,
+		},
+
 
 		// 'featureFlag.syncAccurateTimestamps': {
 		// 	value: false,
@@ -1590,6 +1632,17 @@ const builtInMetadata = (Setting: typeof SettingType) => {
 		// 	public: false,
 		// 	storage: SettingStorage.File,
 		// },
+
+		'featureFlag.useBetaEncryptionMethod': {
+			value: false,
+			type: SettingItemType.Bool,
+			public: true,
+			storage: SettingStorage.File,
+			label: () => 'Use beta encryption',
+			description: () => 'Set beta encryption methods as the default methods. This applies to all clients and takes effect after restarting the app.',
+			section: 'sync',
+			isGlobal: true,
+		},
 
 		'sync.allowUnsupportedProviders': {
 			value: -1,
@@ -1613,6 +1666,25 @@ const builtInMetadata = (Setting: typeof SettingType) => {
 			// For now, iOS and web don't support voice typing.
 			show: () => shim.mobilePlatform() === 'android',
 			section: 'note',
+		},
+
+		'voiceTyping.preferredProvider': {
+			value: 'whisper-tiny',
+			type: SettingItemType.String,
+			public: true,
+			appTypes: [AppType.Mobile],
+			label: () => _('Preferred voice typing provider'),
+			isEnum: true,
+			// For now, iOS and web don't support voice typing.
+			show: () => shim.mobilePlatform() === 'android',
+			section: 'note',
+
+			options: () => {
+				return {
+					'vosk': _('Vosk'),
+					'whisper-tiny': _('Whisper'),
+				};
+			},
 		},
 
 		'trash.autoDeletionEnabled': {
