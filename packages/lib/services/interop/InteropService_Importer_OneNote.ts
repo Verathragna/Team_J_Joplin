@@ -22,6 +22,7 @@ type ExtractSvgsReturn = {
 	html: string;
 };
 
+// See onenote-converter README.md for more information
 export default class InteropService_Importer_OneNote extends InteropService_Importer_Base {
 	protected importedNotes: Record<string, NoteEntity> = {};
 	private document: Document = null;
