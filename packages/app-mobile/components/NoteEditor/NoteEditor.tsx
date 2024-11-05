@@ -345,6 +345,7 @@ function NoteEditor(props: Props, ref: any) {
 
 		automatchBraces: false,
 		ignoreModifiers: false,
+		autocompleteMarkup: Setting.value('editor.autocompleteMarkup'),
 
 		indentWithTabs: true,
 	}), [props.themeId, props.readOnly]);
@@ -569,6 +570,7 @@ function NoteEditor(props: Props, ref: any) {
 			}}>
 				<ExtendedWebView
 					webviewInstanceId='NoteEditor'
+					testID='NoteEditor'
 					scrollEnabled={true}
 					ref={webviewRef}
 					html={html}
