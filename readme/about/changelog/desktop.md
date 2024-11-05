@@ -1,14 +1,33 @@
 # Joplin Desktop Changelog
 
-## [v3.1.16](https://github.com/laurent22/joplin/releases/tag/v3.1.16) (Pre-release) - 2024-09-24T16:11:51Z
+## [v3.1.20](https://github.com/laurent22/joplin/releases/tag/v3.1.20) - 2024-10-22T12:21:32Z
 
+- Fixed: Fix error screen shown on opening settings when an incompatible plugin is installed ([#11223](https://github.com/laurent22/joplin/issues/11223) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Security: Improve KaTeX error handling ([#11207](https://github.com/laurent22/joplin/issues/11207) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Security: Improve Markdown viewer link handling ([#11201](https://github.com/laurent22/joplin/issues/11201) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Security: Open more target="_blank" links in a browser ([#11212](https://github.com/laurent22/joplin/issues/11212) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [v3.1.18](https://github.com/laurent22/joplin/releases/tag/v3.1.18) (Pre-release) - 2024-10-11T23:27:10Z
+
+- New: Plugins: Add support for joplin.settings.values and deprecate joplin.settings.value ([715abcc](https://github.com/laurent22/joplin/commit/715abcc))
+- Improved: Downgrade CodeMirror packages to fix various Android regressions ([#11170](https://github.com/laurent22/joplin/issues/11170) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Plugins: Name webview root attribute so that it can be styled ([75b8caf](https://github.com/laurent22/joplin/commit/75b8caf))
+- Improved: Remove Math Mode from the list of plugins incompatible with the new editor ([#11143](https://github.com/laurent22/joplin/issues/11143) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Improved: Updated packages glob (v10.4.5), katex (v0.16.11), types
+- Fixed: Accessibility: Fix context menu button doesn't open the note list context menu (regression) ([#11175](https://github.com/laurent22/joplin/issues/11175) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fix incorrect list switching behavior ([#11137](https://github.com/laurent22/joplin/issues/11137)) ([#11135](https://github.com/laurent22/joplin/issues/11135) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Improve performance by allowing note list background timers to be cancelled ([#11133](https://github.com/laurent22/joplin/issues/11133)) ([#11129](https://github.com/laurent22/joplin/issues/11129) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+
+## [v3.1.17](https://github.com/laurent22/joplin/releases/tag/v3.1.17) (Pre-release) - 2024-09-26T11:57:54Z
+
+- Improved: Enable again auto-updates ([058a559](https://github.com/laurent22/joplin/commit/058a559))
 - New: Fix horizontal rule button when cursor is not on a new line ([#11085](https://github.com/laurent22/joplin/issues/11085) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
 - Improved: Automatically detect and use operating system theme by default ([5beb80b](https://github.com/laurent22/joplin/commit/5beb80b))
-- Improved: Seamless-Updates: triggering updates ([#11079](https://github.com/laurent22/joplin/issues/11079) by [@AliceHincu](https://github.com/AliceHincu))
 - Improved: Updated packages glob (v10.4.2), jsdom (v24.1.0), sass (v1.77.6), turndown (v7.2.0)
 - Fixed: Delete revisions on the sync target when deleted locally ([#11035](https://github.com/laurent22/joplin/issues/11035)) ([#11017](https://github.com/laurent22/joplin/issues/11017) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
 - Fixed: Fix ctrl/cmd-n can create new notes while the trash folder is selected ([#11092](https://github.com/laurent22/joplin/issues/11092) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
 - Fixed: Improve performance when there are many selected items ([#11067](https://github.com/laurent22/joplin/issues/11067)) ([#11065](https://github.com/laurent22/joplin/issues/11065) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Plugin API: Save changes made with `editor.setText` ([#11117](https://github.com/laurent22/joplin/issues/11117)) ([#11105](https://github.com/laurent22/joplin/issues/11105) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
 - Fixed: WebDAV synchronisation not working because of URL encoding differences ([#11076](https://github.com/laurent22/joplin/issues/11076)) ([#10608](https://github.com/laurent22/joplin/issues/10608) by [@pedr](https://github.com/pedr))
 
 ## [v3.1.15](https://github.com/laurent22/joplin/releases/tag/v3.1.15) (Pre-release) - 2024-09-17T09:15:10Z
