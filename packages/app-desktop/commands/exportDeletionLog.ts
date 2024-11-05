@@ -4,6 +4,7 @@ import { _ } from '@joplin/lib/locale';
 import shim from '@joplin/lib/shim';
 import Setting from '@joplin/lib/models/Setting';
 import bridge from '../services/bridge';
+import { formatMsToLocal } from '@joplin/utils/time';
 
 export const declaration: CommandDeclaration = {
 	name: 'exportDeletionLog',
@@ -39,7 +40,9 @@ export const runtime = (): CommandRuntime => {
 				allDeletionLines += deletionLines;
 			}
 
-			const deletionLogPath = `${Setting.value('profileDir')}/deletion_log.txt`;
+			const fileName = `deletion_log_${formatMsToLocal(Date.now(), 'YYYYMMDD')}.txt`;
+
+			const deletionLogPath = `${Setting.value('profileDir')}/${fileName}`;
 
 			await shim.fsDriver().writeFile(deletionLogPath, allDeletionLines, 'utf8');
 

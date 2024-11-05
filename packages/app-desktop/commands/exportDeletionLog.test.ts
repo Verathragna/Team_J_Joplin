@@ -39,13 +39,15 @@ describe('exportDeletionLog', () => {
 
 	beforeAll(() => {
 		state = createAppDefaultState({}, {});
+		jest.useFakeTimers();
+		jest.setSystemTime(new Date('2024-09-18T12:00:00Z').getTime());
 	});
 
 	it('should get all deletion lines from the log file', async () => {
 		await createFakeLogFile('log.txt', logContentWithDeleteAction);
 
 		await exportDeletionLog.runtime().execute({ state, dispatch: () => {} });
-		const result = await shim.fsDriver().readFile(`${Setting.value('profileDir')}/deletion_log.txt`, 'utf-8');
+		const result = await shim.fsDriver().readFile(`${Setting.value('profileDir')}/deletion_log_20240918.txt`, 'utf-8');
 		expect(result).toBe(
 			`2024-09-17 18:34:28: DeleteAction: MigrationService: ; Item IDs: 1
 2024-09-17 18:34:28: DeleteAction: MigrationService: ; Item IDs: 2
@@ -58,7 +60,7 @@ describe('exportDeletionLog', () => {
 	it('should return a empty file if there is not deletion lines', async () => {
 		await createFakeLogFile('log.txt', '');
 		await exportDeletionLog.runtime().execute({ state, dispatch: () => {} });
-		const result = await shim.fsDriver().readFile(`${Setting.value('profileDir')}/deletion_log.txt`, 'utf-8');
+		const result = await shim.fsDriver().readFile(`${Setting.value('profileDir')}/deletion_log_20240918.txt`, 'utf-8');
 		expect(result).toBe('');
 	});
 
@@ -70,7 +72,7 @@ describe('exportDeletionLog', () => {
 		await createFakeLogFile('log.txt', '');
 
 		await exportDeletionLog.runtime().execute({ state, dispatch: () => {} });
-		const result = await shim.fsDriver().readFile(`${Setting.value('profileDir')}/deletion_log.txt`, 'utf-8');
+		const result = await shim.fsDriver().readFile(`${Setting.value('profileDir')}/deletion_log_20240918.txt`, 'utf-8');
 		expect(result).toBe('');
 	});
 
@@ -80,10 +82,21 @@ describe('exportDeletionLog', () => {
 		await createFakeLogFile('log.txt', '2024-09-17 18:34:29: DeleteAction: MigrationService: ; Item IDs: 5');
 
 		await exportDeletionLog.runtime().execute({ state, dispatch: () => {} });
-		const result = await shim.fsDriver().readFile(`${Setting.value('profileDir')}/deletion_log.txt`, 'utf-8');
+		const result = await shim.fsDriver().readFile(`${Setting.value('profileDir')}/deletion_log_20240918.txt`, 'utf-8');
 		expect(result).toBe(
 			`2024-09-17 18:34:29: DeleteAction: MigrationService: ; Item IDs: 4
 2024-09-17 18:34:29: DeleteAction: MigrationService: ; Item IDs: 5
 `);
 	});
+
+	it('should contain the date in the filename', async () => {
+		await shim.fsDriver().remove(`${Setting.value('profileDir')}/deletion_log_20230111.txt`);
+		jest.setSystemTime(new Date('2023-01-11T12:00:00Z').getTime());
+		await createFakeLogFile('log.txt', '');
+
+		await exportDeletionLog.runtime().execute({ state, dispatch: () => {} });
+		const exists = await shim.fsDriver().exists(`${Setting.value('profileDir')}/deletion_log_20230111.txt`);
+		expect(exists).toBe(true);
+	});
+
 });
