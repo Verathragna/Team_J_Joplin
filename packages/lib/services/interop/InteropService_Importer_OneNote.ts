@@ -119,8 +119,9 @@ export default class InteropService_Importer_OneNote extends InteropService_Impo
 	}
 
 	public extractSvgs(html: string, titleGenerator: ()=> string): ExtractSvgsReturn {
-		const root = this.document.createElement('html');
-		const body = this.document.createElement('body');
+		const htmlDocument = this.document.implementation.createHTMLDocument('htmlDocument');
+		const root = htmlDocument.createElement('html');
+		const body = htmlDocument.createElement('body');
 		root.appendChild(body);
 		root.innerHTML = html;
 
@@ -135,7 +136,7 @@ export default class InteropService_Importer_OneNote extends InteropService_Impo
 
 		for (const svgNode of svgNodeList) {
 			const title = `${titleGenerator()}.svg`;
-			const img = this.document.createElement('img');
+			const img = htmlDocument.createElement('img');
 			img.setAttribute('style', svgNode.getAttribute('style'));
 			img.setAttribute('src', `./${title}`);
 			svgNode.removeAttribute('style');
