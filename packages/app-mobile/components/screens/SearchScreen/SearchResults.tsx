@@ -10,7 +10,7 @@ import Note from '@joplin/lib/models/Note';
 import SearchEngine from '@joplin/lib/services/search/SearchEngine';
 import { ProgressBar } from 'react-native-paper';
 import shim from '@joplin/lib/shim';
-import { SearchType } from '@joplin/lib/services/search/types';
+import { SearchType } from '@joplin/lib/services/search/SearchEngine';
 
 interface Props {
 	query: string;

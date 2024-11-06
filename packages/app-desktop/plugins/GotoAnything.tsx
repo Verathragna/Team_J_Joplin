@@ -22,7 +22,7 @@ import { MarkupLanguage, MarkupToHtml } from '@joplin/renderer';
 import Resource from '@joplin/lib/models/Resource';
 import { NoteEntity, ResourceEntity } from '@joplin/lib/services/database/types';
 import Dialog from '../gui/Dialog';
-import { SearchType } from '@joplin/lib/services/search/types';
+import { SearchType } from '@joplin/lib/services/search/SearchEngine';
 import AsyncActionQueue from '@joplin/lib/AsyncActionQueue';
 
 const logger = Logger.create('GotoAnything');

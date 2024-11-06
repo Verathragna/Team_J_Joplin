@@ -64,7 +64,7 @@ import { join } from 'path';
 import processStartFlags from './utils/processStartFlags';
 import { setupAutoDeletion } from './services/trash/permanentlyDeleteOldItems';
 import determineProfileAndBaseDir from './determineBaseAppDirs';
-import { SearchType } from './services/search/types';
+import { SearchType } from './services/search/SearchEngine';
 
 const appLogger: LoggerWrapper = Logger.create('App');
 

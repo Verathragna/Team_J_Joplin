@@ -15,7 +15,6 @@ import BaseItem from '../../models/BaseItem';
 import { isCallbackUrl, parseCallbackUrl } from '../../callbackUrlUtils';
 import replaceUnsupportedCharacters from '../../utils/replaceUnsupportedCharacters';
 import { htmlentitiesDecode } from '@joplin/utils/html';
-import { SearchType } from './types';
 const { sprintf } = require('sprintf-js');
 import { pregQuote, scriptType, removeDiacritics } from '../../string-utils';
 
@@ -60,6 +59,13 @@ export interface Terms {
 	_: (string | ComplexTerm)[];
 	title: (string | ComplexTerm)[];
 	body: (string | ComplexTerm)[];
+}
+
+export enum SearchType {
+	Auto = 'auto',
+	Basic = 'basic',
+	Nonlatin = 'nonlatin',
+	Fts = 'fts',
 }
 
 const quoted = (s: string) => s.startsWith('"') && s.endsWith('"');

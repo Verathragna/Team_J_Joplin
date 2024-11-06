@@ -1,9 +1,9 @@
 import { setupDatabaseAndSynchronizer, db, sleep, switchClient, msleep } from '../../testing/test-utils';
 import SearchEngine from './SearchEngine';
+import { SearchType } from './SearchEngine';
 import Note from '../../models/Note';
 import ItemChange from '../../models/ItemChange';
 import Setting from '../../models/Setting';
-import { SearchType } from './types';
 
 let engine: SearchEngine = null;
 
