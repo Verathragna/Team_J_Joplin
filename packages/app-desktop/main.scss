@@ -154,7 +154,7 @@ a {
 // sufficient because it matches any focused input (https://stackoverflow.com/a/66109577).
 //
 // See https://github.com/laurent22/joplin/issues/9982.
-input:not([type=button]):not([type=checkbox]), select {
+input:not([type=button]):not([type=checkbox]) {
 	&:focus-visible {
 		outline: none;
 	}
@@ -289,22 +289,9 @@ Component-specific classes
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-
-	> .password-valid-icon {
-		margin-left: 10px;
-	}
 }
 
 // .master-password-dialog .current-password-wrapper input {
 // 	flex: 1;
 // 	margin-right: 10px;
 // }
-
-.master-password-dialog .fa-check {
-	color: var(--joplin-color-correct);
-}
-
-.master-password-dialog .fa-times {
-	color: var(--joplin-color-error);
-	margin-left: 5px;
-}

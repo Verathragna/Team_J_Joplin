@@ -6,7 +6,7 @@ import UndoRedoService from '@joplin/lib/services/UndoRedoService';
 import NoteBodyViewer from '../NoteBodyViewer/NoteBodyViewer';
 import checkPermissions from '../../utils/checkPermissions';
 import NoteEditor from '../NoteEditor/NoteEditor';
-const React = require('react');
+import * as React from 'react';
 import { Keyboard, View, TextInput, StyleSheet, Linking, Share, NativeSyntheticEvent } from 'react-native';
 import { Platform, PermissionsAndroid } from 'react-native';
 import { connect } from 'react-redux';
@@ -17,7 +17,7 @@ import Resource from '@joplin/lib/models/Resource';
 import Folder from '@joplin/lib/models/Folder';
 const Clipboard = require('@react-native-clipboard/clipboard').default;
 const md5 = require('md5');
-const { BackButtonService } = require('../../services/back-button.js');
+import BackButtonService from '../../services/BackButtonService';
 import NavService, { OnNavigateCallback as OnNavigateCallback } from '@joplin/lib/services/NavService';
 import { ModelType } from '@joplin/lib/BaseModel';
 import FloatingActionButton from '../buttons/FloatingActionButton';
@@ -26,7 +26,7 @@ import * as mimeUtils from '@joplin/lib/mime-utils';
 import ScreenHeader, { MenuOptionType } from '../ScreenHeader';
 import NoteTagsDialog from './NoteTagsDialog';
 import time from '@joplin/lib/time';
-const { Checkbox } = require('../checkbox.js');
+import Checkbox from '../Checkbox';
 import { _, currentLocale } from '@joplin/lib/locale';
 import { reg } from '@joplin/lib/registry';
 import ResourceFetcher from '@joplin/lib/services/ResourceFetcher';
@@ -38,14 +38,13 @@ import shared, { BaseNoteScreenComponent, Props as BaseProps } from '@joplin/lib
 import { Asset, ImagePickerResponse, launchImageLibrary } from 'react-native-image-picker';
 import SelectDateTimeDialog from '../SelectDateTimeDialog';
 import ShareExtension from '../../utils/ShareExtension.js';
-import CameraView from '../CameraView';
+import CameraView from '../CameraView/CameraView';
 import { FolderEntity, NoteEntity, ResourceEntity } from '@joplin/lib/services/database/types';
 import Logger from '@joplin/utils/Logger';
 import ImageEditor from '../NoteEditor/ImageEditor/ImageEditor';
 import promptRestoreAutosave from '../NoteEditor/ImageEditor/promptRestoreAutosave';
 import isEditableResource from '../NoteEditor/ImageEditor/isEditableResource';
 import VoiceTypingDialog from '../voiceTyping/VoiceTypingDialog';
-import { voskEnabled } from '../../services/voiceTyping/vosk';
 import { isSupportedLanguage } from '../../services/voiceTyping/vosk';
 import { ChangeEvent as EditorChangeEvent, SelectionRangeChangeEvent, UndoRedoDepthChangeEvent } from '@joplin/editor/events';
 import { join } from 'path';
@@ -64,6 +63,7 @@ import CommandService from '@joplin/lib/services/CommandService';
 import { ResourceInfo } from '../NoteBodyViewer/hooks/useRerenderHandler';
 import getImageDimensions from '../../utils/image/getImageDimensions';
 import resizeImage from '../../utils/image/resizeImage';
+import { CameraResult } from '../CameraView/types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 const emptyArray: any[] = [];
@@ -493,11 +493,6 @@ class NoteScreenComponent extends BaseScreenComponent<Props, State> implements B
 		this.undoRedoService_ = new UndoRedoService();
 		this.undoRedoService_.on('stackChange', this.undoRedoService_stackChange);
 
-		if (this.state.note && this.state.note.body && Setting.value('sync.resourceDownloadMode') === 'auto') {
-			const resourceIds = await Note.linkedResourceIds(this.state.note.body);
-			await ResourceFetcher.instance().markForDownload(resourceIds);
-		}
-
 		// Although it is async, we don't wait for the answer so that if permission
 		// has already been granted, it doesn't slow down opening the note. If it hasn't
 		// been granted, the popup will open anyway.
@@ -509,8 +504,12 @@ class NoteScreenComponent extends BaseScreenComponent<Props, State> implements B
 		void ResourceFetcher.instance().markForDownload(event.resourceId);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
-	public componentDidUpdate(prevProps: any, prevState: any) {
+	public async markAllAttachedResourcesForDownload() {
+		const resourceIds = await Note.linkedResourceIds(this.state.note.body);
+		await ResourceFetcher.instance().markForDownload(resourceIds);
+	}
+
+	public componentDidUpdate(prevProps: Props, prevState: State) {
 		if (this.doFocusUpdate_) {
 			this.doFocusUpdate_ = false;
 			this.scheduleFocusUpdate();
@@ -528,6 +527,11 @@ class NoteScreenComponent extends BaseScreenComponent<Props, State> implements B
 			void promptRestoreAutosave((drawingData: string) => {
 				void this.attachNewDrawing(drawingData);
 			});
+
+			// Handle automatic resource downloading
+			if (this.state.note?.body && Setting.value('sync.resourceDownloadMode') === 'auto') {
+				void this.markAllAttachedResourcesForDownload();
+			}
 		}
 
 		// Disable opening/closing the side menu with touch gestures
@@ -627,21 +631,6 @@ class NoteScreenComponent extends BaseScreenComponent<Props, State> implements B
 		await shared.saveOneProperty(this, name, value);
 	}
 
-	private async deleteNote_onPress() {
-		const note = this.state.note;
-		if (!note.id) return;
-
-		const folderId = note.parent_id;
-
-		await Note.delete(note.id, { toTrash: true, sourceDescription: 'Delete note button' });
-
-		this.props.dispatch({
-			type: 'NAV_GO',
-			routeName: 'Notes',
-			folderId: folderId,
-		});
-	}
-
 	private async pickDocuments() {
 		const result = await pickDocument({ multiple: true });
 		return result;
@@ -690,6 +679,39 @@ class NoteScreenComponent extends BaseScreenComponent<Props, State> implements B
 		}
 
 		return await saveOriginalImage();
+	}
+
+	private async insertText(text: string) {
+		const newNote = { ...this.state.note };
+
+		if (this.state.mode === 'edit') {
+			let newText = '';
+
+			if (this.selection) {
+				newText = `\n${text}\n`;
+				const prefix = newNote.body.substring(0, this.selection.start);
+				const suffix = newNote.body.substring(this.selection.end);
+				newNote.body = `${prefix}${newText}${suffix}`;
+			} else {
+				newText = `\n${text}`;
+				newNote.body = `${newNote.body}\n${newText}`;
+			}
+
+			if (this.useEditorBeta()) {
+				// The beta editor needs to be explicitly informed of changes
+				// to the note's body
+				if (this.editorRef.current) {
+					this.editorRef.current.insertText(newText);
+				} else {
+					logger.info(`Tried to insert text ${text} to the note when the editor is not visible -- updating the note body instead.`);
+				}
+			}
+		} else {
+			newNote.body += `\n${text}`;
+		}
+
+		this.setState({ note: newNote });
+		return newNote;
 	}
 
 	public async attachFile(pickerResponse: Asset, fileType: string): Promise<ResourceEntity|null> {
@@ -765,36 +787,7 @@ class NoteScreenComponent extends BaseScreenComponent<Props, State> implements B
 		resource = await Resource.save(resource, { isNew: true });
 
 		const resourceTag = Resource.markupTag(resource);
-
-		const newNote = { ...this.state.note };
-
-		if (this.state.mode === 'edit') {
-			let newText = '';
-
-			if (this.selection) {
-				newText = `\n${resourceTag}\n`;
-				const prefix = newNote.body.substring(0, this.selection.start);
-				const suffix = newNote.body.substring(this.selection.end);
-				newNote.body = `${prefix}${newText}${suffix}`;
-			} else {
-				newText = `\n${resourceTag}`;
-				newNote.body = `${newNote.body}\n${newText}`;
-			}
-
-			if (this.useEditorBeta()) {
-				// The beta editor needs to be explicitly informed of changes
-				// to the note's body
-				if (this.editorRef.current) {
-					this.editorRef.current.insertText(newText);
-				} else {
-					logger.error(`Tried to attach resource ${resource.id} to the note when the editor is not visible!`);
-				}
-			}
-		} else {
-			newNote.body += `\n${resourceTag}`;
-		}
-
-		this.setState({ note: newNote });
+		const newNote = await this.insertText(resourceTag);
 
 		void this.refreshResource(resource, newNote.body);
 
@@ -833,18 +826,19 @@ class NoteScreenComponent extends BaseScreenComponent<Props, State> implements B
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
-	private cameraView_onPhoto(data: any) {
+	private cameraView_onPhoto(data: CameraResult) {
 		void this.attachFile(
-			{
-				uri: data.uri,
-				type: 'image/jpg',
-			},
+			data,
 			'image',
 		);
 
 		this.setState({ showCamera: false });
 	}
+
+	private cameraView_onInsertBarcode = (data: string) => {
+		this.setState({ showCamera: false });
+		void this.insertText(data);
+	};
 
 	private cameraView_onCancel() {
 		this.setState({ showCamera: false });
@@ -900,20 +894,12 @@ class NoteScreenComponent extends BaseScreenComponent<Props, State> implements B
 	};
 
 	private drawPicture_onPress = async () => {
-		if (this.state.mode === 'edit') {
-			// Create a new empty drawing and attach it now, before the image editor is opened.
-			// With the present structure of Note.tsx, the we can't use this.editorRef while
-			// the image editor is open, and thus can't attach drawings at the cursor location.
-			const resource = await this.attachNewDrawing('');
-			await this.editDrawing(resource);
-		} else {
-			logger.info('Showing image editor...');
-			this.setState({
-				showImageEditor: true,
-				imageEditorResourceFilepath: null,
-				imageEditorResource: null,
-			});
-		}
+		logger.info('Showing image editor...');
+		this.setState({
+			showImageEditor: true,
+			imageEditorResourceFilepath: null,
+			imageEditorResource: null,
+		});
 	};
 
 	private async editDrawing(item: BaseItem) {
@@ -1223,8 +1209,8 @@ class NoteScreenComponent extends BaseScreenComponent<Props, State> implements B
 			});
 		}
 
-		// Voice typing is enabled only for French language and on Android for now
-		if (voskEnabled && shim.mobilePlatform() === 'android' && isSupportedLanguage(currentLocale())) {
+		// Voice typing is enabled only on Android for now
+		if (shim.mobilePlatform() === 'android' && isSupportedLanguage(currentLocale())) {
 			output.push({
 				title: _('Voice typing...'),
 				onPress: () => {
@@ -1291,30 +1277,33 @@ class NoteScreenComponent extends BaseScreenComponent<Props, State> implements B
 			});
 		}
 
-		output.push({
-			title: _('Delete'),
-			onPress: () => {
-				void this.deleteNote_onPress();
-			},
-			disabled: readOnly,
-		});
+		const commandService = CommandService.instance();
+		const whenContext = commandService.currentWhenClauseContext();
+		const addButtonFromCommand = (commandName: string, title?: string) => {
+			if (commandName === '-') {
+				output.push({ isDivider: true });
+			} else {
+				output.push({
+					title: title ?? commandService.description(commandName),
+					onPress: async () => {
+						void commandService.execute(commandName);
+					},
+					disabled: !commandService.isEnabled(commandName, whenContext),
+				});
+			}
+		};
+
+		if (whenContext.inTrash) {
+			addButtonFromCommand('permanentlyDeleteNote');
+		} else {
+			addButtonFromCommand('deleteNote', _('Delete'));
+		}
 
 		if (pluginCommands.length) {
 			output.push({ isDivider: true });
 
-			const commandService = CommandService.instance();
 			for (const commandName of pluginCommands) {
-				if (commandName === '-') {
-					output.push({ isDivider: true });
-				} else {
-					output.push({
-						title: commandService.description(commandName),
-						onPress: async () => {
-							void commandService.execute(commandName);
-						},
-						disabled: !commandService.isEnabled(commandName),
-					});
-				}
+				addButtonFromCommand(commandName);
 			}
 		}
 
@@ -1457,7 +1446,12 @@ class NoteScreenComponent extends BaseScreenComponent<Props, State> implements B
 		const isTodo = !!Number(note.is_todo);
 
 		if (this.state.showCamera) {
-			return <CameraView themeId={this.props.themeId} style={{ flex: 1 }} onPhoto={this.cameraView_onPhoto} onCancel={this.cameraView_onCancel} />;
+			return <CameraView
+				style={{ flex: 1 }}
+				onPhoto={this.cameraView_onPhoto}
+				onInsertBarcode={this.cameraView_onInsertBarcode}
+				onCancel={this.cameraView_onCancel}
+			/>;
 		} else if (this.state.showImageEditor) {
 			return <ImageEditor
 				resourceFilename={this.state.imageEditorResourceFilepath}

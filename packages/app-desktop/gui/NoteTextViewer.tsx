@@ -26,10 +26,10 @@ export default class NoteTextViewerComponent extends React.Component<Props, any>
 
 	private initialized_ = false;
 	private domReady_ = false;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
-	private webviewRef_: any;
+	private webviewRef_: React.RefObject<HTMLIFrameElement>;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private webviewListeners_: any = null;
+
 	private removePluginAssetsCallback_: RemovePluginAssetsCallback|null = null;
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
@@ -111,7 +111,7 @@ export default class NoteTextViewerComponent extends React.Component<Props, any>
 		window.addEventListener('message', this.webview_message);
 	}
 
-	public destroyWebview() {
+	private destroyWebview() {
 		const wv = this.webviewRef_.current;
 		if (!wv || !this.initialized_) return;
 
@@ -131,8 +131,19 @@ export default class NoteTextViewerComponent extends React.Component<Props, any>
 
 	public focus() {
 		if (this.webviewRef_.current) {
+			// Calling focus on webviewRef_ seems to be necessary when NoteTextViewer.focus
+			// is called outside of a user event (e.g. in a setTimeout) or during automated
+			// tests:
 			focus('NoteTextViewer::focus', this.webviewRef_.current);
+
+			// Calling .focus on this.webviewRef.current isn't sufficient.
+			// To allow arrow-key scrolling, focus must also be set within the iframe:
+			this.send('focus');
 		}
+	}
+
+	public hasFocus() {
+		return this.webviewRef_.current?.contains(document.activeElement);
 	}
 
 	public tryInit() {
@@ -184,13 +195,12 @@ export default class NoteTextViewerComponent extends React.Component<Props, any>
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public setHtml(html: string, options: SetHtmlOptions) {
+		const protocolHandler = bridge().electronApp().getCustomProtocolHandler();
+
 		// Grant & remove asset access.
 		if (options.pluginAssets) {
 			this.removePluginAssetsCallback_?.();
-
-			const protocolHandler = bridge().electronApp().getCustomProtocolHandler();
 
 			const pluginAssetPaths: string[] = options.pluginAssets.map((asset) => asset.path);
 			const assetAccesses = pluginAssetPaths.map(
@@ -206,7 +216,10 @@ export default class NoteTextViewerComponent extends React.Component<Props, any>
 			};
 		}
 
-		this.send('setHtml', html, options);
+		this.send('setHtml', html, {
+			...options,
+			mediaAccessKey: protocolHandler.getMediaAccessKey(),
+		});
 	}
 
 	// ----------------------------------------------------------------
@@ -222,7 +235,7 @@ export default class NoteTextViewerComponent extends React.Component<Props, any>
 				className="noteTextViewer"
 				ref={this.webviewRef_}
 				style={viewerStyle}
-				allow='fullscreen=* autoplay=* local-fonts=* encrypted-media=*'
+				allow='clipboard-write=(self) fullscreen=(self) autoplay=(self) local-fonts=(self) encrypted-media=(self)'
 				allowFullScreen={true}
 				src={`joplin-content://note-viewer/${__dirname}/note-viewer/index.html`}
 			></iframe>

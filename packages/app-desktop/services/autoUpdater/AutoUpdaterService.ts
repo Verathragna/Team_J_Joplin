@@ -19,16 +19,28 @@ export enum AutoUpdaterEvents {
 export const defaultUpdateInterval = 12 * 60 * 60 * 1000;
 export const initialUpdateStartup = 5 * 1000;
 const releasesLink = 'https://objects.joplinusercontent.com/r/releases';
-const supportedPlatformAssets: { [key in string]: string } = {
-	'darwin': 'latest-mac.yml',
-	'win32': 'latest.yml',
+export type Architecture = typeof process.arch;
+interface PlatformAssets {
+	[platform: string]: {
+		[arch in Architecture]?: string;
+	};
+}
+const supportedPlatformAssets: PlatformAssets = {
+	'darwin': {
+		'x64': 'latest-mac.yml',
+		'arm64': 'latest-mac-arm64.yml',
+	},
+	'win32': {
+		'x64': 'latest.yml',
+		'ia32': 'latest.yml',
+	},
 };
 
 export interface AutoUpdaterServiceInterface {
-	checkForUpdates(): void;
+	checkForUpdates(isManualCheck: boolean): void;
 	updateApp(): void;
 	fetchLatestRelease(includePreReleases: boolean): Promise<GitHubRelease>;
-	getDownloadUrlForPlatform(release: GitHubRelease, platform: string): string;
+	getDownloadUrlForPlatform(release: GitHubRelease, platform: string, arch: string): string;
 }
 
 export default class AutoUpdaterService implements AutoUpdaterServiceInterface {
@@ -36,10 +48,11 @@ export default class AutoUpdaterService implements AutoUpdaterServiceInterface {
 	private logger_: LoggerWrapper;
 	private devMode_: boolean;
 	private enableDevMode = true; // force the updater to work in "dev" mode
-	private enableAutoDownload = false; // automatically download an update when it is found
+	private enableAutoDownload = true; // automatically download an update when it is found
 	private autoInstallOnAppQuit = false; // automatically install the downloaded update once the user closes the application
 	private includePreReleases_ = false;
 	private allowDowngrade = false;
+	private isManualCheckInProgress = false;
 
 	public constructor(mainWindow: BrowserWindow, logger: LoggerWrapper, devMode: boolean, includePreReleases: boolean) {
 		this.window_ = mainWindow;
@@ -49,8 +62,9 @@ export default class AutoUpdaterService implements AutoUpdaterServiceInterface {
 		this.configureAutoUpdater();
 	}
 
-	public checkForUpdates = async (): Promise<void> => {
+	public checkForUpdates = async (isManualCheck = false): Promise<void> => {
 		try {
+			this.isManualCheckInProgress = isManualCheck;
 			await this.checkForLatestRelease();
 		} catch (error) {
 			this.logger_.error('Failed to check for updates:', error);
@@ -76,15 +90,20 @@ export default class AutoUpdaterService implements AutoUpdaterServiceInterface {
 	};
 
 
-	public getDownloadUrlForPlatform(release: GitHubRelease, platform: string): string {
-		const assetName: string = supportedPlatformAssets[platform];
-		if (!assetName) {
+	public getDownloadUrlForPlatform(release: GitHubRelease, platform: string, arch: string): string {
+		if (!supportedPlatformAssets[platform]) {
 			throw new Error(`The AutoUpdaterService does not support the following platform: ${platform}`);
+		}
+
+		const platformAssets = supportedPlatformAssets[platform];
+		const assetName: string | undefined = platformAssets ? platformAssets[arch as Architecture] : undefined;
+		if (!assetName) {
+			throw new Error(`The AutoUpdaterService does not support the architecture: ${arch} for platform: ${platform}`);
 		}
 
 		const asset: GitHubReleaseAsset = release.assets.find(a => a.name === assetName);
 		if (!asset) {
-			throw new Error('No suitable update asset found for this platform.');
+			throw new Error(`Yml file: ${assetName} not found for version: ${release.tag_name} platform: ${platform} and architecture: ${arch}`);
 		}
 
 		return asset.browser_download_url;
@@ -110,11 +129,12 @@ export default class AutoUpdaterService implements AutoUpdaterServiceInterface {
 			const release: GitHubRelease = await this.fetchLatestRelease(this.includePreReleases_);
 
 			try {
-				let assetUrl = this.getDownloadUrlForPlatform(release, shim.platformName());
+				let assetUrl = this.getDownloadUrlForPlatform(release, shim.platformName(), process.arch);
 				// electron's autoUpdater appends automatically the platform's yml file to the link so we should remove it
 				assetUrl = assetUrl.substring(0, assetUrl.lastIndexOf('/'));
 				autoUpdater.setFeedURL({ provider: 'generic', url: assetUrl });
 				await autoUpdater.checkForUpdates();
+				this.isManualCheckInProgress = false;
 			} catch (error) {
 				this.logger_.error(`Update download url failed: ${error.message}`);
 			}
@@ -150,6 +170,10 @@ export default class AutoUpdaterService implements AutoUpdaterServiceInterface {
 	};
 
 	private onUpdateNotAvailable = (_info: UpdateInfo): void => {
+		if (this.isManualCheckInProgress) {
+			this.window_.webContents.send(AutoUpdaterEvents.UpdateNotAvailable);
+		}
+
 		this.logger_.info('Update not available.');
 	};
 

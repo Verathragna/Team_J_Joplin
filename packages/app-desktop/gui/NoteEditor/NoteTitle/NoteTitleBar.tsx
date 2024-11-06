@@ -1,34 +1,10 @@
 import * as React from 'react';
 import { _ } from '@joplin/lib/locale';
 import CommandService from '@joplin/lib/services/CommandService';
-import { ChangeEvent, useCallback } from 'react';
+import { ChangeEvent, useCallback, useRef } from 'react';
 import NoteToolbar from '../../NoteToolbar/NoteToolbar';
 import { buildStyle } from '@joplin/lib/theme';
 import time from '@joplin/lib/time';
-import styled from 'styled-components';
-
-const StyledRoot = styled.div`
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	padding-left: ${props => props.theme.editorPaddingLeft}px;
-
-	@media (max-width: 800px) {
-		flex-direction: column;
-		align-items: flex-start;
-	}
-`;
-
-const InfoGroup = styled.div`
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-
-	@media (max-width: 800px) {
-		border-top: 1px solid ${props => props.theme.dividerColor};
-		width: 100%;
-	}
-`;
 
 interface Props {
 	themeId: number;
@@ -75,6 +51,33 @@ function styles_(props: Props) {
 	});
 }
 
+const useReselectHandlers = () => {
+	const lastTitleFocus = useRef([0, 0]);
+	const lastTitleValue = useRef('');
+
+	const onTitleBlur: React.FocusEventHandler<HTMLInputElement> = useCallback((event) => {
+		const titleElement = event.currentTarget;
+		lastTitleFocus.current = [titleElement.selectionStart, titleElement.selectionEnd];
+		lastTitleValue.current = titleElement.value;
+	}, []);
+
+	const onTitleFocus: React.FocusEventHandler<HTMLInputElement> = useCallback((event) => {
+		const titleElement = event.currentTarget;
+		// By default, focusing the note title bar can cause its content to become selected. We override
+		// this with a more reasonable default:
+		if (titleElement.selectionStart === 0 && titleElement.selectionEnd === titleElement.value.length) {
+			if (lastTitleValue.current !== titleElement.value) {
+				titleElement.selectionStart = titleElement.value.length;
+			} else {
+				titleElement.selectionStart = lastTitleFocus.current[0];
+				titleElement.selectionEnd = lastTitleFocus.current[1];
+			}
+		}
+	}, []);
+
+	return { onTitleBlur, onTitleFocus };
+};
+
 export default function NoteTitleBar(props: Props) {
 	const styles = styles_(props);
 
@@ -87,6 +90,8 @@ export default function NoteTitleBar(props: Props) {
 			void CommandService.instance().execute('focusElement', 'noteBody', { moveCursorToStart });
 		}
 	}, []);
+
+	const { onTitleFocus, onTitleBlur } = useReselectHandlers();
 
 	function renderTitleBarDate() {
 		return <span className="updated-time-label" style={styles.titleDate}>{time.formatMsToLocal(props.noteUserUpdatedTime)}</span>;
@@ -101,7 +106,7 @@ export default function NoteTitleBar(props: Props) {
 	}
 
 	return (
-		<StyledRoot>
+		<div className='note-title-wrapper'>
 			<input
 				className="title-input"
 				type="text"
@@ -111,12 +116,14 @@ export default function NoteTitleBar(props: Props) {
 				readOnly={props.disabled}
 				onChange={props.onTitleChange}
 				onKeyDown={onTitleKeydown}
+				onFocus={onTitleFocus}
+				onBlur={onTitleBlur}
 				value={props.noteTitle}
 			/>
-			<InfoGroup>
+			<div className='note-title-info-group'>
 				{renderTitleBarDate()}
 				{renderNoteToolbar()}
-			</InfoGroup>
-		</StyledRoot>
+			</div>
+		</div>
 	);
 }
