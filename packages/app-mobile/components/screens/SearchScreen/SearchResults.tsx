@@ -10,6 +10,7 @@ import Note from '@joplin/lib/models/Note';
 import SearchEngine from '@joplin/lib/services/search/SearchEngine';
 import { ProgressBar } from 'react-native-paper';
 import shim from '@joplin/lib/shim';
+import { SearchType } from '@joplin/lib/services/search/types';
 
 interface Props {
 	query: string;
@@ -49,7 +50,7 @@ const useResults = (props: Props) => {
 
 			if (event.cancelled) return;
 
-			const parsedQuery = await SearchEngine.instance().parseQuery(query);
+			const parsedQuery = await SearchEngine.instance().parseQuery(query, SearchType.Auto);
 			const highlightedWords = SearchEngine.instance().allParsedQueryTerms(parsedQuery);
 
 			props.onHighlightedWordsChange(highlightedWords);
