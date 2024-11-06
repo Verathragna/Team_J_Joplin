@@ -118,13 +118,29 @@ class Application extends BaseApplication {
 		}
 	}
 
+	private updateLanguage() {
+		setLocale(Setting.value('locale'));
+		// The bridge runs within the main process, with its own instance of locale.js
+		// so it needs to be set too here.
+		bridge().setLocale(Setting.value('locale'));
+
+		const htmlContainer = document.querySelector('html');
+		// HTML expects the lang attribute to be in BCP47 format, with a dash rather than
+		// an underscore:
+		const htmlLang = Setting.value('locale').replace(/_/g, '-');
+		htmlContainer.setAttribute('lang', htmlLang);
+	}
+
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	protected async generalMiddleware(store: any, next: any, action: any) {
 		if (action.type === 'SETTING_UPDATE_ONE' && action.key === 'locale' || action.type === 'SETTING_UPDATE_ALL') {
-			setLocale(Setting.value('locale'));
-			// The bridge runs within the main process, with its own instance of locale.js
-			// so it needs to be set too here.
-			bridge().setLocale(Setting.value('locale'));
+			this.updateLanguage();
+		}
+
+		if (action.type === 'SETTING_UPDATE_ONE' && action.key === 'renderer.fileUrls' || action.type === 'SETTING_UPDATE_ALL') {
+			bridge().electronApp().getCustomProtocolHandler().setMediaAccessEnabled(
+				Setting.value('renderer.fileUrls'),
+			);
 		}
 
 		if (action.type === 'SETTING_UPDATE_ONE' && action.key === 'showTrayIcon' || action.type === 'SETTING_UPDATE_ALL') {
@@ -404,9 +420,9 @@ class Application extends BaseApplication {
 		eventManager.on(EventName.ResourceChange, handleResourceChange);
 	}
 
-	private async setupAutoUpdaterService() {
+	private setupAutoUpdaterService() {
 		if (Setting.value('featureFlag.autoUpdaterServiceEnabled')) {
-			await bridge().electronApp().initializeAutoUpdaterService(
+			bridge().electronApp().initializeAutoUpdaterService(
 				Logger.create('AutoUpdaterService'),
 				Setting.value('env') === 'dev',
 				Setting.value('autoUpdate.includePreReleases'),
@@ -448,6 +464,8 @@ class Application extends BaseApplication {
 
 		// Loads app-wide styles. (Markdown preview-specific styles loaded in app.js)
 		await injectCustomStyles('appStyles', Setting.customCssFilePath(Setting.customCssFilenames.JOPLIN_APP));
+
+		this.setupAutoUpdaterService();
 
 		AlarmService.setDriver(new AlarmServiceDriverNode({ appName: packageInfo.build.appId }));
 		AlarmService.setLogger(reg.logger());
@@ -697,8 +715,6 @@ class Application extends BaseApplication {
 		eventManager.on(EventName.NoteResourceIndexed, async () => {
 			SearchEngine.instance().scheduleSyncTables();
 		});
-
-		await this.setupAutoUpdaterService();
 
 		// setTimeout(() => {
 		// 	void populateDatabase(reg.db(), {

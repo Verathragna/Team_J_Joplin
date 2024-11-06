@@ -5,7 +5,7 @@ import type ShimType from '@joplin/lib/shim';
 const shim: typeof ShimType = require('@joplin/lib/shim').default;
 import { isCallbackUrl } from '@joplin/lib/callbackUrlUtils';
 
-import { BrowserWindow, Tray, screen } from 'electron';
+import { BrowserWindow, Tray, WebContents, screen } from 'electron';
 import bridge from './bridge';
 const url = require('url');
 const path = require('path');
@@ -232,14 +232,35 @@ export default class ElectronAppWrapper {
 			}, 3000);
 		}
 
-		// will-frame-navigate is fired by clicking on a link within the BrowserWindow.
-		this.win_.webContents.on('will-frame-navigate', event => {
-			// If the link changes the URL of the browser window,
-			if (event.isMainFrame) {
-				event.preventDefault();
-				void bridge().openExternal(event.url);
-			}
-		});
+		const addWindowEventHandlers = (webContents: WebContents) => {
+			// will-frame-navigate is fired by clicking on a link within the BrowserWindow.
+			webContents.on('will-frame-navigate', event => {
+				// If the link changes the URL of the browser window,
+				if (event.isMainFrame) {
+					event.preventDefault();
+					void bridge().openExternal(event.url);
+				}
+			});
+
+			// Override calls to window.open and links with target="_blank": Open most in a browser instead
+			// of Electron:
+			webContents.setWindowOpenHandler((event) => {
+				if (event.url === 'about:blank') {
+					// Script-controlled pages: Used for opening notes in new windows
+					return {
+						action: 'allow',
+					};
+				} else if (event.url.match(/^https?:\/\//)) {
+					void bridge().openExternal(event.url);
+				}
+				return { action: 'deny' };
+			});
+
+			webContents.on('did-create-window', (event) => {
+				addWindowEventHandlers(event.webContents);
+			});
+		};
+		addWindowEventHandlers(this.win_.webContents);
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		this.win_.on('close', (event: any) => {
@@ -330,6 +351,10 @@ export default class ElectronAppWrapper {
 
 		ipcMain.on('apply-update-now', () => {
 			this.updaterService_.updateApp();
+		});
+
+		ipcMain.on('check-for-updates', () => {
+			void this.updaterService_.checkForUpdates(true);
 		});
 
 		// Let us register listeners on the window, so we can update the state
@@ -470,7 +495,7 @@ export default class ElectronAppWrapper {
 	}
 
 	// Electron's autoUpdater has to be init from the main process
-	public async initializeAutoUpdaterService(logger: LoggerWrapper, devMode: boolean, includePreReleases: boolean) {
+	public initializeAutoUpdaterService(logger: LoggerWrapper, devMode: boolean, includePreReleases: boolean) {
 		if (shim.isWindows() || shim.isMac()) {
 			if (!this.updaterService_) {
 				this.updaterService_ = new AutoUpdaterService(this.win_, logger, devMode, includePreReleases);
@@ -482,7 +507,7 @@ export default class ElectronAppWrapper {
 	private startPeriodicUpdateCheck = (updateInterval: number = defaultUpdateInterval): void => {
 		this.stopPeriodicUpdateCheck();
 		this.updatePollInterval_ = setInterval(() => {
-			void this.updaterService_.checkForUpdates();
+			void this.updaterService_.checkForUpdates(false);
 		}, updateInterval);
 		setTimeout(this.updaterService_.checkForUpdates, initialUpdateStartup);
 	};
@@ -491,6 +516,7 @@ export default class ElectronAppWrapper {
 		if (this.updatePollInterval_) {
 			clearInterval(this.updatePollInterval_);
 			this.updatePollInterval_ = null;
+			this.updaterService_ = null;
 		}
 	};
 
