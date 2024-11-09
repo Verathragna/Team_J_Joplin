@@ -487,10 +487,12 @@ packages/app-desktop/integration-tests/util/createStartupArgs.js
 packages/app-desktop/integration-tests/util/extendedExpect.js
 packages/app-desktop/integration-tests/util/firstNonDevToolsWindow.js
 packages/app-desktop/integration-tests/util/getImageSourceSize.js
+packages/app-desktop/integration-tests/util/setDarkMode.js
 packages/app-desktop/integration-tests/util/setFilePickerResponse.js
 packages/app-desktop/integration-tests/util/setMessageBoxResponse.js
 packages/app-desktop/integration-tests/util/test.js
 packages/app-desktop/integration-tests/util/waitForNextOpenPath.js
+packages/app-desktop/integration-tests/wcag.spec.js
 packages/app-desktop/playwright.config.js
 packages/app-desktop/plugins/GotoAnything.js
 packages/app-desktop/services/autoUpdater/AutoUpdaterService.test.js
@@ -1149,6 +1151,8 @@ packages/lib/services/interop/InteropService_Importer_Md.test.js
 packages/lib/services/interop/InteropService_Importer_Md.js
 packages/lib/services/interop/InteropService_Importer_Md_frontmatter.test.js
 packages/lib/services/interop/InteropService_Importer_Md_frontmatter.js
+packages/lib/services/interop/InteropService_Importer_OneNote.test.js
+packages/lib/services/interop/InteropService_Importer_OneNote.js
 packages/lib/services/interop/InteropService_Importer_Raw.test.js
 packages/lib/services/interop/InteropService_Importer_Raw.js
 packages/lib/services/interop/Module.test.js
@@ -1514,6 +1518,7 @@ packages/tools/update-readme-download.test.js
 packages/tools/update-readme-download.js
 packages/tools/update-readme-sponsors.js
 packages/tools/updateMarkdownDoc.js
+packages/tools/utils/discourse.test.js
 packages/tools/utils/discourse.js
 packages/tools/utils/loadSponsors.js
 packages/tools/utils/translation.js
