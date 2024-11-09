@@ -4,7 +4,7 @@ import ToolbarBase from '../ToolbarBase';
 import { utils as pluginUtils } from '@joplin/lib/services/plugins/reducer';
 import ToolbarButtonUtils, { ToolbarButtonInfo } from '@joplin/lib/services/commands/ToolbarButtonUtils';
 import stateToWhenClauseContext from '../../services/commands/stateToWhenClauseContext';
-const { connect } = require('react-redux');
+import { connect } from 'react-redux';
 import { buildStyle } from '@joplin/lib/theme';
 import { _ } from '@joplin/lib/locale';
 import getActivePluginEditorView from '@joplin/lib/services/plugins/utils/getActivePluginEditorView';
@@ -44,8 +44,11 @@ function NoteToolbar(props: NoteToolbarProps) {
 
 const toolbarButtonUtils = new ToolbarButtonUtils(CommandService.instance());
 
-const mapStateToProps = (state: AppState) => {
-	const whenClauseContext = stateToWhenClauseContext(state);
+interface ConnectProps {
+	windowId: string;
+}
+const mapStateToProps = (state: AppState, ownProps: ConnectProps) => {
+	const whenClauseContext = stateToWhenClauseContext(state, { windowId: ownProps.windowId });
 
 	const { editorPlugin } = getActivePluginEditorView(state.pluginService.plugins);
 
