@@ -7,21 +7,41 @@ import WebviewController, { ContainerType } from '../WebviewController';
 import { ActivationCheckCallback, EditorActivationCheckFilterObject, FilterHandler, ViewHandle, UpdateCallback } from './types';
 
 /**
- * Allows creating alternative note editors. When `setActive` is called, this view is going to
- * replace the note editor - you can then handle loading and saving note, and do your own rendering.
+ * Allows creating alternative note editors. You can create a view to handle loading and saving the
+ * note, and do your own rendering.
  *
  * Although it may be used to implement an alternative text editor, the more common use case may be
  * to render the note in a different, graphical way - for example displaying a graph, and
  * saving/loading the graph data in the associated note. In that case, you would detect whether the
- * current note contains graph data and, in this case, you'd display your viewer. If not, you would
- * hide it.
+ * current note contains graph data and, in this case, you'd display your viewer.
  *
- * Usually you would listen to the `onNoteChange` event - at that point check the note content, and
- * if your plugin can render it, then call `setActive(handle, true)`. Otherwise make sure to call
- * `setActive(handle, false)`, so that the view is not unnecessarily being displayed.
+ * Terminology: An editor is **active** when it can be used to edit the current note. Note that it
+ * doesn't necessarily mean that your editor is visible - it just means that the user has the option
+ * to switch to it (via the "toggle editor" button). A **visible** editor is active and is currently
+ * being displayed.
  *
- * Note that only one editor view can be active at a time. This is why it's important not to
- * activate your view if it's not relevant to the current note.
+ * To implement an editor you need to listen to two events:
+ *
+ * - `onActivationCheck`: This is a way for the app to know whether your editor should be active or
+ *   not. Return `true` from this handler to activate your editor.
+ *
+ * - `onUpdate`: When this is called you should update your editor based on the current note
+ *   content. Call `joplin.workspace.selectedNote()` to get the current note.
+ *
+ * - `showEditorPlugin` and `toggleEditorPlugin` commands. Additionally you can use these commands
+ *   to display your editor via `joplin.commands.execute('showEditorPlugin')`. This is not always
+ *   necessary since the user can switch to your editor using the "toggle editor" button, however
+ *   you may want to programmatically display the editor in some cases - for example when creating a
+ *   new note specific to your editor.
+ *
+ * Note that only one editor view can be active at a time. This is why it is important not to
+ * activate your view if it's not relevant to the current note. If more than one is active, it is
+ * undefined which editor is going to be used to display the note.
+ *
+ * For an example of editor plugin, see the [YesYouKan
+ * plugin](https://github.com/joplin/plugin-yesyoukan/blob/master/src/index.ts). In particular,
+ * check the logic around `onActivationCheck` and `onUpdate` since this is the entry points for
+ * using this API.
  */
 export default class JoplinViewsEditors {
 
@@ -72,6 +92,12 @@ export default class JoplinViewsEditors {
 		return this.controller(handle).onMessage(callback);
 	}
 
+	/**
+	 * Emitted when the editor can potentially be activated - this for example when the current note
+	 * is changed, or when the application is opened. At that point should can check the current
+	 * note and decide whether your editor should be activated or not. If it should return `true`,
+	 * otherwise return `false`.
+	 */
 	public async onActivationCheck(handle: ViewHandle, callback: ActivationCheckCallback): Promise<void> {
 		const handler: FilterHandler<EditorActivationCheckFilterObject> = async (object) => {
 			const isActive = await callback();
@@ -91,6 +117,10 @@ export default class JoplinViewsEditors {
 		});
 	}
 
+	/**
+	 * Emitted when the editor content should be updated. This for example when the currently
+	 * selected note changes, or when the user makes the editor visible.
+	 */
 	public async onUpdate(handle: ViewHandle, callback: UpdateCallback): Promise<void> {
 		this.controller(handle).onUpdate(callback);
 	}
@@ -101,13 +131,6 @@ export default class JoplinViewsEditors {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public postMessage(handle: ViewHandle, message: any): void {
 		return this.controller(handle).postMessage(message);
-	}
-
-	/**
-	 * Sets the editor as active or inactive for the current note.
-	 */
-	public async setActive(handle: ViewHandle, active: boolean) {
-		return this.controller(handle).setActive(active);
 	}
 
 	/**
