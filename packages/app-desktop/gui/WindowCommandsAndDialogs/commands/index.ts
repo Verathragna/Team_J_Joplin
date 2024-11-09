@@ -28,6 +28,7 @@ import * as restoreNote from './restoreNote';
 import * as revealResourceFile from './revealResourceFile';
 import * as search from './search';
 import * as setTags from './setTags';
+import * as showEditorPlugin from './showEditorPlugin';
 import * as showModalMessage from './showModalMessage';
 import * as showNoteContentProperties from './showNoteContentProperties';
 import * as showNoteProperties from './showNoteProperties';
@@ -77,6 +78,7 @@ const index: any[] = [
 	revealResourceFile,
 	search,
 	setTags,
+	showEditorPlugin,
 	showModalMessage,
 	showNoteContentProperties,
 	showNoteProperties,

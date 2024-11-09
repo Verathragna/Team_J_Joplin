@@ -1,9 +1,10 @@
 /* eslint-disable multiline-comment-style */
 
+import eventManager from '../../../eventManager';
 import Plugin from '../Plugin';
 import createViewHandle from '../utils/createViewHandle';
 import WebviewController, { ContainerType } from '../WebviewController';
-import { ViewHandle } from './types';
+import { ActivationCheckCallback, EditorActivationCheckFilterObject, FilterHandler, ViewHandle, UpdateCallback } from './types';
 
 /**
  * Allows creating alternative note editors. When `setActive` is called, this view is going to
@@ -27,6 +28,7 @@ export default class JoplinViewsEditors {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private store: any;
 	private plugin: Plugin;
+	private activationCheckHandlers_: Record<string, FilterHandler<EditorActivationCheckFilterObject>> = {};
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public constructor(plugin: Plugin, store: any) {
@@ -68,6 +70,29 @@ export default class JoplinViewsEditors {
 	// eslint-disable-next-line @typescript-eslint/ban-types -- Old code before rule was applied
 	public async onMessage(handle: ViewHandle, callback: Function): Promise<void> {
 		return this.controller(handle).onMessage(callback);
+	}
+
+	public async onActivationCheck(handle: ViewHandle, callback: ActivationCheckCallback): Promise<void> {
+		const handler: FilterHandler<EditorActivationCheckFilterObject> = async (object) => {
+			const isActive = await callback();
+			object.activatedEditors.push({
+				pluginId: this.plugin.id,
+				viewId: handle,
+				isActive: isActive,
+			});
+			return object;
+		};
+
+		this.activationCheckHandlers_[handle] = handler;
+
+		eventManager.filterOn('editorActivationCheck', this.activationCheckHandlers_[handle]);
+		this.plugin.addOnUnloadListener(() => {
+			eventManager.filterOff('editorActivationCheck', this.activationCheckHandlers_[handle]);
+		});
+	}
+
+	public async onUpdate(handle: ViewHandle, callback: UpdateCallback): Promise<void> {
+		this.controller(handle).onUpdate(callback);
 	}
 
 	/**

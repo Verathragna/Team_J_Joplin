@@ -58,6 +58,7 @@ export interface NoteEditorProps {
 	'plugins.shownEditorViewIds': string[];
 	onTitleChange?: (title: string)=> void;
 	bodyEditor: string;
+	startupPluginsLoaded: boolean;
 }
 
 export interface NoteBodyEditorRef {

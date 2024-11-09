@@ -5,6 +5,10 @@ const { toSystemSlashes } = require('../../path-utils');
 import PostMessageService, { MessageParticipant } from '../PostMessageService';
 import { PluginViewState } from './reducer';
 import { defaultWindowId } from '../../reducer';
+import Logger from '@joplin/utils/Logger';
+import CommandService from '../CommandService';
+
+const logger = Logger.create('WebviewController');
 
 export enum ContainerType {
 	Panel = 'panel',
@@ -50,12 +54,15 @@ export default class WebviewController extends ViewController {
 	private baseDir_: string;
 	// eslint-disable-next-line @typescript-eslint/ban-types -- Old code before rule was applied
 	private messageListener_: Function = null;
+	private updateListener_: ()=> void = null;
 	private closeResponse_: CloseResponse = null;
+	private containerType_: ContainerType = null;
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public constructor(handle: ViewHandle, pluginId: string, store: any, baseDir: string, containerType: ContainerType) {
 		super(handle, pluginId, store);
 		this.baseDir_ = toSystemSlashes(baseDir, 'linux');
+		this.containerType_ = containerType;
 
 		const view: PluginViewState = {
 			id: this.handle,
@@ -138,14 +145,36 @@ export default class WebviewController extends ViewController {
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public async emitMessage(event: EmitMessageEvent): Promise<any> {
-
 		if (!this.messageListener_) return;
+
+		if (this.containerType_ === ContainerType.Editor && !this.isActive()) {
+			logger.info('emitMessage: Not emitting message because editor is disabled:', this.pluginId, this.handle);
+			return;
+		}
+
 		return this.messageListener_(event.message);
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
+	public emitUpdate() {
+		if (!this.updateListener_) return;
+
+		if (this.containerType_ === ContainerType.Editor && (!this.isActive() || !this.isVisible())) {
+			logger.info('emitMessage: Not emitting update because editor is disabled or hidden:', this.pluginId, this.handle, this.isActive(), this.isVisible());
+			return;
+		}
+
+		this.updateListener_();
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public onMessage(callback: any) {
 		this.messageListener_ = callback;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
+	public onUpdate(callback: any) {
+		this.updateListener_ = callback;
 	}
 
 	// ---------------------------------------------
@@ -244,14 +273,22 @@ export default class WebviewController extends ViewController {
 	// Specific to editors
 	// ---------------------------------------------
 
-	public async setActive(active: boolean): Promise<void> {
+	public setActive(active: boolean) {
 		this.setStoreProp('opened', active);
+	}
+
+	public isActive(): boolean {
+		return this.storeView.opened;
 	}
 
 	public async isVisible(): Promise<boolean> {
 		if (!this.storeView.opened) return false;
 		const shownEditorViewIds: string[] = this.store.getState().settings['plugins.shownEditorViewIds'];
 		return shownEditorViewIds.includes(this.handle);
+	}
+
+	public async setVisible(visible: boolean) {
+		await CommandService.instance().execute('showEditorPlugin', this.handle, visible);
 	}
 
 }

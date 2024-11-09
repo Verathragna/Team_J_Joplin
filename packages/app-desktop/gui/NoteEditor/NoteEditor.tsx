@@ -55,6 +55,10 @@ import Logger from '@joplin/utils/Logger';
 import usePluginEditorView from './utils/usePluginEditorView';
 import { stateUtils } from '@joplin/lib/reducer';
 import { WindowIdContext } from '../NewWindowOrIFrame';
+import { EditorActivationCheckFilterObject } from '@joplin/lib/services/plugins/api/types';
+import PluginService from '@joplin/lib/services/plugins/PluginService';
+import WebviewController from '@joplin/lib/services/plugins/WebviewController';
+import AsyncActionQueue, { IntervalType } from '@joplin/lib/AsyncActionQueue';
 
 const debounce = require('debounce');
 
@@ -69,6 +73,15 @@ const toolbarButtonUtils = new ToolbarButtonUtils(CommandService.instance());
 const onDragOver: React.DragEventHandler = event => event.preventDefault();
 let editorIdCounter = 0;
 
+const makeNoteUpdateAction = (shownEditorViewIds: string[]) => {
+	return async () => {
+		for (const viewId of shownEditorViewIds) {
+			const controller = PluginService.instance().viewControllerByViewId(viewId) as WebviewController;
+			if (controller) controller.emitUpdate();
+		}
+	};
+};
+
 function NoteEditorContent(props: NoteEditorProps) {
 	const [showRevisions, setShowRevisions] = useState(false);
 	const [titleHasBeenManuallyChanged, setTitleHasBeenManuallyChanged] = useState(false);
@@ -78,6 +91,9 @@ function NoteEditorContent(props: NoteEditorProps) {
 	const titleInputRef = useRef<HTMLInputElement>();
 	const isMountedRef = useRef(true);
 	const noteSearchBarRef = useRef(null);
+	const viewUpdateAsyncQueue_ = useRef<AsyncActionQueue>(new AsyncActionQueue(100, IntervalType.Fixed));
+
+	const shownEditorViewIds = props['plugins.shownEditorViewIds'];
 
 	// Should be constant and unique to this instance of the editor.
 	const editorId = useMemo(() => {
@@ -99,7 +115,27 @@ function NoteEditorContent(props: NoteEditorProps) {
 
 	const effectiveNoteId = useEffectiveNoteId(props);
 
-	const { editorPlugin, editorView } = usePluginEditorView(props.plugins, props['plugins.shownEditorViewIds']);
+	useAsyncEffect(async (event) => {
+		if (!props.startupPluginsLoaded) return;
+
+		let filterObject: EditorActivationCheckFilterObject = {
+			activatedEditors: [],
+		};
+		filterObject = await eventManager.filterEmit('editorActivationCheck', filterObject);
+		if (event.cancelled) return;
+
+		for (const editor of filterObject.activatedEditors) {
+			const controller = PluginService.instance().pluginById(editor.pluginId).viewController(editor.viewId) as WebviewController;
+			controller.setActive(editor.isActive);
+		}
+	}, [effectiveNoteId, props.startupPluginsLoaded]);
+
+	useEffect(() => {
+		if (!props.startupPluginsLoaded) return;
+		viewUpdateAsyncQueue_.current.push(makeNoteUpdateAction(shownEditorViewIds));
+	}, [effectiveNoteId, shownEditorViewIds, props.startupPluginsLoaded]);
+
+	const { editorPlugin, editorView } = usePluginEditorView(props.plugins, shownEditorViewIds);
 	const builtInEditorVisible = !editorPlugin;
 
 	const { formNote, setFormNote, isNewNote, resourceInfos } = useFormNote({
