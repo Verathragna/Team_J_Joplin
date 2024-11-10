@@ -143,8 +143,7 @@ export default class WebviewController extends ViewController {
 
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
-	public async emitMessage(event: EmitMessageEvent): Promise<any> {
+	public async emitMessage(event: EmitMessageEvent) {
 		if (!this.messageListener_) return;
 
 		if (this.containerType_ === ContainerType.Editor && !this.isActive()) {
@@ -155,7 +154,6 @@ export default class WebviewController extends ViewController {
 		return this.messageListener_(event.message);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public emitUpdate() {
 		if (!this.updateListener_) return;
 
