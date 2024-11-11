@@ -658,6 +658,16 @@ const builtInMetadata = (Setting: typeof SettingType) => {
 			storage: SettingStorage.File,
 			isGlobal: true,
 		},
+		'editor.pastePreserveColors': {
+			value: false,
+			type: SettingItemType.Bool,
+			public: true,
+			section: 'note',
+			appTypes: [AppType.Desktop],
+			label: () => _('Preserve colours when pasting text in Rich Text Editor'),
+			storage: SettingStorage.File,
+			isGlobal: true,
+		},
 		'notes.columns': {
 			value: defaultListColumns(),
 			public: false,
@@ -914,6 +924,12 @@ const builtInMetadata = (Setting: typeof SettingType) => {
 			label: () => 'Development plugins',
 			description: () => 'You may add multiple plugin paths, each separated by a comma. You will need to restart the application for the changes to take effect.',
 			storage: SettingStorage.File,
+		},
+
+		'plugins.shownEditorViewIds': {
+			value: [] as string[],
+			type: SettingItemType.Array,
+			public: false,
 		},
 
 		// Deprecated - use markdown.plugin.*
