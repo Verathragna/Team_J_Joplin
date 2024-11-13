@@ -72,8 +72,9 @@ describe('e2ee/crypto', () => {
 		expect(nonce.subarray(0, 28)).toEqual(nonCounterPart);
 	}));
 
-	it('should generate new nonce if counter overflow', (async () => {
-		jest.useFakeTimers();
+	it.each([0, 1, 0xFE, 0xFF, 0x100, 0xFFFE, 0xFFFF, 0x10000, Date.now()],
+	)('should generate new nonce if counter overflow', (async (mockedTimestamp) => {
+		jest.useFakeTimers({ now: mockedTimestamp });
 
 		const nonce = await crypto.generateNonce(new Uint8Array(36));
 		expect(nonce.subarray(-8)).toEqual(new Uint8Array(8));
@@ -96,8 +97,16 @@ describe('e2ee/crypto', () => {
 		// Random part should be changed
 		expect(nonce.subarray(0, 21)).not.toEqual(randomPart);
 		// Timestamp part should have expected value
-		expect(nonce[21]).toBe(timestampPart[0] + 2);
-		expect(nonce.subarray(22, 28)).toEqual(timestampPart.subarray(1));
+		let carry = 2;
+		for (let i = 0; i < timestampPart.length; i++) {
+			const sum = timestampPart[i] + carry;
+			timestampPart[i] = sum % 256;
+			carry = Math.floor(sum / 256);
+			if (carry === 0) {
+				break;
+			}
+		}
+		expect(nonce.subarray(21, 28)).toEqual(timestampPart);
 	}));
 
 });
