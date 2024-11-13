@@ -12,6 +12,7 @@ import { ResourceEntity } from './services/database/types';
 import { TextItem } from 'pdfjs-dist/types/src/display/api';
 import replaceUnsupportedCharacters from './utils/replaceUnsupportedCharacters';
 import { FetchBlobOptions } from './types';
+import { fromFile as fileTypeFromFile } from 'file-type';
 import crypto from './services/e2ee/crypto';
 
 import FileApiDriverLocal from './file-api-driver-local';
@@ -306,9 +307,6 @@ function shimInit(options: ShimInitOptions = null) {
 			...options,
 		};
 
-		const readChunk = require('read-chunk');
-		const imageType = require('image-type');
-
 		const isUpdate = !!options.destinationResourceId;
 
 		const uuid = require('./uuid').default;
@@ -332,8 +330,7 @@ function shimInit(options: ShimInitOptions = null) {
 		let fileExt = safeFileExtension(fileExtension(filePath));
 
 		if (!resource.mime) {
-			const buffer = await readChunk(filePath, 0, 64);
-			const detectedType = imageType(buffer);
+			const detectedType = await fileTypeFromFile(filePath);
 
 			if (detectedType) {
 				fileExt = detectedType.ext;
@@ -416,11 +413,10 @@ function shimInit(options: ShimInitOptions = null) {
 		return newBody.join('\n\n');
 	};
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
-	shim.attachFileToNote = async function(note, filePath, position: number = null, options: any = null) {
+	shim.attachFileToNote = async function(note, filePath, options = {}) {
 		if (!options) options = {};
 		if (note.markup_language) options.markupLanguage = note.markup_language;
-		const newBody = await shim.attachFileToNoteBody(note.body, filePath, position, options);
+		const newBody = await shim.attachFileToNoteBody(note.body, filePath, options.position ?? 0, options);
 		if (!newBody) return null;
 
 		const newNote = { ...note, body: newBody };

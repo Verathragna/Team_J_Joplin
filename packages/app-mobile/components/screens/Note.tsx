@@ -38,7 +38,7 @@ import shared, { BaseNoteScreenComponent, Props as BaseProps } from '@joplin/lib
 import { Asset, ImagePickerResponse, launchImageLibrary } from 'react-native-image-picker';
 import SelectDateTimeDialog from '../SelectDateTimeDialog';
 import ShareExtension from '../../utils/ShareExtension.js';
-import CameraView from '../CameraView';
+import CameraView from '../CameraView/CameraView';
 import { FolderEntity, NoteEntity, ResourceEntity } from '@joplin/lib/services/database/types';
 import Logger from '@joplin/utils/Logger';
 import ImageEditor from '../NoteEditor/ImageEditor/ImageEditor';
@@ -63,6 +63,7 @@ import CommandService from '@joplin/lib/services/CommandService';
 import { ResourceInfo } from '../NoteBodyViewer/hooks/useRerenderHandler';
 import getImageDimensions from '../../utils/image/getImageDimensions';
 import resizeImage from '../../utils/image/resizeImage';
+import { CameraResult } from '../CameraView/types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 const emptyArray: any[] = [];
@@ -234,7 +235,6 @@ class NoteScreenComponent extends BaseScreenComponent<Props, State> implements B
 				Keyboard.dismiss();
 
 				this.setState({
-					note: { ...this.state.lastSavedNote },
 					mode: 'view',
 				});
 
@@ -244,14 +244,14 @@ class NoteScreenComponent extends BaseScreenComponent<Props, State> implements B
 			}
 
 			if (this.state.fromShare) {
-				// effectively the same as NAV_BACK but NAV_BACK causes undesired behaviour in this case:
+				// Note: In the past, NAV_BACK caused undesired behaviour in this case:
 				// - share to Joplin from some other app
 				// - open Joplin and open any note
 				// - go back -- with NAV_BACK this causes the app to exit rather than just showing notes
+				// This no longer seems to happen, but this case should be checked when adjusting navigation
+				// history behavior.
 				this.props.dispatch({
-					type: 'NAV_GO',
-					routeName: 'Notes',
-					folderId: this.state.note.parent_id,
+					type: 'NAV_BACK',
 				});
 
 				ShareExtension.close();
@@ -680,6 +680,39 @@ class NoteScreenComponent extends BaseScreenComponent<Props, State> implements B
 		return await saveOriginalImage();
 	}
 
+	private async insertText(text: string) {
+		const newNote = { ...this.state.note };
+
+		if (this.state.mode === 'edit') {
+			let newText = '';
+
+			if (this.selection) {
+				newText = `\n${text}\n`;
+				const prefix = newNote.body.substring(0, this.selection.start);
+				const suffix = newNote.body.substring(this.selection.end);
+				newNote.body = `${prefix}${newText}${suffix}`;
+			} else {
+				newText = `\n${text}`;
+				newNote.body = `${newNote.body}\n${newText}`;
+			}
+
+			if (this.useEditorBeta()) {
+				// The beta editor needs to be explicitly informed of changes
+				// to the note's body
+				if (this.editorRef.current) {
+					this.editorRef.current.insertText(newText);
+				} else {
+					logger.info(`Tried to insert text ${text} to the note when the editor is not visible -- updating the note body instead.`);
+				}
+			}
+		} else {
+			newNote.body += `\n${text}`;
+		}
+
+		this.setState({ note: newNote });
+		return newNote;
+	}
+
 	public async attachFile(pickerResponse: Asset, fileType: string): Promise<ResourceEntity|null> {
 		if (!pickerResponse) {
 			// User has cancelled
@@ -753,36 +786,7 @@ class NoteScreenComponent extends BaseScreenComponent<Props, State> implements B
 		resource = await Resource.save(resource, { isNew: true });
 
 		const resourceTag = Resource.markupTag(resource);
-
-		const newNote = { ...this.state.note };
-
-		if (this.state.mode === 'edit') {
-			let newText = '';
-
-			if (this.selection) {
-				newText = `\n${resourceTag}\n`;
-				const prefix = newNote.body.substring(0, this.selection.start);
-				const suffix = newNote.body.substring(this.selection.end);
-				newNote.body = `${prefix}${newText}${suffix}`;
-			} else {
-				newText = `\n${resourceTag}`;
-				newNote.body = `${newNote.body}\n${newText}`;
-			}
-
-			if (this.useEditorBeta()) {
-				// The beta editor needs to be explicitly informed of changes
-				// to the note's body
-				if (this.editorRef.current) {
-					this.editorRef.current.insertText(newText);
-				} else {
-					logger.info(`Tried to attach resource ${resource.id} to the note when the editor is not visible -- updating the note body instead.`);
-				}
-			}
-		} else {
-			newNote.body += `\n${resourceTag}`;
-		}
-
-		this.setState({ note: newNote });
+		const newNote = await this.insertText(resourceTag);
 
 		void this.refreshResource(resource, newNote.body);
 
@@ -821,18 +825,19 @@ class NoteScreenComponent extends BaseScreenComponent<Props, State> implements B
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
-	private cameraView_onPhoto(data: any) {
+	private cameraView_onPhoto(data: CameraResult) {
 		void this.attachFile(
-			{
-				uri: data.uri,
-				type: 'image/jpg',
-			},
+			data,
 			'image',
 		);
 
 		this.setState({ showCamera: false });
 	}
+
+	private cameraView_onInsertBarcode = (data: string) => {
+		this.setState({ showCamera: false });
+		void this.insertText(data);
+	};
 
 	private cameraView_onCancel() {
 		this.setState({ showCamera: false });
@@ -1440,7 +1445,12 @@ class NoteScreenComponent extends BaseScreenComponent<Props, State> implements B
 		const isTodo = !!Number(note.is_todo);
 
 		if (this.state.showCamera) {
-			return <CameraView themeId={this.props.themeId} style={{ flex: 1 }} onPhoto={this.cameraView_onPhoto} onCancel={this.cameraView_onCancel} />;
+			return <CameraView
+				style={{ flex: 1 }}
+				onPhoto={this.cameraView_onPhoto}
+				onInsertBarcode={this.cameraView_onInsertBarcode}
+				onCancel={this.cameraView_onCancel}
+			/>;
 		} else if (this.state.showImageEditor) {
 			return <ImageEditor
 				resourceFilename={this.state.imageEditorResourceFilepath}
