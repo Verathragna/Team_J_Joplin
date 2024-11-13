@@ -10,6 +10,9 @@ import InteropService_Importer_OneNote from './InteropService_Importer_OneNote';
 import { JSDOM } from 'jsdom';
 import { ImportModuleOutputFormat } from './types';
 
+// We don't require all developers to have Rust to run the project, so we skip this test if not running in CI
+const skipIfNotCI = process.env.IS_CONTINUOUS_INTEGRATION ? it : it.skip;
+
 describe('InteropService_Importer_OneNote', () => {
 	let tempDir: string;
 	async function importNote(path: string) {
@@ -37,7 +40,7 @@ describe('InteropService_Importer_OneNote', () => {
 	afterEach(async () => {
 		await remove(tempDir);
 	});
-	it('should import a simple OneNote notebook', async () => {
+	skipIfNotCI('should import a simple OneNote notebook', async () => {
 		const notes = await importNote(`${supportDir}/onenote/simple_notebook.zip`);
 		const folders = await Folder.all();
 
@@ -54,7 +57,7 @@ describe('InteropService_Importer_OneNote', () => {
 		expect(mainNote.body).toMatchSnapshot(mainNote.title);
 	});
 
-	it('should preserve indentation of subpages in Section page', async () => {
+	skipIfNotCI('should preserve indentation of subpages in Section page', async () => {
 		const notes = await importNote(`${supportDir}/onenote/subpages.zip`);
 
 		const sectionPage = notes.find(n => n.title === 'Section');
@@ -74,7 +77,7 @@ describe('InteropService_Importer_OneNote', () => {
 		expect(menuLines[7].trim()).toBe(`<li class="l2"><a href=":/${pageTwoB.id}" target="content" title="Page 2-b">${pageTwoB.title}</a>`);
 	});
 
-	it('should created subsections', async () => {
+	skipIfNotCI('should created subsections', async () => {
 		const notes = await importNote(`${supportDir}/onenote/subsections.zip`);
 		const folders = await Folder.all();
 
@@ -92,7 +95,7 @@ describe('InteropService_Importer_OneNote', () => {
 		expect(notesFromParentSection.length).toBe(2);
 	});
 
-	it('should expect notes to be rendered the same', async () => {
+	skipIfNotCI('should expect notes to be rendered the same', async () => {
 		let idx = 0;
 		const originalIdGenerator = BaseModel.setIdGenerator(() => String(idx++));
 		const notes = await importNote(`${supportDir}/onenote/complex_notes.zip`);
@@ -109,7 +112,7 @@ describe('InteropService_Importer_OneNote', () => {
 		BaseModel.setIdGenerator(originalIdGenerator);
 	});
 
-	it('should render the proper tree for notebook with group sections', async () => {
+	skipIfNotCI('should render the proper tree for notebook with group sections', async () => {
 		const notes = await importNote(`${supportDir}/onenote/group_sections.zip`);
 		const folders = await Folder.all();
 
@@ -137,7 +140,7 @@ describe('InteropService_Importer_OneNote', () => {
 		expect(notes.filter(n => n.parent_id === sectionD1.id).length).toBe(1);
 	});
 
-	it.each([
+	skipIfNotCI.each([
 		'svg_with_text_and_style.html',
 		'many_svgs.html',
 	])('should extract svgs', async (filename: string) => {
@@ -164,7 +167,7 @@ describe('InteropService_Importer_OneNote', () => {
 		expect(importer.extractSvgs(content, titleGenerator())).toMatchSnapshot();
 	});
 
-	it('should ignore broken characters at the start of paragraph', async () => {
+	skipIfNotCI('should ignore broken characters at the start of paragraph', async () => {
 		let idx = 0;
 		const originalIdGenerator = BaseModel.setIdGenerator(() => String(idx++));
 		const notes = await importNote(`${supportDir}/onenote/bug_broken_character.zip`);

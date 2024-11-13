@@ -2,6 +2,17 @@ const { execCommand } = require('@joplin/utils');
 const yargs = require('yargs');
 
 async function main() {
+	if (!process.env.IS_CONTINUOUS_INTEGRATION) {
+		// eslint-disable-next-line no-console
+		console.info(
+			'----------------------------------------------------------------\n' +
+			'Not building onenote-converter because it is not a continuous integration environment.\n' +
+			'Use IS_CONTINUOUS_INTEGRATION=1 env var if build is necessary.\n' +
+			'----------------------------------------------------------------',
+		);
+		return;
+	}
+
 	const argv = yargs.argv;
 	if (!argv.profile) throw new Error('OneNote build: profile value is missing');
 	if (!['release', 'dev'].includes(argv.profile)) throw new Error('OneNote build: profile value is invalid');

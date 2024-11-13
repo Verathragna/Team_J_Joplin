@@ -60,6 +60,17 @@ When working with the Rust code you will probably rather run `yarn buildDev` sin
 
 During development, it will be easier to test it where this library is called. `InteropService_Importer_Onenote.ts` is the code that depends on this and already has some tests.
 
+### Running tests and IS_CONTINUOUS_INTEGRATION
+
+We don't require developers that won't work on this project to have Rust installed on their machine.
+To make this work we:
+
+- Use temporary files, required only for building the application correctly (e.g: `pkg/onenote_converter.js`).
+- Skip the build process if `IS_CONTINUOUS_INTEGRATION` is not set (see `build.js`).
+- Skip some tests if `IS_CONTINUOUS_INTEGRATION` is not set (see `lib/services/interop/InteropService_Importer_OneNote.test.ts`).
+
+The tests should still run on CI since `IS_CONTINUOUS_INTEGRATION` is used there.
+
 ## Security concerns
 
 We are using WebAssembly with Node.js calls to the file system, reading and writing files and directories, which means
