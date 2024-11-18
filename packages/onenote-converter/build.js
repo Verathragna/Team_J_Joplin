@@ -20,6 +20,13 @@ async function main() {
 	const buildCommand = `wasm-pack build --target nodejs --${argv.profile}`;
 
 	await execCommand(buildCommand);
+
+	if (argv.profile !== 'release') return;
+
+	// // If release build, remove intermediary folder to decrease size of release
+	const removeIntermediaryFolder = 'rm -r target/';
+
+	await execCommand(removeIntermediaryFolder);
 }
 
 // eslint-disable-next-line promise/prefer-await-to-then
