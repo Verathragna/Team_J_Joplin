@@ -24,7 +24,7 @@ async function main() {
 	if (argv.profile !== 'release') return;
 
 	// // If release build, remove intermediary folder to decrease size of release
-	const removeIntermediaryFolder = 'rm -r target/';
+	const removeIntermediaryFolder = 'cargo clean';
 
 	await execCommand(removeIntermediaryFolder);
 }
