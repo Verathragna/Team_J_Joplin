@@ -7,7 +7,7 @@ describe('search/gotoAnythingStyleQuery', () => {
 			['hello', 'hello*'],
 			['hello welc', 'hello* welc*'],
 			['joplin://x-callback-url/openNote?id=3600e074af0e4b06aeb0ae76d3d96af7', 'joplin://x-callback-url/openNote?id=3600e074af0e4b06aeb0ae76d3d96af7'],
-			['3600e074af0e4b06aeb0ae76d3d96af7', '3600e074af0e4b06aeb0ae76d3d96af7'],
+			['3600e074af0e4b06aeb0ae76d3d96af7', '3600e074af0e4b06aeb0ae76d3d96af7*'],
 			['', ''],
 		];
 
