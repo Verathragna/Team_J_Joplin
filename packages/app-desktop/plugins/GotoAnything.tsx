@@ -377,7 +377,7 @@ class DialogComponent extends React.PureComponent<Props, State> {
 						.map(r => ({ ...r, title: notesById[r.id].title }));
 
 					const normalizedKeywords = (await this.keywords(searchQuery)).map(
-						({ valueRegex }: ComplexTerm) => new RegExp(removeDiacritics(valueRegex), 'ig'),
+						({ value }: ComplexTerm) => new RegExp(removeDiacritics(value), 'ig'),
 					);
 
 					for (let i = 0; i < results.length; i++) {
