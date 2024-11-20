@@ -26,6 +26,16 @@ There are also a few forks of existing packages under the "fork-*" name.
 If using the `onenote-converter` you will require Rust:
 - Install Rust 1.80+. Follow the instructions on [Rust toolchain website](https://rustup.rs/)
 
+All of the required dependencies to build Joplin are listed within the `devbox.json` file in the project root; you can also automatically install them and start a development environment on any distribution of Linux or MacOS by using:
+```sh
+devbox shell
+```
+
+If you don't already devbox, it can be installed using:
+```sh
+curl -fsSL https://get.jetify.com/devbox | bash
+```
+
 ## Building
 
 Make sure the path to the project directory does not contain spaces or the build may fail.
