@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect, useRef, forwardRef, useCallback, useImperativeHandle, useMemo, ForwardedRef } from 'react';
+import { useState, useEffect, useRef, forwardRef, useCallback, useImperativeHandle, ForwardedRef, useContext } from 'react';
 
 // eslint-disable-next-line no-unused-vars
 import { EditorCommand, MarkupToHtmlOptions, NoteBodyEditorProps, NoteBodyEditorRef } from '../../../utils/types';
@@ -33,6 +33,7 @@ import useContextMenu from '../utils/useContextMenu';
 import useWebviewIpcMessage from '../utils/useWebviewIpcMessage';
 import useEditorSearchHandler from '../utils/useEditorSearchHandler';
 import { focus } from '@joplin/lib/utils/focusHandler';
+import { WindowIdContext } from '../../../../NewWindowOrIFrame';
 
 function markupRenderOptions(override: MarkupToHtmlOptions = null): MarkupToHtmlOptions {
 	return { ...override };
@@ -242,6 +243,10 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 							} else {
 								reg.logger().warn('CodeMirror execCommand: unsupported command: ', value.name);
 							}
+						},
+						'editor.scrollToText': (_text: string) => {
+							reg.logger().warn('"editor.scrollToText" is unsupported in legacy editor - please use the new editor');
+							return false;
 						},
 					};
 
@@ -689,25 +694,6 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 		showEditorMarkers: true,
 	});
 
-	const cellEditorStyle = useMemo(() => {
-		const output = { ...styles.cellEditor };
-		if (!props.visiblePanes.includes('editor')) {
-			output.display = 'none'; // Seems to work fine since the refactoring
-		}
-
-		return output;
-	}, [styles.cellEditor, props.visiblePanes]);
-
-	const cellViewerStyle = useMemo(() => {
-		const output = { ...styles.cellViewer };
-		if (!props.visiblePanes.includes('viewer')) {
-			output.display = 'none';
-		} else if (!props.visiblePanes.includes('editor')) {
-			output.borderLeftStyle = 'none';
-		}
-		return output;
-	}, [styles.cellViewer, props.visiblePanes]);
-
 	useEffect(() => {
 		if (!editorRef.current) return;
 
@@ -728,6 +714,7 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 		editorCutText, editorCopyText, editorPaste,
 		editorRef,
 		editorClassName: 'codeMirrorEditor',
+		containerRef: rootRef,
 	});
 
 	function renderEditor() {
@@ -735,7 +722,7 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 		const matchBracesOptions = Setting.value('editor.autoMatchingBraces') ? { override: true, pairs: '``()[]{}\'\'""‘’“”（）《》「」『』【】〔〕〖〗〘〙〚〛' } : false;
 
 		return (
-			<div style={cellEditorStyle}>
+			<div className='editor'>
 				<Editor
 					value={props.content}
 					searchMarkers={props.searchMarkers}
@@ -760,7 +747,7 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 
 	function renderViewer() {
 		return (
-			<div style={cellViewerStyle}>
+			<div className='viewer'>
 				<NoteTextViewer
 					ref={webviewRef}
 					themeId={props.themeId}
@@ -773,17 +760,26 @@ function CodeMirror(props: NoteBodyEditorProps, ref: ForwardedRef<NoteBodyEditor
 		);
 	}
 
+	const editorViewerRow = (
+		<div className={[
+			'note-editor-viewer-row',
+			props.visiblePanes.includes('editor') ? '-show-editor' : '',
+			props.visiblePanes.includes('viewer') ? '-show-viewer' : '',
+		].join(' ')}>
+			{renderEditor()}
+			{renderViewer()}
+		</div>
+	);
+
+	const windowId = useContext(WindowIdContext);
 	return (
 		<ErrorBoundary message="The text editor encountered a fatal error and could not continue. The error might be due to a plugin, so please try to disable some of them and try again.">
 			<div style={styles.root} ref={rootRef}>
 				<div style={styles.rowToolbar}>
-					<Toolbar themeId={props.themeId}/>
+					<Toolbar themeId={props.themeId} windowId={windowId}/>
 					{props.noteToolbar}
 				</div>
-				<div style={styles.rowEditorViewer}>
-					{renderEditor()}
-					{renderViewer()}
-				</div>
+				{editorViewerRow}
 			</div>
 		</ErrorBoundary>
 	);

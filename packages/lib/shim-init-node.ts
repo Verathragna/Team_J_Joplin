@@ -12,10 +12,12 @@ import { ResourceEntity } from './services/database/types';
 import { TextItem } from 'pdfjs-dist/types/src/display/api';
 import replaceUnsupportedCharacters from './utils/replaceUnsupportedCharacters';
 import { FetchBlobOptions } from './types';
+import { fromFile as fileTypeFromFile } from 'file-type';
 import crypto from './services/e2ee/crypto';
 
 import FileApiDriverLocal from './file-api-driver-local';
 import * as mimeUtils from './mime-utils';
+import BaseItem from './models/BaseItem';
 const { _ } = require('./locale');
 const http = require('http');
 const https = require('https');
@@ -306,18 +308,13 @@ function shimInit(options: ShimInitOptions = null) {
 			...options,
 		};
 
-		const readChunk = require('read-chunk');
-		const imageType = require('image-type');
-
 		const isUpdate = !!options.destinationResourceId;
-
-		const uuid = require('./uuid').default;
 
 		if (!(await fs.pathExists(filePath))) throw new Error(_('Cannot access %s', filePath));
 
 		defaultProps = defaultProps ? defaultProps : {};
 
-		let resourceId = defaultProps.id ? defaultProps.id : uuid.create();
+		let resourceId = defaultProps.id ? defaultProps.id : BaseItem.generateUuid();
 		if (isUpdate) resourceId = options.destinationResourceId;
 
 		let resource = isUpdate ? {} : Resource.new();
@@ -332,8 +329,7 @@ function shimInit(options: ShimInitOptions = null) {
 		let fileExt = safeFileExtension(fileExtension(filePath));
 
 		if (!resource.mime) {
-			const buffer = await readChunk(filePath, 0, 64);
-			const detectedType = imageType(buffer);
+			const detectedType = await fileTypeFromFile(filePath);
 
 			if (detectedType) {
 				fileExt = detectedType.ext;
