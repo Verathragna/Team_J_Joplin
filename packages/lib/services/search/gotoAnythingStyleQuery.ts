@@ -1,9 +1,10 @@
 import { isCallbackUrl } from '../../callbackUrlUtils';
+import isItemId from '../../models/utils/isItemId';
 
 export default (query: string) => {
 	if (!query) return '';
 
-	if (isCallbackUrl(query)) return query;
+	if ((query.startsWith('id:') && isItemId(query.substring(3))) || isCallbackUrl(query)) return query;
 
 	const output = [];
 	const splitted = query.split(' ');
