@@ -68,6 +68,14 @@ export interface Terms {
 	body: (string | ComplexTerm)[];
 }
 
+export interface ParsedQuery {
+	termCount: number;
+	keys: string[];
+	terms: Terms; // text terms
+	allTerms: Term[];
+	any: boolean;
+}
+
 export default class SearchEngine {
 
 	public static instance_: SearchEngine = null;
@@ -521,7 +529,7 @@ export default class SearchEngine {
 		return regexString;
 	}
 
-	public async parseQuery(query: string) {
+	public async parseQuery(query: string): Promise<ParsedQuery> {
 
 		const trimQuotes = (str: string) => str.startsWith('"') ? str.substr(1, str.length - 2) : str;
 
@@ -606,14 +614,11 @@ export default class SearchEngine {
 		};
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
-	public allParsedQueryTerms(parsedQuery: any) {
+	public allParsedQueryTerms(parsedQuery: ParsedQuery) {
 		if (!parsedQuery || !parsedQuery.termCount) return [];
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
-		let output: any[] = [];
-		for (const col in parsedQuery.terms) {
-			if (!parsedQuery.terms.hasOwnProperty(col)) continue;
+		let output: typeof parsedQuery.terms._ = [];
+		for (const col of Object.keys(parsedQuery.terms) as (keyof Terms)[]) {
 			output = output.concat(parsedQuery.terms[col]);
 		}
 		return output;
