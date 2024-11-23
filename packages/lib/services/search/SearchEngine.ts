@@ -63,6 +63,9 @@ export interface ComplexTerm {
 }
 
 export interface Terms {
+	// This `string | ComplexTerm` type that ends up propagating throughout the app is a bit of a
+	// mess, but it reflects how it was originally done in plain JS. Ideally it should be refactor
+	// to use a simple type.
 	_: (string | ComplexTerm)[];
 	title: (string | ComplexTerm)[];
 	body: (string | ComplexTerm)[];
