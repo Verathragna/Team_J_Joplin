@@ -55,6 +55,7 @@ echo "GIT_TAG_NAME=$GIT_TAG_NAME"
 echo "BUILD_SEQUENCIAL=$BUILD_SEQUENCIAL"
 echo "SERVER_REPOSITORY=$SERVER_REPOSITORY"
 echo "SERVER_TAG_PREFIX=$SERVER_TAG_PREFIX"
+echo "PR_TITLE=$PR_TITLE"
 
 echo "IS_CONTINUOUS_INTEGRATION=$IS_CONTINUOUS_INTEGRATION"
 echo "IS_PULL_REQUEST=$IS_PULL_REQUEST"
@@ -79,40 +80,6 @@ testResult=$?
 if [ $testResult -ne 0 ]; then
 	echo "Yarn installation failed. Search for 'exit code 1' in the log for more information."
 	exit $testResult
-fi
-
-# =============================================================================
-# Run test units
-# =============================================================================
-
-if [ "$RUN_TESTS" == "1" ]; then
-	echo "Step: Running tests..."
-
-	# On Linux, we run the Joplin Server tests using PostgreSQL
-	if [ "$IS_LINUX" == "1" ]; then
-		echo "Running Joplin Server tests using PostgreSQL..."
-		sudo docker compose --file docker-compose.db-dev.yml up -d
-		cmdResult=$?
-		if [ $cmdResult -ne 0 ]; then
-			exit $cmdResult
-		fi
-		export JOPLIN_TESTS_SERVER_DB=pg
-	else
-		echo "Running Joplin Server tests using SQLite..."
-	fi
-
-	# Need this because we're getting this error:
-	#
-	# @joplin/lib: FATAL ERROR: Ineffective mark-compacts near heap limit
-	# Allocation failed - JavaScript heap out of memory
-	#
-	# https://stackoverflow.com/questions/38558989
-	export NODE_OPTIONS="--max-old-space-size=32768"
-	yarn test-ci
-	testResult=$?
-	if [ $testResult -ne 0 ]; then
-		exit $testResult
-	fi
 fi
 
 # =============================================================================
@@ -173,6 +140,23 @@ if [ "$RUN_TESTS" == "1" ]; then
 fi
 
 # =============================================================================
+# Check whether this is a translation PR. There is no need to run the entire
+# pipeline in such a case, thus exit early.
+# =============================================================================
+
+if [ "$RUN_TESTS" == "1" ]; then
+	# Due to the ancient bash release in macOS, the following is required, instead
+	# of using ${var,,}
+	PR_TITLE=$(echo $PR_TITLE |tr '[:upper:]' '[:lower:]')
+	echo "Step: Checking for translation PR..."
+
+	if [[ "$PR_TITLE" =~ ^.*(translation|(add|fix|update) .*language|\.po)( .*)?$ ]]; then
+		echo "It is a translation PR. Exit early."
+		exit 0
+	fi
+fi
+
+# =============================================================================
 # Check .gitignore and .eslintignore files - they should be updated when
 # new TypeScript files are added by running `yarn updateIgnored`.
 # See coding_style.md
@@ -185,7 +169,7 @@ if [ "$IS_LINUX" == "1" ]; then
 	# so that checkIgnoredFiles works.
 	git restore .gitignore .eslintignore
 
-	node packages/tools/checkIgnoredFiles.js 
+	node packages/tools/checkIgnoredFiles.js
 	testResult=$?
 	if [ $testResult -ne 0 ]; then
 		exit $testResult
@@ -225,6 +209,40 @@ if [ "$IS_LINUX" == "1" ]; then
 fi
 
 # =============================================================================
+# Run test units
+# =============================================================================
+
+if [ "$RUN_TESTS" == "1" ]; then
+	echo "Step: Running tests..."
+
+	# On Linux, we run the Joplin Server tests using PostgreSQL
+	if [ "$IS_LINUX" == "1" ]; then
+		echo "Running Joplin Server tests using PostgreSQL..."
+		sudo docker compose --file docker-compose.db-dev.yml up -d
+		cmdResult=$?
+		if [ $cmdResult -ne 0 ]; then
+			exit $cmdResult
+		fi
+		export JOPLIN_TESTS_SERVER_DB=pg
+	else
+		echo "Running Joplin Server tests using SQLite..."
+	fi
+
+	# Need this because we're getting this error:
+	#
+	# @joplin/lib: FATAL ERROR: Ineffective mark-compacts near heap limit
+	# Allocation failed - JavaScript heap out of memory
+	#
+	# https://stackoverflow.com/questions/38558989
+	export NODE_OPTIONS="--max-old-space-size=32768"
+	yarn test-ci
+	testResult=$?
+	if [ $testResult -ne 0 ]; then
+		exit $testResult
+	fi
+fi
+
+# =============================================================================
 # Find out if we should run the build or not. Electron-builder gets stuck when
 # building PRs so we disable it in this case. The Linux build should provide
 # enough info if the app builds or not.
@@ -257,7 +275,7 @@ if [ "$IS_DESKTOP_RELEASE" == "1" ]; then
 
 	if [ "$IS_MACOS" == "1" ]; then
 		# This is to fix this error:
-		# 
+		#
 		# Exit code: ENOENT. spawn /usr/bin/python ENOENT
 		#
 		# Ref: https://github.com/electron-userland/electron-builder/issues/6767#issuecomment-1096589528
@@ -273,14 +291,14 @@ if [ "$IS_DESKTOP_RELEASE" == "1" ]; then
 		USE_HARD_LINKS=false yarn dist
 	else
 		USE_HARD_LINKS=false yarn dist
-	fi	
+	fi
 elif [[ $IS_LINUX = 1 ]] && [ "$IS_SERVER_RELEASE" == "1" ]; then
 	echo "Step: Building Docker Image..."
 	cd "$ROOT_DIR"
 	yarn buildServerDocker --tag-name $GIT_TAG_NAME --push-images --repository $SERVER_REPOSITORY
 else
 	echo "Step: Building but *not* publishing desktop application..."
-	
+
 	if [ "$IS_MACOS" == "1" ]; then
 		# See above why we need to specify Python
 		alias python=$(which python3)
@@ -290,7 +308,7 @@ else
 		# https://www.electron.build/code-signing#how-to-disable-code-signing-during-the-build-process-on-macos
 		export CSC_IDENTITY_AUTO_DISCOVERY=false
 		npm pkg set 'build.mac.identity'=null --json
-		
+
 		USE_HARD_LINKS=false yarn dist --publish=never
 	else
 		USE_HARD_LINKS=false yarn dist --publish=never
