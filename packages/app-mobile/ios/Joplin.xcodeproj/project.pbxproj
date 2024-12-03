@@ -293,7 +293,6 @@
 					};
 					AE82E4A72599FA3A0013551B = {
 						CreatedOnToolsVersion = 12.0.1;
-						DevelopmentTeam = A9BXAFS6CT;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -570,7 +569,7 @@
 					SwiftUI,
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = cat.itsmeow.net.cozic.joplin0;
+				PRODUCT_BUNDLE_IDENTIFIER = cat.itsmeow.net.cozic.joplin;
 				PRODUCT_NAME = Joplin;
 				SWIFT_OBJC_BRIDGING_HEADER = "Joplin-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -604,7 +603,7 @@
 					SwiftUI,
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = cat.itsmeow.net.cozic.joplin0;
+				PRODUCT_BUNDLE_IDENTIFIER = cat.itsmeow.net.cozic.joplin;
 				PRODUCT_NAME = Joplin;
 				SWIFT_OBJC_BRIDGING_HEADER = "Joplin-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -663,7 +662,9 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\n\n$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\n\n$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\n\n$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\n\n";
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\n\n$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\n\n$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\n\n$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\n\n",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD = "";
 				LDPLUSPLUS = "";
@@ -687,10 +688,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
@@ -740,7 +738,9 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\n\n$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\n\n$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\n\n$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\n\n";
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\n\n$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\n\n$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\n\n$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\n\n",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD = "";
 				LDPLUSPLUS = "";
@@ -763,10 +763,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
@@ -789,7 +786,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 128;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = A9BXAFS6CT;
+				DEVELOPMENT_TEAM = W9492ZNP2Q;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
@@ -832,7 +829,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 128;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = A9BXAFS6CT;
+				DEVELOPMENT_TEAM = W9492ZNP2Q;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
