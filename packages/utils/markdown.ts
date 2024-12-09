@@ -40,6 +40,8 @@ export const extractUrls = (md: string): Link[] => {
 				};
 			} else if (token.type === 'link_close') {
 				if (!currentLink) throw new Error('Found a link_close without a link_open');
+				// Render the collected title content to process Markdown (supports bold, italic, etc.)
+				currentLink.title = markdownIt.renderInline(currentLink.title);
 				output.push(currentLink);
 				currentLink = null;
 			} else if (token.children && token.children.length) {
@@ -57,9 +59,10 @@ export const extractUrls = (md: string): Link[] => {
 	const htmlAnchorRegex = /<a[\s\S]*?href=["'](.*?)["'][\s\S]*?>(.*?)<\/a>/ig;
 	let result;
 	while ((result = htmlAnchorRegex.exec(md)) !== null) {
+		// Render the content inside HTML anchor tags to process Markdown (e.g., italic, bold)
 		output.push({
 			url: result[1],
-			title: result[2],
+			title: markdownIt.renderInline(result[2]),
 		});
 	}
 
