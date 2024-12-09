@@ -8,7 +8,7 @@ const legacyPluginIds = [
 ];
 
 const pathLibrary = require('path');
-const punycode = require('punycode/');
+
 
 export const requireModule = (moduleName: string, fromPluginId: string) => {
 	if (moduleName === 'path') {
@@ -18,7 +18,10 @@ export const requireModule = (moduleName: string, fromPluginId: string) => {
 	if (legacyPluginIds.includes(fromPluginId)) {
 		if (moduleName === 'punycode') {
 			console.warn('Requiring punycode is deprecated. Please transition to a newer API.');
-			return punycode;
+			return {
+				toASCII: (domain: string) => new URL(`http://${domain}`).hostname,
+				toUnicode: (domain: string) => domain,
+			};
 		}
 		if (moduleName === 'fs' || moduleName === 'fs-extra') {
 			console.warn('The fs library is unavailable to mobile plugins. A non-functional mock will be returned.');
@@ -36,7 +39,9 @@ export const requireModule = (moduleName: string, fromPluginId: string) => {
 			return {};
 		}
 		if (moduleName === 'url') {
-			return { parse: (u: string) => new URL(u) };
+			return {
+				parse: (u: string) => new URL(u),
+			};
 		}
 	}
 
