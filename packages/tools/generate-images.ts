@@ -1,7 +1,7 @@
-import { fileExtension } from '@joplin/lib/path-utils';
-import { copyFile, pathExists, readdir, readFile, writeFile } from 'fs-extra';
+import { pathExists, readFile, writeFile, copyFile, readdir } from 'fs-extra';
 import { dirname } from 'path';
 import { execCommand } from './tool-utils';
+import { fileExtension } from '@joplin/lib/path-utils';
 const md5File = require('md5-file');
 const sharp = require('sharp');
 
