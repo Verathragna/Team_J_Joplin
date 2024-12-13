@@ -9,7 +9,7 @@ import * as Sentry from '@sentry/electron/main';
 import { ErrorEvent } from '@sentry/types/types';
 import { homedir } from 'os';
 import { msleep } from '@joplin/utils/time';
-import { pathExists, pathExistsSync, writeFileSync } from 'fs-extra';
+import { pathExists, pathExistsSync, stat, writeFileSync } from 'fs-extra';
 import { extname, normalize } from 'path';
 import isSafeToOpen from './utils/isSafeToOpen';
 import { closeSync, openSync, readSync, statSync } from 'fs';
@@ -431,16 +431,23 @@ export class Bridge {
 		if (await pathExists(fullPath)) {
 			const fileExtension = extname(fullPath);
 			const userAllowedExtension = this.extraAllowedOpenExtensions.includes(fileExtension);
-			if (userAllowedExtension || await isSafeToOpen(fullPath)) {
+
+			if (userAllowedExtension || (await isSafeToOpen(fullPath))) {
 				return shell.openPath(fullPath);
 			} else {
 				const allowOpenId = 2;
 				const learnMoreId = 1;
 				const fileExtensionDescription = JSON.stringify(fileExtension);
+
+				let warningMessage = _('Joplin doesn\'t recognise the %s extension. Opening this file could be dangerous. What would you like to do?', fileExtensionDescription);
+				const isDirectory = (await stat(fullPath)).isDirectory();
+				if (isDirectory) {
+					warningMessage = _('This file seems to be a directory, but Joplin doesn\'t recognise the %s extension. Opening this could be dangerous. What would you like to do?', fileExtensionDescription);
+				}
+
 				const result = await dialog.showMessageBox(this.activeWindow(), {
 					title: _('Unknown file type'),
-					message:
-						_('Joplin doesn\'t recognise the %s extension. Opening this file could be dangerous. What would you like to do?', fileExtensionDescription),
+					message: warningMessage,
 					type: 'warning',
 					checkboxLabel: _('Always open %s files without asking.', fileExtensionDescription),
 					buttons: [
