@@ -1,4 +1,5 @@
 import { stat } from 'fs-extra';
+import { extname } from 'path';
 
 
 const isSafeToOpen = async (path: string) => {
@@ -175,7 +176,7 @@ const isSafeToOpen = async (path: string) => {
 		}
 	}
 
-	if ((await stat(path)).isDirectory()) {
+	if (extname(path) === '' && (await stat(path)).isDirectory()) {
 		return true;
 	}
 
