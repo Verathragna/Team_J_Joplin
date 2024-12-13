@@ -1,4 +1,4 @@
-import { remove, writeFile } from 'fs-extra';
+import { mkdirp, remove, writeFile } from 'fs-extra';
 import { createTempDir } from '@joplin/lib/testing/test-utils';
 import { join } from 'path';
 import isSafeToOpen from './isSafeToOpen';
@@ -25,6 +25,20 @@ describe('isSafeToOpen', () => {
 			const fullPath = join(tempDir, fileName);
 			await writeFile(fullPath, 'test');
 			expect(await isSafeToOpen(fullPath)).toBe(expected);
+		} finally {
+			await remove(tempDir);
+		}
+	});
+
+	it.each([
+		'folder',
+		'name.nice',
+	])('should consider folders safe to open', async (fileName) => {
+		const tempDir = await createTempDir();
+		try {
+			const fullPath = join(tempDir, fileName);
+			await mkdirp(fullPath);
+			expect(await isSafeToOpen(fullPath)).toBe(true);
 		} finally {
 			await remove(tempDir);
 		}
