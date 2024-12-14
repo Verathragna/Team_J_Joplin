@@ -4,6 +4,8 @@ import { Dispatch } from 'redux';
 import CommandService from '@joplin/lib/services/CommandService';
 import Logger from '@joplin/utils/Logger';
 import { DeviceEventEmitter } from 'react-native';
+import { GotoNoteOptions } from './commands/util/goToNote';
+import { AttachFileAction } from './components/screens/Note/commands/attachFile';
 
 const logger = Logger.create('setupQuickActions');
 
@@ -20,8 +22,9 @@ export default async (dispatch: Dispatch) => {
 	}
 
 	QuickActions.setShortcutItems([
-		{ type: 'New note', title: _('New note'), icon: 'Compose', userInfo },
-		{ type: 'New to-do', title: _('New to-do'), icon: 'Add', userInfo },
+		{ type: 'newNote', title: _('New note'), icon: 'Compose', userInfo },
+		{ type: 'newTodo', title: _('New to-do'), icon: 'Add', userInfo },
+		{ type: 'newPhoto', title: _('New photo'), icon: 'CapturePhoto', userInfo },
 	]);
 
 	try {
@@ -50,6 +53,12 @@ const quickActionHandler = (dispatch: Dispatch) => async (data: TData) => {
 	dispatch({ type: 'NAV_BACK' });
 	dispatch({ type: 'SIDE_MENU_CLOSE' });
 
-	const isTodo = data.type === 'New to-do' ? 1 : 0;
-	await CommandService.instance().execute('newNote', '', isTodo);
+	const isTodo = data.type === 'newTodo' ? 1 : 0;
+	const options: GotoNoteOptions = {
+		attachFileAction: null,
+	};
+
+	if (data.type === 'newPhoto') options.attachFileAction = AttachFileAction.TakePhoto;
+
+	await CommandService.instance().execute('newNote', '', isTodo, options);
 };
