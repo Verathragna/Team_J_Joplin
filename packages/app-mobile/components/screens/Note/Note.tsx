@@ -528,10 +528,14 @@ class NoteScreenComponent extends BaseScreenComponent<ComponentProps, State> imp
 
 		if (this.props.newNoteAttachFileAction) {
 			setTimeout(async () => {
-				const options: AttachFileOptions = {
-					action: AttachFileAction.TakePhoto,
-				};
-				await CommandService.instance().execute('attachFile', '', options);
+				if (this.props.newNoteAttachFileAction === AttachFileAction.AttachDrawing) {
+					await this.drawPicture_onPress();
+				} else {
+					const options: AttachFileOptions = {
+						action: this.props.newNoteAttachFileAction,
+					};
+					await CommandService.instance().execute('attachFile', '', options);
+				}
 			}, 100);
 		}
 	}

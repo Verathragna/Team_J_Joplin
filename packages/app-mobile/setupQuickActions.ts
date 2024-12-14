@@ -21,10 +21,17 @@ export default async (dispatch: Dispatch) => {
 		return null;
 	}
 
+	// List of iOS icons:
+	// https://github.com/EvanBacon/expo-quick-actions?tab=readme-ov-file#system-icons
+	//
+	// Note: on Android, anything beyond the fourth menu item appears to be ignored, at least on
+	// emulator.
 	QuickActions.setShortcutItems([
 		{ type: 'newNote', title: _('New note'), icon: 'Compose', userInfo },
 		{ type: 'newTodo', title: _('New to-do'), icon: 'Add', userInfo },
 		{ type: 'newPhoto', title: _('New photo'), icon: 'CapturePhoto', userInfo },
+		{ type: 'newResource', title: _('New attachment'), icon: 'Bookmark', userInfo },
+		{ type: 'newDrawing', title: _('New drawing'), icon: 'Favorite', userInfo },
 	]);
 
 	try {
@@ -58,7 +65,13 @@ const quickActionHandler = (dispatch: Dispatch) => async (data: TData) => {
 		attachFileAction: null,
 	};
 
-	if (data.type === 'newPhoto') options.attachFileAction = AttachFileAction.TakePhoto;
+	if (data.type === 'newPhoto') {
+		options.attachFileAction = AttachFileAction.TakePhoto;
+	} else if (data.type === 'newResource') {
+		options.attachFileAction = AttachFileAction.AttachFile;
+	} else if (data.type === 'newDrawing') {
+		options.attachFileAction = AttachFileAction.AttachDrawing;
+	}
 
 	await CommandService.instance().execute('newNote', '', isTodo, options);
 };

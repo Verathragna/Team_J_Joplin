@@ -12,6 +12,7 @@ export enum AttachFileAction {
 	TakePhoto = 'takePhoto',
 	AttachFile = 'attachFile',
 	AttachPhoto = 'attachPhoto',
+	AttachDrawing = 'attachDrawing',
 }
 
 export interface AttachFileOptions {
