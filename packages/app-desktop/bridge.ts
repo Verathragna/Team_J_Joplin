@@ -440,6 +440,9 @@ export class Bridge {
 				const fileExtensionDescription = JSON.stringify(fileExtension);
 
 				let warningMessage = _('Joplin doesn\'t recognise the %s extension. Opening this file could be dangerous. What would you like to do?', fileExtensionDescription);
+
+				// We recheck if it is a directory because there is a possibility that the file could be dangerous and a directory
+				// but we would like to not confuse users about what link is being open
 				const isDirectory = (await stat(fullPath)).isDirectory();
 				if (isDirectory) {
 					warningMessage = _('This file seems to be a directory, but Joplin doesn\'t recognise the %s extension. Opening this could be dangerous. What would you like to do?', fileExtensionDescription);
