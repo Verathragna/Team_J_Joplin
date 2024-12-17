@@ -287,18 +287,16 @@ const EncryptionConfigScreen = (props: Props) => {
 		<View style={rootStyle}>
 			<ScreenHeader title={_('Encryption Config')} />
 			<ScrollView style={styles.container}>
-				{
-					<View style={{ backgroundColor: theme.warningBackgroundColor, paddingTop: 5, paddingBottom: 5, paddingLeft: 10, paddingRight: 10 }}>
-						<Text>{_('For more information about End-To-End Encryption (E2EE) and advice on how to enable it please check the documentation:')}</Text>
-						<TouchableOpacity
-							onPress={() => {
-								Linking.openURL('https://joplinapp.org/help/apps/sync/e2ee');
-							}}
-						>
-							<Text>https://joplinapp.org/help/apps/sync/e2ee</Text>
-						</TouchableOpacity>
-					</View>
-				}
+				<View style={{ backgroundColor: theme.warningBackgroundColor, paddingTop: 5, paddingBottom: 5, paddingLeft: 10, paddingRight: 10 }}>
+					<Text>{_('For more information about End-To-End Encryption (E2EE) and advice on how to enable it please check the documentation:')}</Text>
+					<TouchableOpacity
+						onPress={() => {
+							Linking.openURL('https://joplinapp.org/help/apps/sync/e2ee');
+						}}
+					>
+						<Text>https://joplinapp.org/help/apps/sync/e2ee</Text>
+					</TouchableOpacity>
+				</View>
 
 				<Text style={styles.titleText}>{_('Status')}</Text>
 				<Text style={styles.normalText}>{_('Encryption is: %s', props.encryptionEnabled ? _('Enabled') : _('Disabled'))}</Text>
