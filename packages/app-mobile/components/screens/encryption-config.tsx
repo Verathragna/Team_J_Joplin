@@ -85,7 +85,7 @@ const EncryptionConfigScreen = (props: Props) => {
 
 	const decryptedItemsInfo = props.encryptionEnabled ? <Text style={styles.normalText}>{decryptedStatText(stats)}</Text> : null;
 
-	const renderMasterKey = (_num: number, mk: MasterKeyEntity) => {
+	const renderMasterKey = (mk: MasterKeyEntity) => {
 		const theme = themeStyle(props.themeId);
 
 		const password = inputPasswords[mk.id] ? inputPasswords[mk.id] : '';
