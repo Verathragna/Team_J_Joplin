@@ -3,6 +3,7 @@ import { User } from '../services/database/types';
 import Logger from '@joplin/utils/Logger';
 import { LdapConfig } from './types';
 import { ErrorForbidden } from './errors';
+import { readFileSync } from 'node:fs';
 
 const logger = Logger.create('LDAP');
 
@@ -16,6 +17,7 @@ export default async function ldapLogin(email: string, password: string, user: U
 	const baseDN = config.baseDN;
 	const bindDN = config.bindDN;
 	const bindPW = config.bindPW;
+	const sslCaFile = config.sslCaFile;
 
 	logger.info(`Starting authentication with Server ${host}`);
 
@@ -25,10 +27,21 @@ export default async function ldapLogin(email: string, password: string, user: U
 
 	if (enabled) {
 		let searchResults;
+
+		let tlsOptions;
+		if (sslCaFile.length !== 0) {
+			tlsOptions = {
+				ca: [readFileSync(sslCaFile)],
+			};
+		} else {
+			null;
+		}
+
 		const client = new Client({
 			url: host,
 			timeout: 5000,
 			connectTimeout: 1000,
+			tlsOptions: tlsOptions,
 		});
 
 		if (bindDN.length !== 0) {
