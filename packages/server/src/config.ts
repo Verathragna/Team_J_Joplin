@@ -125,7 +125,7 @@ function ldapConfigFromEnv(env: EnvVariables): LdapConfig[] {
 			baseDN: env.LDAP_1_BASE_DN,
 			bindDN: env.LDAP_1_BIND_DN,
 			bindPW: env.LDAP_1_BIND_PW,
-			sslCaFile: env.LDAP_1_SSL_CA_FILE,
+			tlsCaFile: env.LDAP_1_TLS_CA_FILE,
 		});
 	}
 
@@ -139,7 +139,7 @@ function ldapConfigFromEnv(env: EnvVariables): LdapConfig[] {
 			baseDN: env.LDAP_2_BASE_DN,
 			bindDN: env.LDAP_2_BIND_DN,
 			bindPW: env.LDAP_2_BIND_PW,
-			sslCaFile: env.LDAP_2_SSL_CA_FILE,
+			tlsCaFile: env.LDAP_2_TLS_CA_FILE,
 		});
 	}
 	return ldapConfig;

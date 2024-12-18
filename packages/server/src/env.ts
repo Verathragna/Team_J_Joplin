@@ -137,7 +137,7 @@ const defaultEnvValues: EnvVariables = {
 	LDAP_1_BASE_DN: '',
 	LDAP_1_BIND_DN: '', // used for user search - leave empty if ldap server allows anonymous bind
 	LDAP_1_BIND_PW: '', // used for user search - leave empty if ldap server allows anonymous bind
-	LDAP_1_SSL_CA_FILE: '', // used for self-signed certificate with ldaps - leave empty if using ldap or server uses CA-issued certificate
+	LDAP_1_TLS_CA_FILE: '', // used for self-signed certificate with ldaps - leave empty if using ldap or server uses CA-issued certificate
 
 	LDAP_2_ENABLED: false,
 	LDAP_2_USER_AUTO_CREATION: true, // if set to true, users will be created on the fly after ldap authentication
@@ -147,7 +147,7 @@ const defaultEnvValues: EnvVariables = {
 	LDAP_2_BASE_DN: '',
 	LDAP_2_BIND_DN: '', // used for user search - leave empty if ldap server allows anonymous bind
 	LDAP_2_BIND_PW: '', // used for user search - leave empty if ldap server allows anonymous bind
-	LDAP_2_SSL_CA_FILE: '', // used for self-signed certificate with ldaps - leave empty if using ldap or server uses CA-issued certificate
+	LDAP_2_TLS_CA_FILE: '', // used for self-signed certificate with ldaps - leave empty if using ldap or server uses CA-issued certificate
 
 };
 
@@ -230,7 +230,7 @@ export interface EnvVariables {
 	LDAP_1_BASE_DN: string;
 	LDAP_1_BIND_DN: string;
 	LDAP_1_BIND_PW: string;
-	LDAP_1_SSL_CA_FILE: string;
+	LDAP_1_TLS_CA_FILE: string;
 
 	LDAP_2_ENABLED: boolean;
 	LDAP_2_USER_AUTO_CREATION: boolean;
@@ -240,7 +240,7 @@ export interface EnvVariables {
 	LDAP_2_BASE_DN: string;
 	LDAP_2_BIND_DN: string;
 	LDAP_2_BIND_PW: string;
-	LDAP_2_SSL_CA_FILE: string;
+	LDAP_2_TLS_CA_FILE: string;
 }
 
 const parseBoolean = (s: string): boolean => {
