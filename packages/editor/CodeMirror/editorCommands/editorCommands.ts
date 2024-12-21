@@ -1,5 +1,8 @@
 import { EditorView } from '@codemirror/view';
 import { EditorCommandType, ListType } from '../../types';
+import { EditorView } from '@codemirror/view';
+import { toggleMark } from '@codemirror/commands';
+import { strikethroughMark } from '@codemirror/schema-basic';
 import { undo, redo, selectAll, indentSelection, cursorDocStart, cursorDocEnd, cursorLineStart, cursorLineEnd, deleteToLineStart, deleteToLineEnd, undoSelection, redoSelection, cursorPageDown, cursorPageUp, cursorCharRight, cursorCharLeft, insertNewlineAndIndent, cursorLineDown, cursorLineUp, toggleComment, deleteLine, moveLineUp, moveLineDown } from '@codemirror/commands';
 import {
 	decreaseIndent, increaseIndent,
@@ -111,7 +114,7 @@ const editorCommands: Record<EditorCommandType, EditorCommandFunction> = {
 };
 export default editorCommands;
 
-function toggleStrikethroughCommand(editor: EditorView, ...args: any[]) {
-	throw new Error('Function not implemented.');
+function toggleStrikethroughCommand(editor: EditorView, ..._args: any[]) {
+    // Use the toggleMark command to toggle the strikethrough mark
+    toggleMark(strikethroughMark)(editor);
 }
-
