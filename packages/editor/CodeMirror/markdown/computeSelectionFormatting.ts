@@ -56,7 +56,7 @@ const computeSelectionFormatting = (state: EditorState, globalSpellcheck: boolea
 			case 'BulletList':
 				formatting.inUnorderedList = true;
 				break;
-			case 'StrikeThrough':  // Add this case
+			case 'StrikeThrough': // Add this case
 				formatting.strikethrough = true;
 				break;
 			case 'OrderedList':

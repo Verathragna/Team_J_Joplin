@@ -29,13 +29,13 @@ export const toggleBolded: Command = (view: EditorView): boolean => {
 };
 
 export const toggleStrikethrough: Command = (view: EditorView): boolean => {
-    const spec = RegionSpec.of({ 
-        template: '~~', 
-        nodeName: 'StrikeThrough'
-    });
-    const changes = toggleInlineFormatGlobally(view.state, spec);
-    view.dispatch(changes);
-    return true;
+	const spec = RegionSpec.of({
+		template: '~~',
+		nodeName: 'StrikeThrough',
+	});
+	const changes = toggleInlineFormatGlobally(view.state, spec);
+	view.dispatch(changes);
+	return true;
 };
 
 export const toggleItalicized: Command = (view: EditorView): boolean => {

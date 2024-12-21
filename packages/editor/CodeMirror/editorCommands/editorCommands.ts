@@ -5,7 +5,7 @@ import {
 	decreaseIndent, increaseIndent,
 	insertHorizontalRule,
 	toggleBolded, toggleCode,
-	toggleHeaderLevel, toggleItalicized,toggleStrikethrough,
+	toggleHeaderLevel, toggleItalicized, toggleStrikethrough,
 	toggleList, toggleMath,
 } from '../markdown/markdownCommands';
 import duplicateLine from './duplicateLine';
