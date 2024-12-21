@@ -10,6 +10,7 @@ export interface MutableSelectionFormatting {
 	inLink: boolean;
 	spellChecking: boolean;
 	unspellCheckableRegion: boolean;
+	strikethrough: boolean;
 
 	// Link data, both fields are null if not in a link.
 	linkData: {
@@ -39,6 +40,7 @@ export const defaultSelectionFormatting: SelectionFormatting = {
 	inLink: false,
 	spellChecking: false,
 	unspellCheckableRegion: false,
+	strikethrough: false,
 
 	linkData: {
 		linkText: null,

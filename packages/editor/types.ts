@@ -77,6 +77,7 @@ export enum EditorCommandType {
 	ReplaceSelection = 'replaceSelection',
 
 	SetText = 'setText',
+	ToggleStrikethrough = 'textStrikethrough',
 }
 
 // Because the editor package can run in a WebView, plugin content scripts

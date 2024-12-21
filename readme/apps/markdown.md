@@ -15,6 +15,7 @@ This is a quick summary of the Markdown syntax.
 | **Heading 1** | <pre># Heading 1</pre> | <h1>Heading 1</h1>
 | **Heading 2** | <pre>## Heading 2</pre> | <h2>Heading 2</h2>
 | **Heading 3** | <pre>### Heading 3</pre> | <h3>Heading 3</h3>
+| **Strikethrough** | `~~sample text~~` | ~~sample text~~
 | **Bold** | <pre>This is some `**bold text**`</pre> | This is some <strong>bold text</strong>
 | **Italic** | <pre>This is some `*italic text*`</pre> | This is some <i>italic text</i>
 | **Blockquotes** | <pre>> Kent.<br/>> Where's the king?<br/><br/>> Gent.<br/>> Contending with the<br/>> fretful elements</pre> | <blockquote>Kent.<br/>Where's the king?<br/><br/>Gent.<br/>Contending with<br/>the fretful elements</blockquote>

@@ -21,6 +21,7 @@ import {
 	insertOrIncreaseIndent,
 	toggleBolded, toggleCode,
 	toggleItalicized, toggleMath,
+	toggleStrikethrough,
 } from './markdown/markdownCommands';
 import decoratorExtension from './markdown/decoratorExtension';
 import computeSelectionFormatting from './markdown/computeSelectionFormatting';
@@ -180,6 +181,7 @@ const createEditor = (
 		keyCommand('Mod-[', decreaseIndent),
 		keyCommand('Mod-]', increaseIndent),
 		keyCommand('Mod-k', showLinkEditor),
+		keyCommand('Alt-Shift-5', toggleStrikethrough),
 		keyCommand('Tab', (view: EditorView) => {
 			if (settings.autocompleteMarkup) {
 				return insertOrIncreaseIndent(view);
