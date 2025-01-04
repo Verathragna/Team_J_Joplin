@@ -118,7 +118,7 @@ export default class InteropService_Importer_Md extends InteropService_Importer_
 				link = decodeURI(encodedLink);
 			} catch (error) {
 				// If the URI cannot be decoded, leave it as it is.
-				logger.warn('Failed to decode URI, skipped:', error);
+				logger.info('Failed to decode URI, skipped:', error);
 				continue;
 			}
 
