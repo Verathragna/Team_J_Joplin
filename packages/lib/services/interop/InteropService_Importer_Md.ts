@@ -14,9 +14,6 @@ const { pregQuote } = require('../../string-utils-common');
 import { MarkupToHtml } from '@joplin/renderer';
 import { isDataUrl } from '@joplin/utils/url';
 import { stripBom } from '../../string-utils';
-import Logger from '@joplin/utils/Logger';
-
-const logger = Logger.create('InteropService_Importer_Md');
 
 export default class InteropService_Importer_Md extends InteropService_Importer_Base {
 	protected importedNotes: Record<string, NoteEntity> = {};
@@ -118,7 +115,6 @@ export default class InteropService_Importer_Md extends InteropService_Importer_
 				link = decodeURI(encodedLink);
 			} catch (error) {
 				// If the URI cannot be decoded, leave it as it is.
-				logger.info('Failed to decode URI, skipped:', error);
 				continue;
 			}
 
