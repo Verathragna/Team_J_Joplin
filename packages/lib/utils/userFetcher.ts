@@ -35,7 +35,7 @@ const userFetcher = async () => {
 
 	const owner: UserApiResponse = await api.exec('GET', `api/users/${api.userId}`);
 
-	logger.info('Got user:', owner);
+	logger.info('Got user:', { userId: owner.jop_id, email: owner.email });
 
 	Setting.setValue('sync.10.inboxId', owner.inbox ? owner.inbox.jop_id : '');
 	Setting.setValue('sync.10.inboxEmail', owner.inbox_email ? owner.inbox_email : '');
