@@ -137,7 +137,7 @@ impl<'a> Renderer<'a> {
     /// The hyperlink is delimited by the HYPERLINK_MARKER until the closing double quote
     /// In some cases the hyperlink is broken in more than one style (e.g.: when there are
     /// chinese characters on the url path), so we must keep track of the href status
-    /// https://github.com/laurent22/joplin/issues/11596
+    /// https://github.com/laurent22/joplin/issues/11600
     fn render_hyperlink(
         &self,
         text: String,
