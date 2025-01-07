@@ -102,7 +102,7 @@ impl Page {
             // Find the first hyperlink mark
             if let Some(marker_start) = title_copy.find(HYPERLINK_MARKER) {
                 let hyperlink_part = &title_copy[marker_start + HYPERLINK_MARKER.len()..];
-                
+
                 // Find the closing double quote of the hyperlink
                 if let Some(quote_end) = hyperlink_part.find('"') {
                     let before_hyperlink = &title_copy[..marker_start];
@@ -119,7 +119,6 @@ impl Page {
 
         title_copy
     }
-
 }
 
 /// A page title.
