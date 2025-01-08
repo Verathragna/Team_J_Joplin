@@ -3,9 +3,16 @@
 #
 # Update the following fields in the stanza below:
 #
+# Postgres fields:
 # POSTGRES_USER
 # POSTGRES_PASSWORD
+# POSTGRES_DATABASE
+#
+# App fields:
 # APP_BASE_URL
+# APP_PORT
+#
+#    ALternatively pass them using the .env file (create one in the same folder and base it off the example one)
 #
 # APP_BASE_URL: This is the base public URL where the service will be running.
 #	- If Joplin Server needs to be accessible over the internet, configure APP_BASE_URL as follows: https://example.com/joplin. 
@@ -14,8 +21,6 @@
 # APP_PORT: The local port on which the Docker container will listen. 
 #	- This would typically be mapped to port to 443 (TLS) with a reverse proxy.
 #	- If Joplin Server does not need to be accessible over the internet, the port can be mapped to 22300.
-
-version: '3'
 
 services:
     db:
