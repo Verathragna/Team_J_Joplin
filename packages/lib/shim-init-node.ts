@@ -96,6 +96,8 @@ function setupProxySettings(options: any) {
 	proxySettings.proxyTimeout = options.proxyTimeout;
 	proxySettings.proxyEnabled = options.proxyEnabled;
 	proxySettings.proxyUrl = options.proxyUrl;
+	proxySettings.proxyUsername = options.proxyUsername;
+	proxySettings.proxyPassword = options.proxyPassword;
 }
 
 interface ShimInitOptions {
@@ -509,7 +511,11 @@ function shimInit(options: ShimInitOptions = null) {
 			throw new Error(`Not a valid URL: ${url}`);
 		}
 		const resolvedProxyUrl = resolveProxyUrl(proxySettings.proxyUrl);
-		options.agent = (resolvedProxyUrl && proxySettings.proxyEnabled) ? shim.proxyAgent(url, resolvedProxyUrl) : null;
+		let proxyAuth = null;
+		if (proxySettings.proxyUsername && proxySettings.proxyPassword) {
+			proxyAuth = `${proxySettings.proxyUsername}:${encodeURIComponent(proxySettings.proxyPassword)}`;
+		}
+		options.agent = (resolvedProxyUrl && proxySettings.proxyEnabled) ? shim.proxyAgent(url, resolvedProxyUrl, proxyAuth) : null;
 		return shim.fetchWithRetry(() => {
 			return nodeFetch(url, options);
 		}, options);
@@ -564,7 +570,11 @@ function shimInit(options: ShimInitOptions = null) {
 		};
 
 		const resolvedProxyUrl = resolveProxyUrl(proxySettings.proxyUrl);
-		requestOptions.agent = (resolvedProxyUrl && proxySettings.proxyEnabled) ? shim.proxyAgent(url.href, resolvedProxyUrl) : null;
+		let proxyAuth = null;
+		if (proxySettings.proxyUsername && proxySettings.proxyPassword) {
+			proxyAuth = `${proxySettings.proxyUsername}:${encodeURIComponent(proxySettings.proxyPassword)}`;
+		}
+		requestOptions.agent = (resolvedProxyUrl && proxySettings.proxyEnabled) ? shim.proxyAgent(url.href, resolvedProxyUrl, proxyAuth) : null;
 
 		const doFetchOperation = async () => {
 			return new Promise((resolve, reject) => {
@@ -696,12 +706,19 @@ function shimInit(options: ShimInitOptions = null) {
 		return url.startsWith('https') ? shim.httpAgent_.https : shim.httpAgent_.http;
 	};
 
-	shim.proxyAgent = (serverUrl: string, proxyUrl: string) => {
+	shim.proxyAgent = (serverUrl: string, proxyUrl: string, proxyAuth: string) => {
+		let headers = {};
+		if (proxyAuth) {
+			headers = {
+				'Proxy-Authorization': `Basic ${Buffer.from(proxyAuth).toString('base64')}`,
+			};
+		}
 		const proxyAgentConfig = {
 			keepAlive: true,
 			maxSockets: proxySettings.maxConcurrentConnections,
 			keepAliveMsecs: 5000,
 			proxy: proxyUrl,
+			headers: headers,
 			timeout: proxySettings.proxyTimeout * 1000,
 		};
 

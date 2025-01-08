@@ -381,6 +381,8 @@ export default class BaseApplication {
 					proxyTimeout: Setting.value('net.proxyTimeout'),
 					proxyEnabled: Setting.value('net.proxyEnabled'),
 					proxyUrl: Setting.value('net.proxyUrl'),
+					proxyUsername: Setting.value('net.proxyUsername'),
+					proxyPassword: Setting.value('net.proxyPassword'),
 				});
 			},
 
@@ -421,6 +423,8 @@ export default class BaseApplication {
 		sideEffects['sync.maxConcurrentConnections'] = sideEffects['net.proxyEnabled'];
 		sideEffects['sync.proxyTimeout'] = sideEffects['net.proxyEnabled'];
 		sideEffects['sync.proxyUrl'] = sideEffects['net.proxyEnabled'];
+		sideEffects['sync.proxyUsername'] = sideEffects['net.proxyEnabled'];
+		sideEffects['sync.proxyPassword'] = sideEffects['net.proxyEnabled'];
 
 		if (action) {
 			const effect = sideEffects[action.key];
