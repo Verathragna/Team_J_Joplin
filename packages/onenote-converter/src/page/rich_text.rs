@@ -81,6 +81,7 @@ impl<'a> Renderer<'a> {
 
         // Probably the best solution here would be to rewrite the render_hyperlink to take this
         // case in account, backtracking if necessary, but this will do for now
+        // https://github.com/laurent22/joplin/issues/11617
         if text.starts_with("\u{fddf}") {
             let first_indice = match indices.get(0) {
                 Some(i) => *i,
