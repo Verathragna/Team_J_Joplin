@@ -1,5 +1,17 @@
 # Joplin Desktop Changelog
 
+## [v3.2.7](https://github.com/laurent22/joplin/releases/tag/v3.2.7) (Pre-release) - 2025-01-06T16:35:41Z
+
+- Improved: Plugins: Add Toast plugin API ([#11583](https://github.com/laurent22/joplin/issues/11583)) ([#11579](https://github.com/laurent22/joplin/issues/11579))
+- Updated translations
+
+## [v3.2.6](https://github.com/laurent22/joplin/releases/tag/v3.2.6) (Pre-release) - 2024-12-23T21:54:40Z
+
+- Improved: Keep comments when rendering Markdown to allow rendered note metadata ([#11530](https://github.com/laurent22/joplin/issues/11530))
+- Improved: Updated packages @rollup/plugin-node-resolve (v15.2.4)
+- Fixed: Rich Text Editor: Fix resized images in lists break sub-list items ([#11532](https://github.com/laurent22/joplin/issues/11532)) ([#11382](https://github.com/laurent22/joplin/issues/11382) by [@personalizedrefrigerator](https://github.com/personalizedrefrigerator))
+- Fixed: Fixes [#11508](https://github.com/laurent22/joplin/issues/11508): Prevent installer from recognizing itself as a running instance of Joplin and switch back to electron-builder v24 ([#11541](https://github.com/laurent22/joplin/issues/11541))
+
 ## [v3.2.5](https://github.com/laurent22/joplin/releases/tag/v3.2.5) (Pre-release) - 2024-12-18T10:41:13Z
 
 - Improved: Generate .deb package ([#11526](https://github.com/laurent22/joplin/issues/11526) by [@pedr](https://github.com/pedr))
