@@ -929,9 +929,23 @@ const builtInMetadata = (Setting: typeof SettingType) => {
 			section: 'plugins',
 			public: true,
 			advanced: true,
-			appTypes: [AppType.Desktop],
+			appTypes: [AppType.Desktop, AppType.Mobile],
+			// For now, development plugins are only enabled on desktop & web.
+			show: (settings) => {
+				if (shim.isElectron()) return true;
+				if (shim.mobilePlatform() !== 'web') return false;
+
+				const pluginSupportEnabled = settings['plugins.pluginSupportEnabled'];
+				return !!pluginSupportEnabled;
+			},
 			label: () => 'Development plugins',
-			description: () => 'You may add multiple plugin paths, each separated by a comma. You will need to restart the application for the changes to take effect.',
+			description: () => {
+				if (shim.mobilePlatform()) {
+					return 'The path to a plugin\'s development directory. When the plugin is rebuilt, Joplin reloads the plugin automatically.';
+				} else {
+					return 'You may add multiple plugin paths, each separated by a comma. You will need to restart the application for the changes to take effect.';
+				}
+			},
 			storage: SettingStorage.File,
 		},
 
@@ -1286,8 +1300,7 @@ const builtInMetadata = (Setting: typeof SettingType) => {
 			type: SettingItemType.Bool,
 			public: true,
 			appTypes: [AppType.Desktop],
-			label: () => _('Enable spell checking in Markdown editor?'),
-			description: () => _('Checks spelling in most non-code regions of the Markdown editor.'),
+			label: () => _('Enable spell checking in Markdown editor'),
 			storage: SettingStorage.File,
 			isGlobal: true,
 		},
@@ -1332,7 +1345,7 @@ const builtInMetadata = (Setting: typeof SettingType) => {
 			public: true,
 			appTypes: [AppType.Desktop],
 			label: () => _('Use the legacy Markdown editor'),
-			description: () => _('Enable the the legacy Markdown editor. Some plugins require this editor to function. However, it has accessibility issues and other plugins will not work.'),
+			description: () => 'Enable the the legacy Markdown editor. Some plugins require this editor to function. However, it has accessibility issues and other plugins will not work.',
 			storage: SettingStorage.File,
 			isGlobal: true,
 		},
