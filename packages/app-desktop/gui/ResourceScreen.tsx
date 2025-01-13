@@ -287,9 +287,9 @@ class ResourceScreenComponent extends React.Component<Props, State> {
 		return (
 			<div style={{ ...theme.containerStyle, fontFamily: theme.fontFamily, height: containerHeight, display: 'flex', flexDirection: 'column' }}>
 				<div style={rootStyle}>
-					<div style={{ ...theme.notificationBox, marginBottom: 10 }}>{
+					<p role="status" style={{ ...theme.notificationBox, marginBottom: 10 }}>{
 						_('This is an advanced tool to show the attachments that are linked to your notes. Please be careful when deleting one of them as they cannot be restored afterwards.')
-					}</div>
+					}</p>
 					<div style={{ float: 'right' }}>
 						<input
 							style={theme.inputStyle}
