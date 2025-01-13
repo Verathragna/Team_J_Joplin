@@ -198,7 +198,7 @@ const NoteList = (props: Props) => {
 
 	const renderEmptyList = () => {
 		if (props.notes.length) return null;
-		return <div className="emptylist">{getEmptyFolderMessage(props.folders, props.selectedFolderId)}</div>;
+		return <div className="emptylist" role="status">{getEmptyFolderMessage(props.folders, props.selectedFolderId)}</div>;
 	};
 
 	const renderFiller = (key: string, style: React.CSSProperties) => {
@@ -302,6 +302,7 @@ const NoteList = (props: Props) => {
 			onKeyUp={onKeyUp}
 			onDrop={onDrop}
 			onContextMenu={onContainerContextMenu}
+			id='search-results'
 		>
 			{renderEmptyList()}
 			{renderFiller('top', topFillerStyle)}

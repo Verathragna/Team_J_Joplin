@@ -79,6 +79,7 @@ export default function(props: Props) {
 				onKeyDown={props.onKeyDown}
 				spellCheck={false}
 				disabled={props.disabled}
+				aria-controls='search-results'
 			/>
 			<SearchButton
 				aria-label={iconLabel}
