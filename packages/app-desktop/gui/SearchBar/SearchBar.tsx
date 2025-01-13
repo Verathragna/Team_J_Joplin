@@ -174,7 +174,7 @@ function SearchBar(props: Props) {
 				onKeyDown={onKeyDown}
 				onSearchButtonClick={onSearchButtonClick}
 				searchStarted={searchStarted}
-				ariaControls='search-results'
+				aria-controls='search-results'
 			/>
 		</Root>
 	);
