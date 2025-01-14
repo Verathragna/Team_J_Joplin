@@ -4,7 +4,7 @@ Joplin est une application gratuite et open source de prise de notes, qui vous a
 
 Les notes de ce carnet donnent un aperçu de ce que Joplin peut faire et comment l'utiliser. En général, les trois applications partagent à peu près les mêmes fonctionnalités ; toute différence sera clairement indiquée.
 
-![](./AllClients.png)
+![Images des applications Joplin Mobile et Desktop](./AllClients.png)
 
 ## Joplin est divisé en trois parties
 
@@ -56,7 +56,7 @@ Les notes de Joplin sont organisées en une arborescence de carnets et de sous-c
 - Sur **mobile**, appuyez sur l'icône "+" et sélectionnez "Nouveau carnet".
 - Sur le **terminal**, appuyez sur `:mn`
 
-![](./SubNotebooks.png)
+![Image montrant comment déplacer des blocs-notes par glisser-déposer](./SubNotebooks.png)
 
 ### Avec des étiquettes
 

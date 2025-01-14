@@ -4,7 +4,7 @@ Les premières notes vous ont donné un aperçu des principales fonctionnalités
 
 ## Web Clipper
 
-![](./WebClipper.png)
+![Image du WebClipper](./WebClipper.png)
 
 Le Web Clipper est une extension de navigateur qui vous permet d'enregistrer des pages Web et des captures d'écran à partir de votre navigateur. Pour commencer à l'utiliser, ouvrez l'application de bureau Joplin, accédez aux options du Web Clipper et suivez les instructions.
 

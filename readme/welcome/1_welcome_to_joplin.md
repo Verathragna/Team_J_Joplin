@@ -4,7 +4,7 @@ Joplin is a free, open source note taking and to-do application, which helps you
 
 The notes in this notebook give an overview of what Joplin can do and how to use it. In general, the three applications share roughly the same functionalities; any differences will be clearly indicated.
 
-![](./AllClients.png)
+![Images of the Joplin Mobile and Desktop applications](./AllClients.png)
 
 ## Joplin is divided into three parts
 
@@ -56,7 +56,7 @@ Joplin notes are organised into a tree of notebooks and sub-notebooks.
 - On **mobile**, press the "+" icon and select "New notebook".
 - On **terminal**, press `:mn`
 
-![](./SubNotebooks.png)
+![Image showing how to move notebooks by dragging and dropping](./SubNotebooks.png)
 
 ### With tags
 
