@@ -5261,7 +5261,7 @@ msgstr "Senkronizasyon hedefi: %s (%s)"
 #: packages/app-mobile/components/side-menu-content.tsx:650
 #: packages/lib/commands/synchronize.ts:8
 msgid "Synchronise"
-msgstr "Senkroniza Et"
+msgstr "Senkronize Et"
 
 #: packages/lib/models/settings/builtInMetadata.ts:1240
 msgid "Synchronise only over WiFi connection"
