@@ -97,6 +97,14 @@ export default function NoteTitleBar(props: Props) {
 		}
 	}, []);
 
+	const onTitleChange: React.ChangeEventHandler<HTMLInputElement> = useCallback((event) => {
+		let title = event.target.value.trim();
+		if (title === '&nbsp;') {
+			title = '';
+		}
+		props.onTitleChange({ ...event, target: { ...event.target, value: title } });
+	}, [props.onTitleChange]);
+
 	const { onTitleFocus, onTitleBlur } = useReselectHandlers();
 
 	function renderTitleBarDate() {
@@ -124,7 +132,7 @@ export default function NoteTitleBar(props: Props) {
 				aria-label={props.isProvisional ? undefined : _('Note title')}
 				style={styles.titleInput}
 				readOnly={props.disabled}
-				onChange={props.onTitleChange}
+				onChange={onTitleChange}
 				onKeyDown={onTitleKeydown}
 				onFocus={onTitleFocus}
 				onBlur={onTitleBlur}
