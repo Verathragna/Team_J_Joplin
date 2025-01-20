@@ -5926,8 +5926,8 @@ msgid ""
 "To manually sort the notes, the sort order must be changed to \"%s\" in the "
 "menu \"%s\" > \"%s\""
 msgstr ""
-"A jegyzetek kézi rendezéséhez a „%s” > „%s” menüben a rendezési sorrendet a "
-"következőre kell módosítania:„%s”"
+"A jegyzetek kézi rendezéséhez a(z) „%s” > „%s” menüben a rendezési sorrendet "
+"a következőre kell módosítania:„%s”"
 
 #: packages/app-cli/app/command-help.ts:82
 msgid "To maximise/minimise the console, press \"tc\"."
