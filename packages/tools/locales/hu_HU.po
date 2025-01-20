@@ -5234,8 +5234,8 @@ msgstr "Szinkronizálási állapot (szinkronizált elemek / összes elem)"
 #: packages/app-cli/app/command-sync.ts:271
 msgid "Sync target must be upgraded! Run `%s` to proceed."
 msgstr ""
-"A szinkronizálási célpontot frissíteni kell! A folytatáshoz futtassa a `%s` "
-"parancsot."
+"A szinkronizálási célpontot frissíteni kell! A folytatáshoz futtassa a(z) "
+"`%s` parancsot."
 
 #: packages/app-mobile/components/screens/UpgradeSyncTargetScreen.tsx:59
 msgid "Sync Target Upgrade"
@@ -6133,7 +6133,7 @@ msgstr "Ismeretlen jelző: %s"
 msgid ""
 "Unknown item type downloaded - please upgrade Joplin to the latest version"
 msgstr ""
-"Ismeretlen elemtípus lett letöltve – frissítse a Joplin-t a legújabb verzióra"
+"Ismeretlen elemtípus lett letöltve – frissítse a Joplint a legújabb verzióra"
 
 #: packages/app-mobile/utils/getVersionInfoText.ts:28
 msgid "Unknown platform"
@@ -6597,7 +6597,7 @@ msgid ""
 "to set it."
 msgstr ""
 "A jelszóra az adatok egy részének visszafejtéséhez van szükség. A "
-"beállításhoz írja be a `:e2ee decrypt` parancsot."
+"beállításához írja be a `:e2ee decrypt` parancsot."
 
 #: packages/app-desktop/checkForUpdates.ts:108
 msgid "Your version: %s"
