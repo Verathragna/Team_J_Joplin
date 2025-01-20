@@ -4,7 +4,7 @@ The first few notes should have given you an overview of the main functionalitie
 
 ## Web clipper
 
-![Image of the WebClipper](./WebClipper.png)
+![](./WebClipper.png)
 
 The Web Clipper is a browser extension that allows you to save web pages and screenshots from your browser. To start using it, open the Joplin desktop application, go to the Web Clipper Options and follow the instructions.
 
