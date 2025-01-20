@@ -421,7 +421,7 @@ function shimInit(options: ShimInitOptions = null) {
 
 		if (noteBody) newBody.push(noteBody.substr(position));
 
-		return newBody.join('\n\n');
+		return newBody.join('');
 	};
 
 	shim.attachFileToNote = async function(note, filePath, options = {}) {
