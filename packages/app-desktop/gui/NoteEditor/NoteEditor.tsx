@@ -59,6 +59,7 @@ import PluginService from '@joplin/lib/services/plugins/PluginService';
 import WebviewController from '@joplin/lib/services/plugins/WebviewController';
 import AsyncActionQueue, { IntervalType } from '@joplin/lib/AsyncActionQueue';
 import useResourceUnwatcher from './utils/useResourceUnwatcher';
+import Dialog from '../Dialog';
 
 const debounce = require('debounce');
 
@@ -539,12 +540,13 @@ function NoteEditorContent(props: NoteEditorProps) {
 			verticalAlign: 'top',
 			boxSizing: 'border-box',
 			flex: 1,
+			height: '95%',
 		};
 
 		return (
-			<div style={revStyle} ref={containerRef}>
+			<Dialog contentStyle={revStyle}>
 				<NoteRevisionViewer customCss={props.customCss} noteId={formNote.id} onBack={noteRevisionViewer_onBack} />
-			</div>
+			</Dialog>
 		);
 	}
 
