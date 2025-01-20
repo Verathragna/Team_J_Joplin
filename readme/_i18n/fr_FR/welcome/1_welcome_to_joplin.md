@@ -4,7 +4,7 @@ Joplin est une application gratuite et open source de prise de notes, qui vous a
 
 Les notes de ce carnet donnent un aperçu de ce que Joplin peut faire et comment l'utiliser. En général, les trois applications partagent à peu près les mêmes fonctionnalités ; toute différence sera clairement indiquée.
 
-![Images des applications Joplin Mobile et Desktop](./AllClients.png)
+![](./AllClients.png)
 
 ## Joplin est divisé en trois parties
 
@@ -52,11 +52,11 @@ Beaucoup plus est possible, y compris l'ajout d'exemples de code informatique, d
 
 Les notes de Joplin sont organisées en une arborescence de carnets et de sous-carnets.
 
-- Sur l'appli de **bureau**, vous pouvez créer un carnet en cliquant sur "Nouveau carnet", puis vous pouvez les organiser à votre guise en les faisant glisser-déposer dans d'autres carnets ou en cliquant droit et sélectionnant "Déplacer vers le carnet".
+- Sur l'appli de **bureau**, vous pouvez créer un carnet en cliquant sur "Nouveau carnet", puis vous pouvez les organiser à votre guise en les faisant glisser-déposer dans d'autres carnets ou en cliquant droit et sélectionnant "Déplacer vers le carnet". Vous pouvez également déplacer un sous-carnet vers la racine en le faisant glisser sur l'intitulé "Carnets".
 - Sur **mobile**, appuyez sur l'icône "+" et sélectionnez "Nouveau carnet".
 - Sur le **terminal**, appuyez sur `:mn`
 
-![Image montrant comment déplacer des blocs-notes par glisser-déposer](./SubNotebooks.png)
+![](./SubNotebooks.png)
 
 ### Avec des étiquettes
 
