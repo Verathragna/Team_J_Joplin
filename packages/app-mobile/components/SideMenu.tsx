@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { AccessibilityInfo, Animated, Dimensions, Easing, I18nManager, LayoutChangeEvent, PanResponder, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
-import { State } from '@joplin/lib/reducer';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import AccessibleView from './accessibility/AccessibleView';
 import { _ } from '@joplin/lib/locale';
 import useReduceMotionEnabled from '../utils/hooks/useReduceMotionEnabled';
 import { themeStyle } from './global-style';
+import { AppState } from '../utils/types';
 
 export enum SideMenuPosition {
 	Left = 'left',
@@ -14,6 +14,7 @@ export enum SideMenuPosition {
 }
 
 export type OnChangeCallback = (isOpen: boolean)=> void;
+const isTablet = true;// DeviceInfo.isTablet();
 
 interface Props {
 	themeId: number;
@@ -29,6 +30,7 @@ interface Props {
 
 	onChange: OnChangeCallback;
 	disableGestures: boolean;
+	editMode: boolean;
 }
 
 interface UseStylesProps {
@@ -36,9 +38,10 @@ interface UseStylesProps {
 	isLeftMenu: boolean;
 	menuWidth: number;
 	menuOpenFraction: Animated.AnimatedInterpolation<number>;
+	isMenuOpen: boolean;
 }
 
-const useStyles = ({ themeId, isLeftMenu, menuWidth, menuOpenFraction }: UseStylesProps) => {
+const useStyles = ({ themeId, isLeftMenu, menuWidth, menuOpenFraction, isMenuOpen }: UseStylesProps) => {
 	const { height: windowHeight, width: windowWidth } = useWindowDimensions();
 	return useMemo(() => {
 		const theme = themeStyle(themeId);
@@ -53,16 +56,9 @@ const useStyles = ({ themeId, isLeftMenu, menuWidth, menuOpenFraction }: UseStyl
 			contentOuterWrapper: {
 				flexGrow: 1,
 				flexShrink: 1,
-				width: windowWidth,
+				width: windowWidth - (isMenuOpen  ? menuWidth : 0),
 				height: windowHeight,
-				transform: [{
-					translateX: menuOpenFraction.interpolate({
-						inputRange: [0, 1],
-						outputRange: [0, isLeftMenu ? menuWidth : -menuWidth],
-					}),
-					// The RN Animation docs suggests setting "perspective" while setting other transform styles:
-					// https://reactnative.dev/docs/animations#bear-in-mind
-				}, { perspective: 1000 }],
+				transform: isMenuOpen  ? 'translateX(' + menuWidth + 'px)' : 'none',
 			},
 			contentWrapper: {
 				display: 'flex',
@@ -107,7 +103,7 @@ const useStyles = ({ themeId, isLeftMenu, menuWidth, menuOpenFraction }: UseStyl
 				width: windowWidth,
 			},
 		});
-	}, [themeId, isLeftMenu, windowWidth, windowHeight, menuWidth, menuOpenFraction]);
+	}, [themeId, isLeftMenu, windowWidth, windowHeight, menuWidth, menuOpenFraction, isMenuOpen]);
 };
 
 interface UseAnimationsProps {
@@ -265,11 +261,11 @@ const SideMenuComponent: React.FC<Props> = props => {
 		setIsAnimating(true);
 	}, [setIsAnimating]);
 
-	const styles = useStyles({ themeId: props.themeId, menuOpenFraction, menuWidth, isLeftMenu });
-
+	const styles = useStyles({ themeId: props.themeId, menuOpenFraction, menuWidth, isLeftMenu, isMenuOpen: open });
+	
 	const menuComponent = (
 		<AccessibleView
-			inert={!open}
+			inert={isTablet ? false : !open}
 			style={styles.menuWrapper}
 		>
 			<AccessibleView
@@ -285,7 +281,7 @@ const SideMenuComponent: React.FC<Props> = props => {
 
 	const contentComponent = (
 		<AccessibleView
-			inert={open}
+			inert={isTablet ? false : open}
 			style={styles.contentWrapper}
 		>
 			<AccessibleView refocusCounter={open ? 1 : undefined} />
@@ -314,16 +310,18 @@ const SideMenuComponent: React.FC<Props> = props => {
 			{menuComponent}
 			<Animated.View style={styles.contentOuterWrapper}>
 				{contentComponent}
-				{closeButtonOverlay}
+				{!isTablet && closeButtonOverlay}
 			</Animated.View>
 		</View>
 	);
 };
 
-const SideMenu = connect((state: State) => {
+const SideMenu = connect((state: AppState) => {
 	return {
+		route: state.route,
 		themeId: state.settings.theme,
 		isOpen: state.showSideMenu,
+		editMode: state.editMode,
 	};
 })(SideMenuComponent);
 

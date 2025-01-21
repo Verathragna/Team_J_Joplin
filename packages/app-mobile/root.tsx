@@ -42,7 +42,7 @@ import NavService from '@joplin/lib/services/NavService';
 import { createStore, applyMiddleware, Dispatch } from 'redux';
 import reduxSharedMiddleware from '@joplin/lib/components/shared/reduxSharedMiddleware';
 import shimInit from './utils/shim-init-react';
-const { AppNav } = require('./components/app-nav.js');
+const { AppNav } = require('./components/app-nav');
 import Note from '@joplin/lib/models/Note';
 import Folder from '@joplin/lib/models/Folder';
 import BaseSyncTarget from '@joplin/lib/BaseSyncTarget';
@@ -58,13 +58,13 @@ import Database from '@joplin/lib/database';
 import NotesScreen from './components/screens/Notes';
 import TagsScreen from './components/screens/tags';
 import ConfigScreen from './components/screens/ConfigScreen/ConfigScreen';
-const { FolderScreen } = require('./components/screens/folder.js');
+const { FolderScreen } = require('./components/screens/folder');
 import LogScreen from './components/screens/LogScreen';
 import StatusScreen from './components/screens/status';
 import SearchScreen from './components/screens/SearchScreen';
-const { OneDriveLoginScreen } = require('./components/screens/onedrive-login.js');
+const { OneDriveLoginScreen } = require('./components/screens/onedrive-login');
 import EncryptionConfigScreen from './components/screens/encryption-config';
-import DropboxLoginScreen from './components/screens/dropbox-login.js';
+import DropboxLoginScreen from './components/screens/dropbox-login';
 import { MenuProvider } from 'react-native-popup-menu';
 import SideMenu, { SideMenuPosition } from './components/SideMenu';
 import SideMenuContent from './components/side-menu-content';
@@ -78,10 +78,10 @@ import WelcomeUtils from '@joplin/lib/WelcomeUtils';
 import { themeStyle } from './components/global-style';
 import SyncTargetRegistry from '@joplin/lib/SyncTargetRegistry';
 import SyncTargetFilesystem from '@joplin/lib/SyncTargetFilesystem';
-const SyncTargetNextcloud = require('@joplin/lib/SyncTargetNextcloud.js');
-const SyncTargetWebDAV = require('@joplin/lib/SyncTargetWebDAV.js');
-const SyncTargetDropbox = require('@joplin/lib/SyncTargetDropbox.js');
-const SyncTargetAmazonS3 = require('@joplin/lib/SyncTargetAmazonS3.js');
+const SyncTargetNextcloud = require('@joplin/lib/SyncTargetNextcloud');
+const SyncTargetWebDAV = require('@joplin/lib/SyncTargetWebDAV');
+const SyncTargetDropbox = require('@joplin/lib/SyncTargetDropbox');
+const SyncTargetAmazonS3 = require('@joplin/lib/SyncTargetAmazonS3');
 import BiometricPopup from './components/biometrics/BiometricPopup';
 import initLib from '@joplin/lib/initLib';
 import { isCallbackUrl, parseCallbackUrl, CallbackUrlCommand } from '@joplin/lib/callbackUrlUtils';
@@ -141,6 +141,7 @@ import { AppState } from './utils/types';
 import { getDisplayParentId } from '@joplin/lib/services/trash';
 
 const logger = Logger.create('root');
+const isTablet = true;// DeviceInfo.isTablet();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 let storeDispatch: any = function(_action: any) {};
@@ -284,9 +285,17 @@ function historyCanGoBackTo(route: any) {
 const appReducer = (state = appDefaultState, action: any) => {
 	let newState = state;
 	let historyGoingBack = false;
-
+	
 	try {
 		switch (action.type) {
+
+		case 'SET_EDIT_MODE':
+			newState = {
+				...state,
+				editMode: action.payload,
+				showSideMenu: !action.payload,
+			};
+		break;
 
 		case 'NAV_BACK':
 		case 'NAV_GO':
@@ -318,7 +327,7 @@ const appReducer = (state = appDefaultState, action: any) => {
 					navHistory.splice(0, navHistory.length);
 				}
 
-				newState = { ...state };
+				newState = { ...state, editMode: false };
 
 				newState.selectedNoteHash = '';
 
@@ -384,9 +393,10 @@ const appReducer = (state = appDefaultState, action: any) => {
 			break;
 
 		case 'SIDE_MENU_CLOSE':
-
-			newState = { ...state };
-			newState.showSideMenu = false;
+			if (!isTablet) {
+				newState = { ...state };
+				newState.showSideMenu = false;
+			}
 			break;
 
 		case 'SET_PLUGIN_PANELS_DIALOG_VISIBLE':
@@ -1256,7 +1266,7 @@ class AppComponent extends React.Component {
 		let menuPosition = SideMenuPosition.Left;
 		let disableSideMenuGestures = this.props.disableSideMenuGestures;
 
-		if (this.props.routeName === 'Note') {
+		if (this.props.routeName === 'Note' && !isTablet) {
 			sideMenuContent = <SafeAreaView style={{ flex: 1, backgroundColor: theme.backgroundColor }}><SideMenuContentNote options={this.props.noteSideMenuOptions}/></SafeAreaView>;
 			menuPosition = SideMenuPosition.Right;
 		} else if (this.props.routeName === 'Config') {
@@ -1311,7 +1321,7 @@ class AppComponent extends React.Component {
 					toleranceY={20}
 					openMenuOffset={this.state.sideMenuWidth}
 					menuPosition={menuPosition}
-					onChange={(isOpen: boolean) => this.sideMenu_change(isOpen)}
+					onChange={(isOpen: boolean) => !isTablet && this.sideMenu_change(isOpen)}
 					disableGestures={disableSideMenuGestures}
 				>
 					<StatusBar barStyle={statusBarStyle} />

@@ -33,7 +33,7 @@ import { BaseScreenComponent } from '../../base-screen';
 import { themeStyle, editorFont } from '../../global-style';
 import shared, { BaseNoteScreenComponent, Props as BaseProps } from '@joplin/lib/components/shared/note-screen-shared';
 import SelectDateTimeDialog from '../../SelectDateTimeDialog';
-import ShareExtension from '../../../utils/ShareExtension.js';
+import ShareExtension from '../../../utils/ShareExtension';
 import CameraView from '../../CameraView/CameraView';
 import { FolderEntity, NoteEntity, ResourceEntity } from '@joplin/lib/services/database/types';
 import Logger from '@joplin/utils/Logger';
@@ -338,6 +338,12 @@ class NoteScreenComponent extends BaseScreenComponent<ComponentProps, State> imp
 				getMode: () => this.state.mode,
 				setMode: (mode: 'view'|'edit') => {
 					this.setState({ mode });
+					if (mode === 'view') {
+						this.props.dispatch({
+							type: 'SET_EDIT_MODE',
+							payload: false,
+						});
+					}
 				},
 			},
 			commands,
@@ -486,6 +492,7 @@ class NoteScreenComponent extends BaseScreenComponent<ComponentProps, State> imp
 			fontSize: theme.fontSize,
 			paddingTop: 10, // Added for iOS (Not needed for Android??)
 			paddingBottom: 10, // Added for iOS (Not needed for Android??)
+			...theme.titleTextInput,
 		};
 
 		this.styles_[cacheKey] = StyleSheet.create(styles);
@@ -1543,6 +1550,10 @@ class NoteScreenComponent extends BaseScreenComponent<ComponentProps, State> imp
 				icon: 'create',
 				onPress: () => {
 					this.setState({ mode: 'edit' });
+					this.props.dispatch({
+						type: 'SET_EDIT_MODE',
+						payload: true,
+					})
 
 					this.doFocusUpdate_ = true;
 				},

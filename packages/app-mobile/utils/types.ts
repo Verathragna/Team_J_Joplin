@@ -13,4 +13,5 @@ export interface AppState extends State {
 	disableSideMenuGestures: boolean;
 
 	newNoteAttachFileAction: AttachFileAction | null;
+	editMode?: boolean;
 }

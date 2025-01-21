@@ -7,6 +7,8 @@ export const DEFAULT_ROUTE = {
 	smartFilterId: 'c3176726992c11e9ac940492261af972',
 };
 
+const isTablet = true;//DeviceInfo.isTablet();
+
 const appDefaultState: AppState = {
 	smartFilterId: undefined,
 	keyboardVisible: false,
@@ -18,6 +20,8 @@ const appDefaultState: AppState = {
 	showPanelsDialog: false,
 	newNoteAttachFileAction: null,
 	...defaultState,
+	editMode: false,
+	showSideMenu: isTablet,
 
 	// On mobile, it's possible to select notes that aren't in the selected folder/tag/etc.
 	allowSelectionInOtherFolders: true,

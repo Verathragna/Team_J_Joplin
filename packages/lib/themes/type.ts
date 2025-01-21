@@ -67,4 +67,8 @@ export interface Theme {
 	headerBackgroundColor: string;
 	textSelectionColor: string;
 	colorBright2: string;
+
+	useNormalization: boolean;
+	extraRawCss?: any;
+	titleTextInput?: any;
 }

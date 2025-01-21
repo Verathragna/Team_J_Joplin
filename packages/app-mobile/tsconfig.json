@@ -12,6 +12,8 @@
 	],
 	"compilerOptions": {
 		"types": ["jest", "node"],
-		"moduleSuffixes": [".ios", ".android", ".native", ""]
+		"moduleSuffixes": [".ios", ".android", ".native", ""],
+		"allowSyntheticDefaultImports": true,
+		"noImplicitAny": false
 	}
 }

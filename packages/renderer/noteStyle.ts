@@ -482,6 +482,10 @@ export default function(theme: any, options: Options = null) {
 			}
 		}
 	`;
+	const styles = [];
+	if (theme.useNormalization) {
+		styles.push(css);
+	}
 
-	return [css];
+	return styles;
 }

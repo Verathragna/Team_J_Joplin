@@ -39,9 +39,9 @@ const useSource = (tempDirPath: string, themeId: number) => {
 		`;
 	}, [tempDirPath]);
 
-	const [paddingLeft, paddingRight] = useMemo(() => {
+	const [paddingLeft, paddingRight, extraRawCss] = useMemo(() => {
 		const theme = themeStyle(themeId);
-		return [theme.marginLeft, theme.marginRight];
+		return [theme.marginLeft, theme.marginRight, theme.extraRawCss];
 	}, [themeId]);
 
 	const html = useMemo(() => {
@@ -75,6 +75,7 @@ const useSource = (tempDirPath: string, themeId: number) => {
 					<meta name="viewport" content="width=device-width, initial-scale=1">
 					<style>
 						${defaultCss}
+						${extraRawCss || ''}
 						${shim.mobilePlatform() === 'ios' ? iOSSpecificCss : ''}
 					</style>
 				</head>
