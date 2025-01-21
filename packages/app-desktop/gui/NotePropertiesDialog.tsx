@@ -310,6 +310,8 @@ class NotePropertiesDialog extends React.Component<Props, State> {
 							// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 							onKeyDown: (event: any) => onKeyDown(event),
 							style: styles.input,
+							id: key,
+							name: key,
 						}}
 						// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 						onChange={(momentObject: any) => {
