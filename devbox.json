@@ -5,10 +5,7 @@
       "version":   "latest",
       "platforms": ["aarch64-darwin", "x86_64-darwin"],
     },
-    "yarn": "latest",
-    "vips.dev": {
-      "platforms": ["aarch64-darwin"],
-    },
+    "yarn":       "latest",
     "nodejs":     "latest",
     "pkg-config": "latest",
     "pixman":     "latest",
@@ -25,7 +22,8 @@
       "version":            "latest",
       "excluded_platforms": ["aarch64-darwin", "x86_64-darwin"],
     },
-    "git": "latest",
+    "git":      "latest",
+    "vips.dev": "",
   },
   "shell": {
     "init_hook": [

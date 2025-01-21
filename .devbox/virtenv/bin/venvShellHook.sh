@@ -1,0 +1,1 @@
+/Users/harshilbambhroliya/Desktop/jplin/joplin/.devbox/virtenv/python/bin/venvShellHook.sh

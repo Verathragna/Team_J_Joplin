@@ -676,7 +676,7 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 			// we create small groups of just one button towards the end.
 
 			const toolbar = [
-				'bold', 'italic', 'joplinHighlight', 'joplinStrikethrough', 'formattingExtras', '|',
+				'bold', 'italic', 'joplinHighlight', 'joplinStrikethrough', 'underline', 'joplinSup', 'joplinSub', 'forecolor', '|',
 				'link', 'joplinInlineCode', 'joplinCodeBlock', 'joplinAttach', '|',
 				'bullist', 'numlist', 'joplinChecklist', '|',
 				'h1', 'h2', 'h3', '|',
