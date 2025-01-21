@@ -11,7 +11,7 @@ export default function styles(props: NoteBodyEditorProps) {
 			display: 'flex',
 			flexDirection: 'row',
 			position: 'absolute',
-			height: theme.toolbarHeight + 11,
+			height: theme.toolbarHeight,
 			alignItems: 'center',
 			zIndex: 2,
 			top: 0,
