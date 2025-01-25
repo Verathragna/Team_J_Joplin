@@ -40,6 +40,8 @@ interface State {
 	editedValue: any;
 }
 
+const uniqueId = (key: string) => `note-properties-dialog-${key}`;
+
 class NotePropertiesDialog extends React.Component<Props, State> {
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
@@ -282,7 +284,7 @@ class NotePropertiesDialog extends React.Component<Props, State> {
 		const styles = this.styles(this.props.themeId);
 		const theme = themeStyle(this.props.themeId);
 		const labelText = this.formatLabel(key);
-		const labelComp = <label htmlFor={key} role='rowheader' style={{ ...theme.textStyle, ...theme.controlBoxLabel }}>{labelText}</label>;
+		const labelComp = <label htmlFor={uniqueId(key)} role='rowheader' style={{ ...theme.textStyle, ...theme.controlBoxLabel }}>{labelText}</label>;
 		let controlComp = null;
 		let editComp = null;
 		let editCompHandler = null;
@@ -336,8 +338,8 @@ class NotePropertiesDialog extends React.Component<Props, State> {
 						}}
 						onKeyDown={event => onKeyDown(event)}
 						style={styles.input}
-						id={key}
-						name={key}
+						id={uniqueId(key)}
+						name={uniqueId(key)}
 					/>
 				);
 			}
