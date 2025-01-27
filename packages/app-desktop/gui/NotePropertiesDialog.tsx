@@ -9,7 +9,6 @@ import shim from '@joplin/lib/shim';
 import { NoteEntity } from '@joplin/lib/services/database/types';
 import { focus } from '@joplin/lib/utils/focusHandler';
 import Dialog from './Dialog';
-const Datetime = require('react-datetime').default;
 const { clipboard } = require('electron');
 const formatcoords = require('formatcoords');
 
@@ -50,6 +49,7 @@ class NotePropertiesDialog extends React.Component<Props, State> {
 	private styleKey_: number;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	private styles_: any;
+	private inputRef: React.RefObject<HTMLInputElement>;
 
 	public constructor(props: Props) {
 		super(props);
@@ -57,6 +57,7 @@ class NotePropertiesDialog extends React.Component<Props, State> {
 		this.revisionsLink_click = this.revisionsLink_click.bind(this);
 		this.buttonRow_click = this.buttonRow_click.bind(this);
 		this.okButton = React.createRef();
+		this.inputRef = React.createRef();
 
 		this.state = {
 			formNote: null,
@@ -226,13 +227,11 @@ class NotePropertiesDialog extends React.Component<Props, State> {
 		});
 
 		shim.setTimeout(() => {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
-			if ((this.refs.editField as any).openCalendar) {
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
-				(this.refs.editField as any).openCalendar();
-			} else {
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
-				focus('NotePropertiesDialog::editPropertyButtonClick', (this.refs.editField as any));
+			// Opens datetime-local fields with calendar
+			if (this.inputRef.current.showPicker) {
+				this.inputRef.current.showPicker();
+			} else if (this.inputRef.current) {
+				focus('NotePropertiesDialog::editPropertyButtonClick', (this.inputRef.current));
 			}
 		}, 100);
 	}
@@ -302,25 +301,16 @@ class NotePropertiesDialog extends React.Component<Props, State> {
 
 		if (this.state.editedKey === key) {
 			if (key.indexOf('_time') >= 0) {
-				controlComp = (
-					<Datetime
-						ref="editField"
-						initialValue={value}
-						dateFormat={time.dateFormat()}
-						timeFormat={time.timeFormat()}
-						inputProps={{
-							// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
-							onKeyDown: (event: any) => onKeyDown(event),
-							style: styles.input,
-							id: key,
-							name: key,
-						}}
-						// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
-						onChange={(momentObject: any) => {
-							this.setState({ editedValue: momentObject });
-						}}
-					/>
-				);
+				controlComp = <input
+					type="datetime-local"
+					defaultValue={value}
+					ref={this.inputRef}
+					onChange={event => this.setState({ editedValue: event.target.value })}
+					onKeyDown={event => onKeyDown(event)}
+					style={styles.input}
+					id={uniqueId(key)}
+					name={uniqueId(key)}
+				/>;
 
 				editCompHandler = () => {
 					void this.saveProperty();
@@ -332,7 +322,7 @@ class NotePropertiesDialog extends React.Component<Props, State> {
 					<input
 						defaultValue={value}
 						type="text"
-						ref="editField"
+						ref={this.inputRef}
 						onChange={event => {
 							this.setState({ editedValue: event.target.value });
 						}}
