@@ -185,15 +185,15 @@ describe('NoteListUtils', () => {
 
 	});
 
-	it('should show only trash menu options on deleted note', () => {
+	it('should hide all options for encrypted notes', () => {
 		const noteIds = ['noteId1'];
-		const deletedNote = {
+		const encrypted = {
 			id: 'noteId1',
-			deleted_time: new Date().getTime(),
+			encryption_applied: 1,
 		};
 		const menu = NoteListUtils.makeContextMenu(noteIds, {
 			notes: [
-				deletedNote,
+				encrypted,
 			],
 			dispatch: mockDispatch,
 			watchedNoteFiles: [],
@@ -202,12 +202,6 @@ describe('NoteListUtils', () => {
 			customCss: '',
 		});
 
-		expect(menu.append).toHaveBeenCalledTimes(2);
-		expect(menu.append).toHaveBeenNthCalledWith(1,
-			{ value: expect.objectContaining({ id: 'restoreNote' }) },
-		);
-		expect(menu.append).toHaveBeenNthCalledWith(2,
-			{ value: expect.objectContaining({ id: 'permanentlyDeleteNote' }) },
-		);
+		expect(menu.append).toHaveBeenCalledTimes(0);
 	});
 });
