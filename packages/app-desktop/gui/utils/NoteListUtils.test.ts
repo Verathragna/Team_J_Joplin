@@ -145,15 +145,6 @@ describe('NoteListUtils', () => {
 		});
 
 		expect(menu.append).toHaveBeenCalledTimes(11);
-		// expect(menu.append).toHaveBeenNthCalledWith(1,
-		// 	{ value: expect.objectContaining({ id: 'openNoteInNewWindow' }) },
-		// );
-		// expect(menu.append).toHaveBeenNthCalledWith(2,
-		// 	{ value: expect.objectContaining({ id: 'startExternalEditing' }) },
-		// );
-		// expect(menu.append).toHaveBeenNthCalledWith(3,
-		// 	{ value: expect.objectContaining({ type: 'separator' }) },
-		// );
 
 		expect(menu.append).toHaveBeenNthCalledWith(1,
 			{ value: expect.objectContaining({ id: 'setTags' }) },
@@ -192,5 +183,31 @@ describe('NoteListUtils', () => {
 			{ value: expect.objectContaining({ label: 'Export' }) },
 		);
 
+	});
+
+	it('should show only trash menu options on deleted note', () => {
+		const noteIds = ['noteId1'];
+		const deletedNote = {
+			id: 'noteId1',
+			deleted_time: new Date().getTime(),
+		};
+		const menu = NoteListUtils.makeContextMenu(noteIds, {
+			notes: [
+				deletedNote,
+			],
+			dispatch: mockDispatch,
+			watchedNoteFiles: [],
+			plugins: {},
+			inConflictFolder: false,
+			customCss: '',
+		});
+
+		expect(menu.append).toHaveBeenCalledTimes(2);
+		expect(menu.append).toHaveBeenNthCalledWith(1,
+			{ value: expect.objectContaining({ id: 'restoreNote' }) },
+		);
+		expect(menu.append).toHaveBeenNthCalledWith(2,
+			{ value: expect.objectContaining({ id: 'permanentlyDeleteNote' }) },
+		);
 	});
 });
