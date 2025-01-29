@@ -15,7 +15,10 @@ jest.mock('../../services/bridge', () => ({
 			}
 		},
 		Menu: class MockMenu {
-			public append = jest.fn();
+			public items: MenuItemType[] = [];
+			public append(item: MenuItemType) {
+				this.items.push(item);
+			}
 		},
 	}),
 }));
@@ -56,13 +59,7 @@ describe('NoteListUtils', () => {
 			customCss: '',
 		});
 
-		expect(menu.append).toHaveBeenCalledTimes(2);
-		expect(menu.append).toHaveBeenNthCalledWith(1,
-			{ value: expect.objectContaining({ id: 'restoreNote' }) },
-		);
-		expect(menu.append).toHaveBeenNthCalledWith(2,
-			{ value: expect.objectContaining({ id: 'permanentlyDeleteNote' }) },
-		);
+		expect(menu.items).toMatchSnapshot();
 	});
 
 	it('should show menu options for normal notes', () => {
@@ -81,53 +78,7 @@ describe('NoteListUtils', () => {
 			customCss: '',
 		});
 
-		expect(menu.append).toHaveBeenCalledTimes(14);
-		expect(menu.append).toHaveBeenNthCalledWith(1,
-			{ value: expect.objectContaining({ id: 'openNoteInNewWindow' }) },
-		);
-		expect(menu.append).toHaveBeenNthCalledWith(2,
-			{ value: expect.objectContaining({ id: 'startExternalEditing' }) },
-		);
-		expect(menu.append).toHaveBeenNthCalledWith(3,
-			{ value: expect.objectContaining({ type: 'separator' }) },
-		);
-
-		expect(menu.append).toHaveBeenNthCalledWith(4,
-			{ value: expect.objectContaining({ id: 'setTags' }) },
-		);
-		expect(menu.append).toHaveBeenNthCalledWith(5,
-			{ value: expect.objectContaining({ type: 'separator' }) },
-		);
-
-		expect(menu.append).toHaveBeenNthCalledWith(6,
-			{ value: expect.objectContaining({ id: 'toggleNoteType' }) },
-		);
-		expect(menu.append).toHaveBeenNthCalledWith(7,
-			{ value: expect.objectContaining({ id: 'moveToFolder' }) },
-		);
-
-		expect(menu.append).toHaveBeenNthCalledWith(8,
-			{ value: expect.objectContaining({ id: 'duplicateNote' }) },
-		);
-		expect(menu.append).toHaveBeenNthCalledWith(9,
-			{ value: expect.objectContaining({ id: 'deleteNote' }) },
-		);
-		expect(menu.append).toHaveBeenNthCalledWith(10,
-			{ value: expect.objectContaining({ type: 'separator' }) },
-		);
-		expect(menu.append).toHaveBeenNthCalledWith(11,
-			{ value: expect.objectContaining({ label: 'Copy Markdown link' }) },
-		);
-		expect(menu.append).toHaveBeenNthCalledWith(12,
-			{ value: expect.objectContaining({ label: 'Copy external link' }) },
-		);
-		expect(menu.append).toHaveBeenNthCalledWith(13,
-			{ value: expect.objectContaining({ type: 'separator' }) },
-		);
-
-		expect(menu.append).toHaveBeenNthCalledWith(14,
-			{ value: expect.objectContaining({ label: 'Export' }) },
-		);
+		expect(menu.items).toMatchSnapshot();
 	});
 
 	it('should show options when more than one note is selected', () => {
@@ -144,48 +95,10 @@ describe('NoteListUtils', () => {
 			customCss: '',
 		});
 
-		expect(menu.append).toHaveBeenCalledTimes(11);
-
-		expect(menu.append).toHaveBeenNthCalledWith(1,
-			{ value: expect.objectContaining({ id: 'setTags' }) },
-		);
-		expect(menu.append).toHaveBeenNthCalledWith(2,
-			{ value: expect.objectContaining({ type: 'separator' }) },
-		);
-
-		expect(menu.append).toHaveBeenNthCalledWith(3,
-			{ value: expect.objectContaining({ label: 'Switch to note type' }) },
-		);
-		expect(menu.append).toHaveBeenNthCalledWith(4,
-			{ value: expect.objectContaining({ label: 'Switch to to-do type' }) },
-		);
-		expect(menu.append).toHaveBeenNthCalledWith(5,
-			{ value: expect.objectContaining({ id: 'moveToFolder' }) },
-		);
-		expect(menu.append).toHaveBeenNthCalledWith(6,
-			{ value: expect.objectContaining({ id: 'duplicateNote' }) },
-		);
-		expect(menu.append).toHaveBeenNthCalledWith(7,
-			{ value: expect.objectContaining({ id: 'deleteNote' }) },
-		);
-		expect(menu.append).toHaveBeenNthCalledWith(8,
-			{ value: expect.objectContaining({ type: 'separator' }) },
-		);
-
-		expect(menu.append).toHaveBeenNthCalledWith(9,
-			{ value: expect.objectContaining({ label: 'Copy Markdown link' }) },
-		);
-		expect(menu.append).toHaveBeenNthCalledWith(10,
-			{ value: expect.objectContaining({ type: 'separator' }) },
-		);
-
-		expect(menu.append).toHaveBeenNthCalledWith(11,
-			{ value: expect.objectContaining({ label: 'Export' }) },
-		);
-
+		expect(menu.items).toMatchSnapshot();
 	});
 
-	it('should hide all options for encrypted notes', () => {
+	it('should hide all options for encrypted', () => {
 		const noteIds = ['noteId1'];
 		const encrypted = {
 			id: 'noteId1',
@@ -202,6 +115,6 @@ describe('NoteListUtils', () => {
 			customCss: '',
 		});
 
-		expect(menu.append).toHaveBeenCalledTimes(0);
+		expect(menu.items).toMatchSnapshot();
 	});
 });
