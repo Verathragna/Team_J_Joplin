@@ -5,6 +5,10 @@ import { MenuItem as MenuItemType } from '@joplin/lib/services/commands/MenuUtil
 import initializeCommandService from '../../utils/initializeCommandService';
 import { createAppDefaultWindowState } from '../../app.reducer';
 
+type MenuItemWrapper = {
+	value: MenuItemType;
+};
+
 jest.mock('../../services/bridge', () => ({
 	__esModule: true,
 	default: () => ({
@@ -15,9 +19,12 @@ jest.mock('../../services/bridge', () => ({
 			}
 		},
 		Menu: class MockMenu {
-			public items: MenuItemType[] = [];
-			public append(item: MenuItemType) {
-				this.items.push(item);
+			public items: string[] = [];
+			public append(item: MenuItemWrapper) {
+				const identifier = item.value.id ? item.value.id : (
+					item.value.label ? item.value.label : item.value.type
+				);
+				this.items.push(identifier);
 			}
 		},
 	}),
@@ -59,7 +66,10 @@ describe('NoteListUtils', () => {
 			customCss: '',
 		});
 
-		expect(menu.items).toMatchSnapshot();
+		expect(menu.items).toEqual([
+			'restoreNote',
+			'permanentlyDeleteNote',
+		]);
 	});
 
 	it('should show menu options for normal notes', () => {
@@ -78,7 +88,23 @@ describe('NoteListUtils', () => {
 			customCss: '',
 		});
 
-		expect(menu.items).toMatchSnapshot();
+		expect(menu.items).toEqual([
+			'openNoteInNewWindow',
+			'startExternalEditing',
+			'separator',
+			'setTags',
+			'separator',
+			'toggleNoteType',
+			'moveToFolder',
+			'duplicateNote',
+			'deleteNote',
+			'separator',
+			'Copy Markdown link',
+			'Copy external link',
+			'separator',
+			'Export',
+
+		]);
 	});
 
 	it('should show options when more than one note is selected', () => {
@@ -95,7 +121,19 @@ describe('NoteListUtils', () => {
 			customCss: '',
 		});
 
-		expect(menu.items).toMatchSnapshot();
+		expect(menu.items).toEqual([
+			'setTags',
+			'separator',
+			'Switch to note type',
+			'Switch to to-do type',
+			'moveToFolder',
+			'duplicateNote',
+			'deleteNote',
+			'separator',
+			'Copy Markdown link',
+			'separator',
+			'Export',
+		]);
 	});
 
 	it('should hide all options for encrypted', () => {
@@ -115,6 +153,6 @@ describe('NoteListUtils', () => {
 			customCss: '',
 		});
 
-		expect(menu.items).toMatchSnapshot();
+		expect(menu.items).toEqual([]);
 	});
 });
