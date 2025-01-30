@@ -280,7 +280,7 @@ The Initialization Vector (IV) length is set to 96 bits because extending it doe
 
 ### 3.6. Extended Equivalent Nonce
 Although AES-GCM has been used in TLS for years and has not shown significant vulnerabilities, there are still some security considerations:  
-- The Galois Counter Mode (GCM) is vulnerable when the IV and key is reused .
+- The Galois Counter Mode (GCM) is vulnerable when the IV and key is reused.
 - While a simple counter could serve as the IV, it's not easy to maintain a reliable monotonic counter across all clients.
 - The AES-GCM cipher has a maximum IV length of 96 bits (as discussed in Section 3.5), which is relatively short.
 
