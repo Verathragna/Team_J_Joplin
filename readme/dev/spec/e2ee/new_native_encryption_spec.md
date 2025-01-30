@@ -262,7 +262,7 @@ PBKDF2 is used as the KDF for its compatibility across all platforms. The parame
 </table>
 
 The iteration count of `KeyV1` follows [OWASP recommendations](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#pbkdf2). For `StringV1` and `FileV1`, the randomly generated Master Key already provides sufficient cryptographic strength so the low iteration count is acceptable.  
-However, applying the KDF to the Master Key is still necessary to resolve the short IV problem in the AES-GCM cipher. The details are provided in Section 3.6.  
+However, applying the KDF to the Master Key is still necessary to resolve the short IV problem in the AES-GCM cipher. The details are provided in [Section 3.6](#36-extended-equivalent-nonce).  
 
 ### 3.5. Cipher/Decipher Parameters
 The parameters for the cipher `AES-256-GCM`, used in all three new encryption methods (`KeyV1`, `StringV1`, `FileV1`), are listed below:  
