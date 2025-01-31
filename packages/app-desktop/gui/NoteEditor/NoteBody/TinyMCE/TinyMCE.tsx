@@ -814,6 +814,10 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 					editor.addShortcut('Meta+Shift+7', '', () => editor.execCommand('InsertOrderedList'));
 					editor.addShortcut('Meta+Shift+8', '', () => editor.execCommand('InsertUnorderedList'));
 					editor.addShortcut('Meta+Shift+9', '', () => editor.execCommand('InsertJoplinChecklist'));
+					editor.shortcuts.add('Alt+F6', 'Focus on toolbar', () => {
+						const firstToolbarButton = editorContainerDom.querySelector('div.tox-editor-header > div.tox-toolbar-overlord > div > div:nth-child(1) > button');
+						focus('TinyMCE::shortcut-focus-toolbar', firstToolbarButton);
+					});
 
 					// TODO: remove event on unmount?
 					editor.on('drop', (event) => {
@@ -865,7 +869,7 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 
 		void loadEditor();
 		// eslint-disable-next-line @seiyab/react-hooks/exhaustive-deps -- Old code before rule was applied
-	}, [scriptLoaded, editorContainer]);
+	}, [scriptLoaded, editorContainer, editorContainerDom]);
 
 	// -----------------------------------------------------------------------------------------
 	// Set the initial content and load the plugin CSS and JS files
