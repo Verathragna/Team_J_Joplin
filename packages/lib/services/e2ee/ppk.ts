@@ -30,8 +30,8 @@ export const rsa = (): RSA => {
 
 async function encryptPrivateKey(encryptionService: EncryptionService, password: string, plainText: string): Promise<PrivateKey> {
 	return {
-		encryptionMethod: EncryptionMethod.SJCL4,
-		ciphertext: await encryptionService.encrypt(EncryptionMethod.SJCL4, password, plainText),
+		encryptionMethod: encryptionService.defaultKeyEncryptionMethod(),
+		ciphertext: await encryptionService.encrypt(encryptionService.defaultKeyEncryptionMethod(), password, plainText),
 	};
 }
 

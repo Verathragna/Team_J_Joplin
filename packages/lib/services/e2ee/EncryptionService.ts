@@ -74,7 +74,7 @@ export default class EncryptionService {
 	private decryptedMasterKeys_: Map<string, DecryptedMasterKey> = new Map();
 	public defaultEncryptionMethod_ = Setting.value('featureFlag.useBetaEncryptionMethod') ? EncryptionMethod.StringV1 : EncryptionMethod.SJCL1a; // public because used in tests
 	public defaultFileEncryptionMethod_ = Setting.value('featureFlag.useBetaEncryptionMethod') ? EncryptionMethod.FileV1 : EncryptionMethod.SJCL1a; // public because used in tests
-	private defaultMasterKeyEncryptionMethod_ = Setting.value('featureFlag.useBetaEncryptionMethod') ? EncryptionMethod.KeyV1 : EncryptionMethod.SJCL4;
+	private defaultKeyEncryptionMethod_ = Setting.value('featureFlag.useBetaEncryptionMethod') ? EncryptionMethod.KeyV1 : EncryptionMethod.SJCL4;
 
 	private encryptionNonce_: Uint8Array = null;
 
@@ -99,10 +99,6 @@ export default class EncryptionService {
 		if (this.instance_) return this.instance_;
 		this.instance_ = new EncryptionService();
 		return this.instance_;
-	}
-
-	public get defaultMasterKeyEncryptionMethod() {
-		return this.defaultMasterKeyEncryptionMethod_;
 	}
 
 	public loadedMasterKeysCount() {
@@ -148,6 +144,10 @@ export default class EncryptionService {
 
 	public defaultFileEncryptionMethod() {
 		return this.defaultFileEncryptionMethod_;
+	}
+
+	public defaultKeyEncryptionMethod() {
+		return this.defaultKeyEncryptionMethod_;
 	}
 
 	public setActiveMasterKeyId(id: string) {
@@ -266,11 +266,11 @@ export default class EncryptionService {
 	}
 
 	public masterKeysThatNeedUpgrading(masterKeys: MasterKeyEntity[]) {
-		return MasterKey.allWithoutEncryptionMethod(masterKeys, [this.defaultMasterKeyEncryptionMethod_, EncryptionMethod.Custom]);
+		return MasterKey.allWithoutEncryptionMethod(masterKeys, [this.defaultKeyEncryptionMethod_, EncryptionMethod.Custom]);
 	}
 
 	public async reencryptMasterKey(model: MasterKeyEntity, decryptionPassword: string, encryptionPassword: string, decryptOptions: EncryptOptions = null, encryptOptions: EncryptOptions = null): Promise<MasterKeyEntity> {
-		const newEncryptionMethod = this.defaultMasterKeyEncryptionMethod_;
+		const newEncryptionMethod = this.defaultKeyEncryptionMethod_;
 		const plainText = await this.decryptMasterKeyContent(model, decryptionPassword, decryptOptions);
 		const newContent = await this.encryptMasterKeyContent(newEncryptionMethod, plainText, encryptionPassword, encryptOptions);
 		return { ...model, ...newContent };
@@ -279,7 +279,7 @@ export default class EncryptionService {
 	public async encryptMasterKeyContent(encryptionMethod: EncryptionMethod, hexaBytes: string, password: string, options: EncryptOptions = null): Promise<MasterKeyEntity> {
 		options = { ...options };
 
-		if (encryptionMethod === null) encryptionMethod = this.defaultMasterKeyEncryptionMethod_;
+		if (encryptionMethod === null) encryptionMethod = this.defaultKeyEncryptionMethod_;
 
 		if (options.encryptionHandler) {
 			return {
@@ -298,7 +298,7 @@ export default class EncryptionService {
 	}
 
 	private async generateMasterKeyContent_(password: string, options: EncryptOptions = null) {
-		options = { encryptionMethod: this.defaultMasterKeyEncryptionMethod_, ...options };
+		options = { encryptionMethod: this.defaultKeyEncryptionMethod_, ...options };
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const bytes: any[] = await shim.randomBytes(256);
