@@ -283,9 +283,12 @@ async function switchClient(id: number, options: any = null) {
 	BaseModel.setDb(databases_[id]);
 	KvStore.instance().setDb(databases_[id]);
 
+	EncryptionService.instance_ = encryptionServices_[id];
 	BaseItem.encryptionService_ = encryptionServices_[id];
 	Resource.encryptionService_ = encryptionServices_[id];
+	RevisionService.instance_ = revisionServices_[id];
 	BaseItem.revisionService_ = revisionServices_[id];
+	ResourceService.instance_ = resourceServices_[id];
 	ResourceFetcher.instance_ = resourceFetchers_[id];
 
 	await Setting.reset();
@@ -470,6 +473,9 @@ async function setupDatabaseAndSynchronizer(id: number, options: any = null) {
 	await fs.remove(pluginDir(id));
 	await fs.mkdirp(pluginDir(id));
 
+	encryptionServices_[id] = new EncryptionService();
+	resourceServices_[id] = new ResourceService();
+
 	if (!synchronizers_[id]) {
 		const SyncTargetClass = SyncTargetRegistry.classById(syncTargetId_);
 		const syncTarget = new SyncTargetClass(db(id));
@@ -478,6 +484,8 @@ async function setupDatabaseAndSynchronizer(id: number, options: any = null) {
 		syncTarget.setLogger(logger);
 		synchronizers_[id] = await syncTarget.synchronizer();
 
+		synchronizers_[id].setEncryptionService(encryptionServices_[id]);
+		synchronizers_[id].setResourceService(resourceServices_[id]);
 		// For now unset the share service as it's not properly initialised.
 		// Share service tests are in ShareService.test.ts normally, and if it
 		// becomes necessary to test integration with the synchroniser we can
@@ -485,11 +493,9 @@ async function setupDatabaseAndSynchronizer(id: number, options: any = null) {
 		synchronizers_[id].setShareService(null);
 	}
 
-	encryptionServices_[id] = new EncryptionService();
 	revisionServices_[id] = new RevisionService();
 	decryptionWorkers_[id] = new DecryptionWorker();
 	decryptionWorkers_[id].setEncryptionService(encryptionServices_[id]);
-	resourceServices_[id] = new ResourceService();
 	resourceFetchers_[id] = new ResourceFetcher(() => { return synchronizers_[id].api(); });
 	kvStores_[id] = new KvStore();
 
