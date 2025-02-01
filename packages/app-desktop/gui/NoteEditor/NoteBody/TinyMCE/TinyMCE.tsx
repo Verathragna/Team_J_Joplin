@@ -871,7 +871,7 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 
 		void loadEditor();
 		// eslint-disable-next-line @seiyab/react-hooks/exhaustive-deps -- Old code before rule was applied
-	}, [scriptLoaded, editorContainer, editorContainerDom]);
+	}, [scriptLoaded, editorContainer]);
 
 	// -----------------------------------------------------------------------------------------
 	// Set the initial content and load the plugin CSS and JS files
