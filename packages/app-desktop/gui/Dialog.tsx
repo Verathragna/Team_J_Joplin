@@ -63,23 +63,54 @@ const Dialog: React.FC<Props> = props => {
 	</div>;
 };
 
+const useDialogDIsmissed = (dialogElement: HTMLDialogElement|null) => {
+	const [mouseDownOutsideContent, setMouseDownOutsideContent] = useState(false);
+	const [clickedOutsideOfContent, setClickedOutsideOfContent] = useState(false);
+
+	if (!dialogElement) return false;
+
+	dialogElement.addEventListener('mousedown', event => {
+		if (event.target === dialogElement) {
+			setMouseDownOutsideContent(true);
+		} else {
+			setMouseDownOutsideContent(false);
+		}
+	});
+	dialogElement.addEventListener('mouseup', event => {
+		if (!mouseDownOutsideContent) return;
+		if (mouseDownOutsideContent && event.target === dialogElement) {
+			setClickedOutsideOfContent(true);
+			setMouseDownOutsideContent(false);
+		} else {
+			setClickedOutsideOfContent(false);
+			setMouseDownOutsideContent(false);
+		}
+	});
+
+	return clickedOutsideOfContent;
+};
+
 const useDialogElement = (containerDocument: Document, onCancel: undefined|OnCancelListener) => {
 	const [dialogElement, setDialogElement] = useState<HTMLDialogElement|null>(null);
 
 	const onCancelRef = useRef(onCancel);
 	onCancelRef.current = onCancel;
 
+	const dialogDismissed = useDialogDIsmissed(dialogElement);
+
+	useEffect(() => {
+		if (dialogDismissed) {
+			const onCancel = onCancelRef.current;
+			if (onCancel) {
+				onCancel();
+			}
+		}
+	}, [dialogDismissed]);
+
 	useEffect(() => {
 		if (!containerDocument) return () => {};
 
 		const dialog = containerDocument.createElement('dialog');
-		dialog.addEventListener('click', event => {
-			const onCancel = onCancelRef.current;
-			const isBackgroundClick = event.target === dialog;
-			if (isBackgroundClick && onCancel) {
-				onCancel();
-			}
-		});
 		dialog.classList.add('dialog-modal-layer');
 		dialog.addEventListener('cancel', event => {
 			const canCancel = !!onCancelRef.current;
