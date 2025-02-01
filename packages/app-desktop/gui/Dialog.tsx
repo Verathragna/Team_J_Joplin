@@ -63,7 +63,7 @@ const Dialog: React.FC<Props> = props => {
 	</div>;
 };
 
-const useDialogDIsmissed = (dialogElement: HTMLDialogElement|null) => {
+const useDialogDismissed = (dialogElement: HTMLDialogElement|null) => {
 	const [mouseDownOutsideContent, setMouseDownOutsideContent] = useState(false);
 	const [clickedOutsideOfContent, setClickedOutsideOfContent] = useState(false);
 
@@ -96,7 +96,7 @@ const useDialogElement = (containerDocument: Document, onCancel: undefined|OnCan
 	const onCancelRef = useRef(onCancel);
 	onCancelRef.current = onCancel;
 
-	const dialogDismissed = useDialogDIsmissed(dialogElement);
+	const dialogDismissed = useDialogDismissed(dialogElement);
 
 	useEffect(() => {
 		if (dialogDismissed) {
