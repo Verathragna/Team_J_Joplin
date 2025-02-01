@@ -43,6 +43,7 @@ import useKeyboardRefocusHandler from './utils/useKeyboardRefocusHandler';
 import useDocument from '../../../hooks/useDocument';
 import useEditDialog from './utils/useEditDialog';
 import useEditDialogEventListeners from './utils/useEditDialogEventListeners';
+import KeymapService from '@joplin/lib/services/KeymapService';
 
 const logger = Logger.create('TinyMCE');
 
@@ -814,10 +815,11 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 					editor.addShortcut('Meta+Shift+7', '', () => editor.execCommand('InsertOrderedList'));
 					editor.addShortcut('Meta+Shift+8', '', () => editor.execCommand('InsertUnorderedList'));
 					editor.addShortcut('Meta+Shift+9', '', () => editor.execCommand('InsertJoplinChecklist'));
-					editor.shortcuts.add('Alt+F6', 'Focus on toolbar', () => {
-						const firstToolbarButton = editorContainerDom.querySelector('div.tox-editor-header > div.tox-toolbar-overlord > div > div:nth-child(1) > button');
-						focus('TinyMCE::shortcut-focus-toolbar', firstToolbarButton);
-					});
+					editor.addShortcut(
+						KeymapService.instance().getAccelerator('focusToolbar'),
+						'Focus toolbar',
+						() => CommandService.instance().execute('focusToolbar'),
+					);
 
 					// TODO: remove event on unmount?
 					editor.on('drop', (event) => {

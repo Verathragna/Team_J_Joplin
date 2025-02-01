@@ -63,6 +63,7 @@ const defaultKeymapItems = {
 		{ accelerator: 'Option+Cmd+Backspace', command: 'permanentlyDeleteNote' },
 		{ accelerator: 'Option+Cmd+N', command: 'openNoteInNewWindow' },
 		{ accelerator: 'Ctrl+M', command: 'toggleTabMovesFocus' },
+		{ accelerator: 'Cmd+F6', command: 'focusToolbar' },
 	],
 	default: [
 		{ accelerator: 'Ctrl+N', command: 'newNote' },
@@ -112,6 +113,7 @@ const defaultKeymapItems = {
 		{ accelerator: 'Ctrl+Alt+3', command: 'switchProfile3' },
 		{ accelerator: 'Ctrl+Alt+N', command: 'openNoteInNewWindow' },
 		{ accelerator: 'Ctrl+M', command: 'toggleTabMovesFocus' },
+		{ accelerator: 'Alt+F6', command: 'focusToolbar' },
 	],
 };
 
