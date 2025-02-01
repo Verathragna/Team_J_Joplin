@@ -41,6 +41,10 @@ interface State {
 
 const uniqueId = (key: string) => `note-properties-dialog-${key}`;
 
+const isPropertyDatetimeRelated = (key: string) => {
+	return key === 'user_created_time' || key === 'user_updated_time' || key === 'deleted_time';
+};
+
 class NotePropertiesDialog extends React.Component<Props, State> {
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
@@ -294,7 +298,7 @@ class NotePropertiesDialog extends React.Component<Props, State> {
 		};
 
 		if (this.state.editedKey === key) {
-			if (key.indexOf('_time') >= 0 || key === 'todo_completed') {
+			if (isPropertyDatetimeRelated(key)) {
 				controlComp = <input
 					type="datetime-local"
 					defaultValue={formatMsToDateTimeLocal(value)}
@@ -337,7 +341,7 @@ class NotePropertiesDialog extends React.Component<Props, State> {
 				} catch (error) {
 					displayedValue = '';
 				}
-			} else if (key.includes('_time') || key === 'todo_completed') {
+			} else if (isPropertyDatetimeRelated(key)) {
 				displayedValue = formatMsToLocal(value);
 			}
 
