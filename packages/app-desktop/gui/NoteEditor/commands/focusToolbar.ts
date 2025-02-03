@@ -15,7 +15,7 @@ export const runtime = (dependencies: EditorCommandsDependencies): CommandRuntim
 			if (!dependencies || !dependencies.editorContainerDomElement) return;
 
 			const boldOnRTE = dependencies.editorContainerDomElement.querySelector(
-				'.tox-toolbar-overlord div.tox-toolbar__group:nth-of-type(1) button:nth-of-type(1)',
+				'.tox-toolbar__group button',
 			);
 
 			if (boldOnRTE) {
