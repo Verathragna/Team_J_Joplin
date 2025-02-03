@@ -15,7 +15,7 @@ export const runtime = (dependencies: EditorCommandsDependencies): CommandRuntim
 			if (!dependencies || !dependencies.editorContainerDomElement) return;
 
 			const boldOnRTE = dependencies.editorContainerDomElement.querySelector(
-				'.tox-tbtn[title=\'Bold\']',
+				'.tox-toolbar-overlord div.tox-toolbar__group:nth-of-type(1) button:nth-of-type(1)',
 			);
 
 			if (boldOnRTE) {
@@ -24,7 +24,7 @@ export const runtime = (dependencies: EditorCommandsDependencies): CommandRuntim
 			}
 
 			const boldOnMarkdown = dependencies.editorContainerDomElement.querySelector(
-				'.button.toolbar-button[title=\'Bold\']',
+				'#CodeMirrorToolbar div.group:nth-of-type(2) button.button.toolbar-button:nth-of-type(1)',
 			);
 
 			if (boldOnMarkdown) {
