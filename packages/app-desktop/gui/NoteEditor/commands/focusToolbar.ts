@@ -14,21 +14,21 @@ export const runtime = (dependencies: EditorCommandsDependencies): CommandRuntim
 		execute: async () => {
 			if (!dependencies || !dependencies.editorContainerDomElement) return;
 
-			const boldOnRTE = dependencies.editorContainerDomElement.querySelector(
+			const firstButtonOnRTEToolbar = dependencies.editorContainerDomElement.querySelector(
 				'.tox-toolbar__group button',
 			);
 
-			if (boldOnRTE) {
-				focus('focusToolbarCommand', boldOnRTE);
+			if (firstButtonOnRTEToolbar) {
+				focus('focusToolbarCommand', firstButtonOnRTEToolbar);
 				return;
 			}
 
-			const boldOnMarkdown = dependencies.editorContainerDomElement.querySelector(
-				'#CodeMirrorToolbar div.group:nth-of-type(2) button.button.toolbar-button:nth-of-type(1)',
+			const firstButtonOnMarkdownToolbar = dependencies.editorContainerDomElement.querySelector(
+				'#CodeMirrorToolbar .button[tabindex="0"]:not(.disabled)',
 			);
 
-			if (boldOnMarkdown) {
-				focus('focusToolbarCommand', boldOnMarkdown);
+			if (firstButtonOnMarkdownToolbar) {
+				focus('focusToolbarCommand', firstButtonOnMarkdownToolbar);
 			}
 
 		},
