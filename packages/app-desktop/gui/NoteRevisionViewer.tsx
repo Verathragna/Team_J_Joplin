@@ -21,6 +21,7 @@ import useQueuedAsyncEffect from '@joplin/lib/hooks/useQueuedAsyncEffect';
 import useMarkupToHtml from './hooks/useMarkupToHtml';
 import useAsyncEffect from '@joplin/lib/hooks/useAsyncEffect';
 import { ScrollbarSize } from '@joplin/lib/models/settings/builtInMetadata';
+import { focus } from '@joplin/lib/utils/focusHandler';
 
 interface Props {
 	themeId: number;
@@ -92,6 +93,7 @@ const NoteRevisionViewerComponent: React.FC<Props> = ({ themeId, noteId, onBack,
 
 		setRevisions(revisions);
 		setCurrentRevId(revisions.length ? revisions[revisions.length - 1].id : '');
+		focus('NoteRevisionViewer::viewer_domReady', viewerRef.current);
 	}, [noteId]);
 
 	const importButton_onClick = useCallback(async () => {
