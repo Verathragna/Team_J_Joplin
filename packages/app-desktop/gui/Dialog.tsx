@@ -63,31 +63,45 @@ const Dialog: React.FC<Props> = props => {
 	</div>;
 };
 
-const useDialogDismissed = (dialogElement: HTMLDialogElement|null) => {
-	const [mouseDownOutsideContent, setMouseDownOutsideContent] = useState(false);
-	const [clickedOutsideOfContent, setClickedOutsideOfContent] = useState(false);
+// We keep track of the mouse events to allow the action to be cancellable on the mouseup
+// If dialogElement is the source of the mouse event it means
+// that the user clicked in the dimmed background and not in the content of the dialog
+const useClickedOutsideContent = (dialogElement: HTMLDialogElement|null) => {
+	const mouseDownOutsideContent = useRef(false);
+	mouseDownOutsideContent.current	= false;
+	const [clickedOutsideContent, setClickedOutsideContent] = useState(false);
 
-	if (!dialogElement) return false;
+	useEffect(() => {
+		if (!dialogElement) return () => {};
 
-	dialogElement.addEventListener('mousedown', event => {
-		if (event.target === dialogElement) {
-			setMouseDownOutsideContent(true);
-		} else {
-			setMouseDownOutsideContent(false);
-		}
-	});
-	dialogElement.addEventListener('mouseup', event => {
-		if (!mouseDownOutsideContent) return;
-		if (mouseDownOutsideContent && event.target === dialogElement) {
-			setClickedOutsideOfContent(true);
-			setMouseDownOutsideContent(false);
-		} else {
-			setClickedOutsideOfContent(false);
-			setMouseDownOutsideContent(false);
-		}
-	});
+		const mouseDownListener = (event: MouseEvent) => {
+			if (event.target === dialogElement) {
+				mouseDownOutsideContent.current = true;
+			} else {
+				mouseDownOutsideContent.current = false;
+			}
+		};
+		const mouseUpListener = (event: MouseEvent) => {
+			if (!mouseDownOutsideContent) return;
+			if (mouseDownOutsideContent.current && event.target === dialogElement) {
+				setClickedOutsideContent(true);
+				mouseDownOutsideContent.current = false;
+			} else {
+				setClickedOutsideContent(false);
+				mouseDownOutsideContent.current = false;
+			}
+		};
 
-	return clickedOutsideOfContent;
+		dialogElement.addEventListener('mousedown', mouseDownListener);
+		dialogElement.addEventListener('mouseup', mouseUpListener);
+
+		return () => {
+			dialogElement.removeEventListener('mousedown', mouseDownListener);
+			dialogElement.removeEventListener('mouseup', mouseUpListener);
+		};
+	}, [dialogElement]);
+
+	return [clickedOutsideContent, setClickedOutsideContent] as const;
 };
 
 const useDialogElement = (containerDocument: Document, onCancel: undefined|OnCancelListener) => {
@@ -96,16 +110,18 @@ const useDialogElement = (containerDocument: Document, onCancel: undefined|OnCan
 	const onCancelRef = useRef(onCancel);
 	onCancelRef.current = onCancel;
 
-	const dialogDismissed = useDialogDismissed(dialogElement);
+	const [clickedOutsideContent, setClickedOutsideContent] = useClickedOutsideContent(dialogElement);
 
 	useEffect(() => {
-		if (dialogDismissed) {
+		if (clickedOutsideContent) {
 			const onCancel = onCancelRef.current;
 			if (onCancel) {
 				onCancel();
+			} else {
+				setClickedOutsideContent(false);
 			}
 		}
-	}, [dialogDismissed]);
+	}, [clickedOutsideContent, setClickedOutsideContent]);
 
 	useEffect(() => {
 		if (!containerDocument) return () => {};
