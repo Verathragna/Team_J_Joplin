@@ -319,15 +319,15 @@ class NotePropertiesDialog extends React.Component<Props, State> {
 		let editComDescription = null;
 
 		const onKeyDown = (event: React.KeyboardEvent) => {
-			const isKeyBeingValidated = this.state.isValid[this.state.editedKey] !== undefined;
-
-			// If is invalid we should return to the original value
-			if (isKeyBeingValidated && !this.state.isValid[this.state.editedKey]) {
-				void this.cancelProperty();
-				return;
-			}
-
 			if (event.keyCode === 13) {
+				const isKeyBeingValidated = this.state.isValid[this.state.editedKey] !== undefined;
+
+				// If is invalid we should return to the original value
+				if (isKeyBeingValidated && !this.state.isValid[this.state.editedKey]) {
+					void this.cancelProperty();
+					return;
+				}
+
 				void this.saveProperty();
 			} else if (event.keyCode === 27) {
 				void this.cancelProperty();
