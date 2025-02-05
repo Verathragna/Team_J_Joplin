@@ -201,6 +201,12 @@ class NotePropertiesDialog extends React.Component<Props, State> {
 			borderColor: 'red',
 		};
 
+		this.styles_.invalidMessage = {
+			marginTop: '0.3em',
+			color: theme.color,
+			fontSize: theme.fontSize * 0.9,
+		};
+
 		return this.styles_;
 	}
 
@@ -346,17 +352,27 @@ class NotePropertiesDialog extends React.Component<Props, State> {
 				editComDescription = _('Save changes');
 			} else if (this.state.editedKey === 'location') {
 				controlComp = (
-					<input
-						defaultValue={value}
-						type="text"
-						ref={this.inputRef}
-						onChange={this.locationOnChange}
-						onKeyDown={event => onKeyDown(event)}
-						style={this.state.isValid.location ? styles.input : { ...styles.input, ...styles.invalidInput }}
-						id={uniqueId(key)}
-						name={uniqueId(key)}
-						aria-invalid={!this.state.isValid.location}
-					/>
+					<React.Fragment>
+						<input
+							defaultValue={value}
+							type="text"
+							ref={this.inputRef}
+							onChange={this.locationOnChange}
+							onKeyDown={event => onKeyDown(event)}
+							style={this.state.isValid.location ? styles.input : { ...styles.input, ...styles.invalidInput }}
+							id={uniqueId(key)}
+							name={uniqueId(key)}
+							aria-invalid={!this.state.isValid.location}
+						/>
+						{
+							this.state.isValid.location ? null
+								: <React.Fragment>
+									<div aria-live='polite' style={styles.invalidMessage}>
+										{_('Invalid format. E.g.: 48.8581372, 2.2926735')}
+									</div>
+								</React.Fragment>
+						}
+					</React.Fragment>
 				);
 			} else {
 				controlComp = (
