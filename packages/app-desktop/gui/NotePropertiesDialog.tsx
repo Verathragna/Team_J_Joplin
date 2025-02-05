@@ -363,6 +363,7 @@ class NotePropertiesDialog extends React.Component<Props, State> {
 						style={this.state.isValid.location ? styles.input : { ...styles.input, ...styles.invalidInput }}
 						id={uniqueId(key)}
 						name={uniqueId(key)}
+						aria-invalid={!this.state.isValid.location}
 					/>
 				);
 			} else {
