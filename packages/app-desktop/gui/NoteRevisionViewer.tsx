@@ -79,6 +79,7 @@ const useNoteContent = (
 const NoteRevisionViewerComponent: React.FC<Props> = ({ themeId, noteId, onBack, customCss, scrollbarSize }) => {
 	const helpButton_onClick = useCallback(() => {}, []);
 	const viewerRef = useRef<NoteViewerControl|null>(null);
+	const revisionListRef = useRef<HTMLSelectElement|null>(null);
 
 	const [revisions, setRevisions] = useState<RevisionEntity[]>([]);
 	const [currentRevId, setCurrentRevId] = useState('');
@@ -93,7 +94,6 @@ const NoteRevisionViewerComponent: React.FC<Props> = ({ themeId, noteId, onBack,
 
 		setRevisions(revisions);
 		setCurrentRevId(revisions.length ? revisions[revisions.length - 1].id : '');
-		focus('NoteRevisionViewer::viewer_domReady', viewerRef.current);
 	}, [noteId]);
 
 	const importButton_onClick = useCallback(async () => {
@@ -170,7 +170,7 @@ const NoteRevisionViewerComponent: React.FC<Props> = ({ themeId, noteId, onBack,
 				<i style={theme.buttonIconStyle} className={'fa fa-chevron-left'}></i>{_('Back')}
 			</button>
 			<input readOnly type="text" className='title' style={theme.inputStyle} value={note?.title ?? ''} />
-			<select disabled={!revisions.length} value={currentRevId} className='revisions' style={theme.dropdownList} onChange={revisionList_onChange}>
+			<select disabled={!revisions.length} value={currentRevId} className='revisions' style={theme.dropdownList} onChange={revisionList_onChange} ref={revisionListRef}>
 				{revisionListItems}
 			</select>
 			<button disabled={!revisions.length || restoring} onClick={importButton_onClick} className='restore'style={{ ...theme.buttonStyle, marginLeft: 10, height: theme.inputStyle.height }}>
@@ -181,6 +181,12 @@ const NoteRevisionViewerComponent: React.FC<Props> = ({ themeId, noteId, onBack,
 	);
 
 	const viewer = <NoteTextViewer themeId={themeId} viewerStyle={{ display: 'flex', flex: 1, borderLeft: 'none' }} ref={viewerRef} onDomReady={viewer_domReady} onIpcMessage={webview_ipcMessage} />;
+
+	React.useEffect(() => {
+		// We need to force focus here because the otherwise the focus is lost and goes back
+		// to the start of the document. See https://github.com/laurent22/joplin/pull/11769
+		focus('NoteRevisionViewer', revisionListRef.current);
+	}, [revisionListRef, revisions]);
 
 	return (
 		<div className='revision-viewer-root'>
