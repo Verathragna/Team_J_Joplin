@@ -1,4 +1,4 @@
-# New Native Encryption Method Specification
+# Native Encryption Method Specification
 
 Starting with Joplin v3.2, we introduced a series of new encryption methods. These methods are built on native libraries and are designed to enhance both performance and security. This document provides an overview and detailed specifications of these new encryption methods.  
 
