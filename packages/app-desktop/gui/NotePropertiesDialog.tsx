@@ -303,7 +303,7 @@ class NotePropertiesDialog extends React.Component<Props, State> {
 
 		if (event.target.value.includes(',')) {
 			const [lat, log] = event.target.value.split(',');
-			if (parseInt(lat, 10) < 90 && parseInt(lat, 10) > -90 && parseInt(log, 10) < 180 && parseInt(log, 10) > -180) {
+			if (parseFloat(lat) < 90 && parseFloat(lat) > -90 && parseFloat(log) < 180 && parseFloat(log) > -180) {
 				this.setState({ isValid: { ...this.state.isValid, location: true } });
 				return;
 			}
