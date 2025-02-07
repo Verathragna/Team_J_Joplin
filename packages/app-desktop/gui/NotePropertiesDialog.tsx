@@ -200,7 +200,7 @@ class NotePropertiesDialog extends React.Component<Props, State> {
 
 		this.styles_.invalidInput = {
 			border: '1px solid',
-			borderColor: 'red',
+			borderColor: theme.colorWarn,
 		};
 
 		this.styles_.invalidMessage = {
