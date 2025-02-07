@@ -817,7 +817,7 @@ const TinyMCE = (props: NoteBodyEditorProps, ref: any) => {
 					editor.addShortcut('Meta+Shift+9', '', () => editor.execCommand('InsertJoplinChecklist'));
 					editor.addShortcut(
 						KeymapService.instance().getAccelerator('focusToolbar'),
-						'Focus toolbar',
+						'',
 						() => CommandService.instance().execute('focusToolbar'),
 					);
 
