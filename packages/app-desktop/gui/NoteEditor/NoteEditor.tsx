@@ -58,7 +58,6 @@ import WebviewController from '@joplin/lib/services/plugins/WebviewController';
 import AsyncActionQueue, { IntervalType } from '@joplin/lib/AsyncActionQueue';
 import useResourceUnwatcher from './utils/useResourceUnwatcher';
 import StatusBar from './StatusBar';
-import { EditorCommandsDependencies } from './types';
 
 const debounce = require('debounce');
 
@@ -402,7 +401,7 @@ function NoteEditorContent(props: NoteEditorProps) {
 	}, [externalEditWatcher_noteChange, onNotePropertyChange]);
 
 	useEffect(() => {
-		const dependencies: EditorCommandsDependencies = {
+		const dependencies = {
 			setShowRevisions,
 			isInFocusedDocument: () => {
 				return containerRef.current?.ownerDocument?.hasFocus();
