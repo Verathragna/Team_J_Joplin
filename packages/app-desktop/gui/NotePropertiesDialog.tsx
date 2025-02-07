@@ -37,7 +37,9 @@ interface State {
 	formNote: FormNote;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	editedValue: any;
-	isValid: Record<string, boolean>;
+	isValid: {
+		location: boolean;
+	};
 }
 
 const uniqueId = (key: string) => `note-properties-dialog-${key}`;
