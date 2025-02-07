@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect } from 'react';
 import { themeStyle } from '@joplin/lib/theme';
 import { _ } from '@joplin/lib/locale';
 import NoteTextViewer, { NoteViewerControl } from './NoteTextViewer';
@@ -182,8 +183,8 @@ const NoteRevisionViewerComponent: React.FC<Props> = ({ themeId, noteId, onBack,
 
 	const viewer = <NoteTextViewer themeId={themeId} viewerStyle={{ display: 'flex', flex: 1, borderLeft: 'none' }} ref={viewerRef} onDomReady={viewer_domReady} onIpcMessage={webview_ipcMessage} />;
 
-	React.useEffect(() => {
-		// We need to force focus here because the otherwise the focus is lost and goes back
+	useEffect(() => {
+		// We need to force focus here because otherwise the focus is lost and goes back
 		// to the start of the document. See https://github.com/laurent22/joplin/pull/11769
 		focus('NoteRevisionViewer', revisionListRef.current);
 	}, [revisionListRef, revisions]);
