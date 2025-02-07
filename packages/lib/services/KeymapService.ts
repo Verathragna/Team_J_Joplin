@@ -38,6 +38,7 @@ const defaultKeymapItems = {
 		{ accelerator: 'Shift+Cmd+L', command: 'focusElementNoteList' },
 		{ accelerator: 'Shift+Cmd+N', command: 'focusElementNoteTitle' },
 		{ accelerator: 'Shift+Cmd+B', command: 'focusElementNoteBody' },
+		{ accelerator: 'Shift+Cmd+O', command: 'focusElementToolbar' },
 		{ accelerator: 'Option+Cmd+S', command: 'toggleSideBar' },
 		{ accelerator: 'Option+Cmd+L', command: 'toggleNoteList' },
 		{ accelerator: 'Cmd+L', command: 'toggleVisiblePanes' },
@@ -63,7 +64,6 @@ const defaultKeymapItems = {
 		{ accelerator: 'Option+Cmd+Backspace', command: 'permanentlyDeleteNote' },
 		{ accelerator: 'Option+Cmd+N', command: 'openNoteInNewWindow' },
 		{ accelerator: 'Ctrl+M', command: 'toggleTabMovesFocus' },
-		{ accelerator: 'Cmd+F6', command: 'focusToolbar' },
 	],
 	default: [
 		{ accelerator: 'Ctrl+N', command: 'newNote' },
@@ -87,6 +87,7 @@ const defaultKeymapItems = {
 		{ accelerator: 'Ctrl+Shift+L', command: 'focusElementNoteList' },
 		{ accelerator: 'Ctrl+Shift+N', command: 'focusElementNoteTitle' },
 		{ accelerator: 'Ctrl+Shift+B', command: 'focusElementNoteBody' },
+		{ accelerator: 'Ctrl+Shift+O', command: 'focusElementToolbar' },
 		{ accelerator: 'F10', command: 'toggleSideBar' },
 		{ accelerator: 'Ctrl+Shift+M', command: 'toggleMenuBar' },
 		{ accelerator: 'F11', command: 'toggleNoteList' },
@@ -113,7 +114,6 @@ const defaultKeymapItems = {
 		{ accelerator: 'Ctrl+Alt+3', command: 'switchProfile3' },
 		{ accelerator: 'Ctrl+Alt+N', command: 'openNoteInNewWindow' },
 		{ accelerator: 'Ctrl+M', command: 'toggleTabMovesFocus' },
-		{ accelerator: 'Alt+F6', command: 'focusToolbar' },
 	],
 };
 
