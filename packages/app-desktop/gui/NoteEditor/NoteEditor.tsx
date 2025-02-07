@@ -65,7 +65,6 @@ const debounce = require('debounce');
 const logger = Logger.create('NoteEditor');
 
 const commands = [
-	require('./commands/focusToolbar'),
 	require('./commands/showRevisions'),
 ];
 
@@ -408,7 +407,6 @@ function NoteEditorContent(props: NoteEditorProps) {
 			isInFocusedDocument: () => {
 				return containerRef.current?.ownerDocument?.hasFocus();
 			},
-			editorContainerDomElement: containerRef.current,
 		};
 
 		const registeredCommands = CommandService.instance().componentRegisterCommands(
