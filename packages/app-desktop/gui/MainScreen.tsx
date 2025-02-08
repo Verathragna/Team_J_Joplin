@@ -305,8 +305,8 @@ class MainScreenComponent extends React.Component<Props, State> {
 
 	public componentDidUpdate(prevProps: Props, prevState: State) {
 		if (prevProps.style.width !== this.props.style.width ||
-      prevProps.style.height !== this.props.style.height ||
-      this.messageBoxVisible(prevProps) !== this.messageBoxVisible(this.props)
+			prevProps.style.height !== this.props.style.height ||
+			this.messageBoxVisible(prevProps) !== this.messageBoxVisible(this.props)
 		) {
 			this.updateRootLayoutSize();
 		}
@@ -465,7 +465,7 @@ class MainScreenComponent extends React.Component<Props, State> {
 			});
 		};
 
-		const onViewJoplinCloudDisableSync = async () => {
+		const onDisableSync = async () => {
 			Setting.setValue('sync.target', null);
 			await Setting.saveAll();
 		};
@@ -565,10 +565,10 @@ class MainScreenComponent extends React.Component<Props, State> {
 		} else if (this.props.showInvalidJoplinCloudCredential) {
 			msg = this.renderNotificationMessage(
 				_('Your Joplin Cloud credentials are invalid, please login.'),
-				_('Login to Joplin Cloud'),
+				_('Login to Joplin Cloud.'),
 				onViewJoplinCloudLoginScreen,
 				_('Disable synchronisation'),
-				onViewJoplinCloudDisableSync,
+				onDisableSync
 			);
 		}
 
@@ -582,17 +582,17 @@ class MainScreenComponent extends React.Component<Props, State> {
 	public messageBoxVisible(props: Props = null) {
 		if (!props) props = this.props;
 		return props.hasDisabledSyncItems ||
-      props.showMissingMasterKeyMessage ||
-      props.hasMissingSyncCredentials ||
-      props.showNeedUpgradingMasterKeyMessage ||
-      props.showShouldReencryptMessage ||
-      props.hasDisabledEncryptionItems ||
-      this.props.shouldUpgradeSyncTarget ||
-      props.isSafeMode ||
-      this.showShareInvitationNotification(props) ||
-      this.props.needApiAuth ||
-      !!this.props.mustUpgradeAppMessage ||
-      props.showInvalidJoplinCloudCredential;
+			props.showMissingMasterKeyMessage ||
+			props.hasMissingSyncCredentials ||
+			props.showNeedUpgradingMasterKeyMessage ||
+			props.showShouldReencryptMessage ||
+			props.hasDisabledEncryptionItems ||
+			this.props.shouldUpgradeSyncTarget ||
+			props.isSafeMode ||
+			this.showShareInvitationNotification(props) ||
+			this.props.needApiAuth ||
+			!!this.props.mustUpgradeAppMessage ||
+			props.showInvalidJoplinCloudCredential;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
