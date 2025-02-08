@@ -13,10 +13,10 @@ graph LR;
     pwd[Master<br/>Password]
     mk[Master Key]
     emk[Encrypted<br/>Master Key]
-    enc_1((EncryptionService<br/>.encrypt#40;#41;))
+    enc_1(("EncryptionService<br/>.encrypt()"))
     sync[(Sync Target)]
     pt[Notes/Resources]
-    enc_2((EncryptionService<br/>.encrypt#40;#41;))
+    enc_2(("EncryptionService<br/>.encrypt()"))
     ct[Encrypted<br/>Notes/Resources]
 
     mk-->enc_1
@@ -39,10 +39,10 @@ graph LR;
     pwd[Master<br/>Password]
     mk[Master Key]
     emk[Encrypted<br/>Master Key]
-    dec_1((EncryptionService<br/>.decrypt#40;#41;))
+    dec_1(("EncryptionService<br/>.decrypt()"))
     sync[(Sync Target)]
     pt[Notes/Resources]
-    dec_2((EncryptionService<br/>.decrypt#40;#41;))
+    dec_2(("EncryptionService<br/>.decrypt()"))
     ct[Encrypted<br/>Notes/Resources]
 
     sync-->ct
@@ -75,21 +75,22 @@ graph LR;
     kdf((KDF))
     key[Key]
 
-    pt_str[Plaintext<br/>#40;string#41;]
-    pt_bin[Plaintext<br/>#40;binary#41;]
-    ct_str[Ciphertext<br/>#40;string#41;]
-    ct_bin[Ciphertext<br/>#40;binary#41;]
+    pt_str["Plaintext<br/>(string)"]
+    pt_bin["Plaintext<br/>(binary)"]
+    ct_str["Ciphertext<br/>(string)"]
+    ct_bin["Ciphertext<br/>(binary)"]
     cipher((Cipher))
     codec_1((Encoder/<br/>Decoder))
     codec_2((Encoder/<br/>Decoder))
 
-    pwd~~~salt
-    pt_str~~~salt
+    pwd---salt
+    pt_str---salt
+    linkStyle 0,1 stroke-width:0px
     
     pwd-->kdf
     pt_str-->codec_1
 
-    subgraph sub_1 [EncryptionService.encrypt#40;#41;]
+    subgraph sub_1 ["EncryptionService.encrypt()"]
     direction LR
         codec_1-->pt_bin
         pt_bin-->cipher
@@ -109,21 +110,22 @@ graph LR;
     kdf((KDF))
     key[Key]
 
-    pt_str[Plaintext<br/>#40;string#41;]
-    pt_bin[Plaintext<br/>#40;binary#41;]
-    ct_str[Ciphertext<br/>#40;string#41;]
-    ct_bin[Ciphertext<br/>#40;binary#41;]
+    pt_str["Plaintext<br/>(string)"]
+    pt_bin["Plaintext<br/>(binary)"]
+    ct_str["Ciphertext<br/>(string)"]
+    ct_bin["Ciphertext<br/>(binary)"]
     decipher((Decipher))
     codec_1((Encoder/<br/>Decoder))
     codec_2((Encoder/<br/>Decoder))
 
-    pwd~~~salt
-    ct_str~~~salt
+    pwd---salt
+    ct_str---salt
+    linkStyle 0,1 stroke-width:0px
 
     pwd-->kdf
     ct_str-->codec_1
     
-    subgraph sub_1 [EncryptionService.decrypt#40;#41;]
+    subgraph sub_1 ["EncryptionService.decrypt()"]
     direction LR
         codec_1-->ct_bin
         ct_bin-->decipher
@@ -151,10 +153,10 @@ graph LR;
     kdf((PBKDF2))
     key[Key]
 
-    pt_str[Plaintext<br/>#40;string#41;]
-    pt_bin[Plaintext<br/>#40;binary#41;]
-    ct_str[Ciphertext<br/>#40;string#41;]
-    ct_bin[Ciphertext<br/>#40;binary#41;]
+    pt_str["Plaintext<br/>(string)"]
+    pt_bin["Plaintext<br/>(binary)"]
+    ct_str["Ciphertext<br/>(string)"]
+    ct_bin["Ciphertext<br/>(binary)"]
     iv[Initialization Vector]
     adata[Associated Data]
     atag[Authentication Tag]
@@ -162,13 +164,14 @@ graph LR;
     codec((Encoder/<br/>Decoder))
     b64enc((Base64<br/>Encoder))
 
-    pwd~~~salt
-    pt_str~~~salt
+    pwd---salt
+    pt_str---salt
+    linkStyle 0,1 stroke-width:0px
     
     pwd-->kdf
     pt_str-->codec
 
-    subgraph sub_1 [EncryptionService.encrypt#40;#41;]
+    subgraph sub_1 ["EncryptionService.encrypt()"]
     direction LR
         codec-->pt_bin
         pt_bin-->cipher
@@ -192,10 +195,10 @@ graph LR;
     kdf((PBKDF2))
     key[Key]
 
-    pt_str[Plaintext<br/>#40;string#41;]
-    pt_bin[Plaintext<br/>#40;binary#41;]
-    ct_str[Ciphertext<br/>#40;string#41;]
-    ct_bin[Ciphertext<br/>#40;binary#41;]
+    pt_str["Plaintext<br/>(string)"]
+    pt_bin["Plaintext<br/>(binary)"]
+    ct_str["Ciphertext<br/>(string)"]
+    ct_bin["Ciphertext<br/>(binary)"]
     iv[Initialization Vector]
     adata[Associated Data]
     atag[Authentication Tag]
@@ -203,13 +206,14 @@ graph LR;
     codec((Encoder/<br/>Decoder))
     b64dec((Base64<br/>Decoder))
 
-    pwd~~~salt
-    ct_str~~~salt
+    pwd---salt
+    ct_str---salt
+    linkStyle 0,1 stroke-width:0px
     
     pwd-->kdf
     ct_str-->b64dec
 
-    subgraph sub_1 [EncryptionService.decrypt#40;#41;]
+    subgraph sub_1 ["EncryptionService.decrypt()"]
     direction LR
         b64dec-->ct_bin
         ct_bin-->decipher
