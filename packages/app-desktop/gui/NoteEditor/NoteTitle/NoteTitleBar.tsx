@@ -81,6 +81,14 @@ const useReselectHandlers = () => {
 
 export default function NoteTitleBar(props: Props) {
 	const styles = styles_(props);
+	const [isDateLocked, setIsDateLocked] = React.useState(false);
+	const [lockedDate, setLockedDate] = React.useState(props.noteUserUpdatedTime);
+	const toggleDateLock = () => {
+		setIsDateLocked(!isDateLocked);
+		if (!isDateLocked) {
+			setLockedDate(props.noteUserUpdatedTime);
+		}
+	};
 
 	const onTitleKeydown: React.KeyboardEventHandler<HTMLInputElement> = useCallback((event) => {
 		const titleElement = event.currentTarget;
@@ -100,7 +108,23 @@ export default function NoteTitleBar(props: Props) {
 	const { onTitleFocus, onTitleBlur } = useReselectHandlers();
 
 	function renderTitleBarDate() {
-		return <span className="updated-time-label" style={styles.titleDate}>{time.formatMsToLocal(props.noteUserUpdatedTime)}</span>;
+		return (
+			<div style={{ display: 'flex', alignItems: 'center' }}>
+
+				<span className="updated-time-label" style={styles.titleDate}>
+					{/* https://github.com/laurent22/issues/10901 */}
+					<button
+						onClick={toggleDateLock}
+						style={{ marginLeft: 8, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
+					>
+						{isDateLocked ? '🔒' : '🔓'}
+
+					</button>
+					{time.formatMsToLocal(isDateLocked ? lockedDate : props.noteUserUpdatedTime)}
+				</span>
+
+			</div>
+		);
 	}
 
 	const windowId = useContext(WindowIdContext);
