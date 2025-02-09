@@ -568,7 +568,7 @@ class MainScreenComponent extends React.Component<Props, State> {
 				_('Login to Joplin Cloud.'),
 				onViewJoplinCloudLoginScreen,
 				_('Disable synchronisation'),
-				onDisableSync
+				onDisableSync,
 			);
 		}
 
