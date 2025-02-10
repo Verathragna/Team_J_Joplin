@@ -82,7 +82,7 @@ const useClickedOutsideContent = (dialogElement: HTMLDialogElement|null) => {
 			}
 		};
 		const mouseUpListener = (event: MouseEvent) => {
-			if (!mouseDownOutsideContent) return;
+			if (!mouseDownOutsideContent.current) return;
 			if (mouseDownOutsideContent.current && event.target === dialogElement) {
 				setClickedOutsideContent(true);
 				mouseDownOutsideContent.current = false;
