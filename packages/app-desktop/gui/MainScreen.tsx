@@ -465,9 +465,8 @@ class MainScreenComponent extends React.Component<Props, State> {
 			});
 		};
 
-		const onDisableSync = async () => {
+		const onDisableSync = () => {
 			Setting.setValue('sync.target', null);
-			await Setting.saveAll();
 		};
 
 		const onViewSyncSettingsScreen = () => {
@@ -568,7 +567,7 @@ class MainScreenComponent extends React.Component<Props, State> {
 				_('Login to Joplin Cloud.'),
 				onViewJoplinCloudLoginScreen,
 				_('Disable synchronisation'),
-				onDisableSync
+				onDisableSync,
 			);
 		}
 
