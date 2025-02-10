@@ -149,7 +149,7 @@ const SettingComponent: React.FunctionComponent<Props> = props => {
 						autoCapitalize="none"
 						key="control"
 						style={styleSheet.settingControl}
-						value={props.value}
+						defaultValue={props.value}
 						onChangeText={(newValue: string) => void props.updateSettingValue(props.settingId, newValue)}
 						secureTextEntry={!!md.secure}
 						aria-labelledby={labelId}
