@@ -15,7 +15,7 @@ describe('ValidatedIntegerInput', () => {
 	});
 
 	test.each(
-		[0, -1],
+		['0', '-1'],
 	)('should return error message for too low integer values', async (input) => {
 		const md = Setting.settingMetadata('revisionService.ttlDays');
 		const value = validate(input, md, md.label());
@@ -23,7 +23,7 @@ describe('ValidatedIntegerInput', () => {
 	});
 
 	test.each(
-		[731, 1e20],
+		['731', '1e20'],
 	)('should return error message for too high integer values', async (input) => {
 		const md = Setting.settingMetadata('revisionService.ttlDays');
 		const value = validate(input, md, md.label());
@@ -31,7 +31,7 @@ describe('ValidatedIntegerInput', () => {
 	});
 
 	test.each(
-		[-999999999999999, 0, 999999999999999],
+		['-999999999999999', '0', '999999999999999'],
 	)('should return empty string for valid integer values for setting without range', async (input) => {
 		const md = Setting.settingMetadata('style.editor.contentMaxWidth');
 		const value = validate(input, md, md.label());
@@ -39,7 +39,7 @@ describe('ValidatedIntegerInput', () => {
 	});
 
 	test.each(
-		[1, 300, 730],
+		['1', '300', '730'],
 	)('should return empty string for valid integer values for setting with range', async (input) => {
 		const md = Setting.settingMetadata('revisionService.ttlDays');
 		const value = validate(input, md, md.label());
