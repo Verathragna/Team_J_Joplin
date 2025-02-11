@@ -2506,7 +2506,7 @@ msgstr "Отримати зараз:"
 
 #: packages/lib/models/settings/builtInMetadata.ts:1199
 msgid "Get pre-releases when checking for updates"
-msgstr "Отримуйте ntcnjdb випуски, перевіряючи наявність оновлень"
+msgstr "Отримувати попередні випуски під час перевірки оновлень"
 
 #: packages/app-cli/app/command-config.ts:14
 msgid ""
@@ -3551,7 +3551,7 @@ msgstr "Не вибрано жодного блокнота."
 
 #: packages/lib/components/shared/NoteList/getEmptyFolderMessage.ts:15
 msgid "No notes in here. Create one by clicking on \"New note\"."
-msgstr "Тут немає нотаток. Створіть його, натиснувши “Нова нотатка”."
+msgstr "Тут немає нотаток. Створіть її, натиснувши «Нова нотатка»."
 
 #: packages/app-mobile/components/screens/ConfigScreen/plugins/PluginStates.tsx:202
 msgid "No plugins are installed."
