@@ -23,15 +23,17 @@ export const validate = (newValue: string, md: SettingItem, label: string) => {
 	const minimum = 'minimum' in md ? md.minimum : null;
 	const maximum = 'maximum' in md ? md.maximum : null;
 
-	if (newValue === null || isNaN(newValue)) {
+	if (!newValue || !Number.isInteger(Number(newValue))) {
 		return _('%s must be a valid whole number', label);
 	}
 
-	if (maximum && newValue > maximum) {
+	const newValueInt = Number(newValue);
+
+	if (maximum && newValueInt > maximum) {
 		return _('%s cannot be greater than %s', label, maximum);
 	}
 
-	if (minimum && newValue < minimum) {
+	if (minimum && newValueInt < minimum) {
 		return _('%s cannot be less than %s', label, minimum);
 	}
 
