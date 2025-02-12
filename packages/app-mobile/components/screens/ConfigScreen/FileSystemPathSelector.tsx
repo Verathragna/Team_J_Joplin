@@ -46,7 +46,11 @@ const useFileSystemPath = (settingId: string, updateSettingValue: UpdateSettingV
 				await updateSettingValue(settingId, uri);
 				setFileSystemPath(uri);
 			} catch (error) {
-				return;
+				if (error.name === 'AbortError') {
+					return;
+				} else {
+					throw error;
+				}
 			}
 		} else {
 			try {
