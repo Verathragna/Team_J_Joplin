@@ -6,6 +6,7 @@ import * as openMasterPasswordDialog from './openMasterPasswordDialog';
 import * as permanentlyDeleteNote from './permanentlyDeleteNote';
 import * as renderMarkup from './renderMarkup';
 import * as synchronize from './synchronize';
+import * as toggleEditorPlugin from './toggleEditorPlugin';
 
 const index: any[] = [
 	deleteNote,
@@ -15,6 +16,7 @@ const index: any[] = [
 	permanentlyDeleteNote,
 	renderMarkup,
 	synchronize,
+	toggleEditorPlugin,
 ];
 
 export default index;

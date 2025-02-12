@@ -157,10 +157,13 @@ export default class WebviewController extends ViewController {
 	public emitUpdate() {
 		if (!this.updateListener_) return;
 
-		if (this.containerType_ === ContainerType.Editor && (!this.isActive() || !this.isVisible())) {
-			logger.info('emitMessage: Not emitting update because editor is disabled or hidden:', this.pluginId, this.handle, this.isActive(), this.isVisible());
-			return;
-		}
+
+		// TODO:
+
+		// if (this.containerType_ === ContainerType.Editor && (!this.isActive() || !this.isVisible())) {
+		// 	logger.info('emitMessage: Not emitting update because editor is disabled or hidden:', this.pluginId, this.handle, this.isActive(), this.isVisible());
+		// 	return;
+		// }
 
 		this.updateListener_();
 	}
@@ -279,7 +282,7 @@ export default class WebviewController extends ViewController {
 		return this.storeView.opened;
 	}
 
-	public async isVisible(): Promise<boolean> {
+	public isVisible(): boolean {
 		if (!this.storeView.opened) return false;
 		const shownEditorViewIds: string[] = this.store.getState().settings['plugins.shownEditorViewIds'];
 		return shownEditorViewIds.includes(this.handle);

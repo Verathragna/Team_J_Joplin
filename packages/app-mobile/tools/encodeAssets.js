@@ -5,7 +5,7 @@ const path = require('path');
 const md5 = require('md5');
 
 const rootDir = `${__dirname}/..`;
-const outputDir = `${rootDir}/pluginAssets`;
+const defaultOutputDir = `${rootDir}/pluginAssets`;
 
 const walk = function(dir) {
 	let results = [];
@@ -37,7 +37,7 @@ const readAsBase64 = async (path, mime) => {
 	return buffer.toString('base64');
 };
 
-async function encodeFile(sourcePath, destPath) {
+async function encodeFile(sourcePath, destPath, outputDir) {
 	const ext = utils.fileExtension(sourcePath).toLowerCase();
 	let mime = 'application/octet-stream';
 	if (ext === 'js') mime = 'application/javascript';
@@ -60,19 +60,35 @@ async function encodeFile(sourcePath, destPath) {
 	};
 }
 
-async function main() {
+const copyFontAwesomeAssets = async () => {
+	const sourceDir = `${rootDir}/node_modules/@fortawesome/fontawesome-free`;
+	const targetDir = `${rootDir}/fontawesome-temp`;
+	await fs.remove(targetDir);
+
+	await fs.mkdirp(`${targetDir}/fontawesome/css`);
+	await fs.mkdirp(`${targetDir}/fontawesome/webfonts`);
+
+	await fs.copyFile(`${sourceDir}/css/all.min.css`, `${targetDir}/fontawesome/css/all.min.css`);
+	await fs.copy(`${sourceDir}/webfonts`, `${targetDir}/fontawesome/webfonts`);
+
+	return targetDir;
+};
+
+const encodeDirectory = async (sourceAssetDir) => {
 	for (let i = 0; i < 3; i++) {
 		try {
+			const outputDir = sourceAssetDir.destination ? sourceAssetDir.destination : defaultOutputDir;
+
 			await fs.remove(outputDir);
 			await utils.mkdirp(outputDir);
 
 			const encodedFiles = [];
-			const sourceAssetDir = `${rootDir}/../renderer/assets`;
-			const files = walk(sourceAssetDir);
+			const files = walk(sourceAssetDir.source);
 
 			for (const file of files) {
-				const destFile = file.substr(sourceAssetDir.length + 1);
-				encodedFiles.push(await encodeFile(file, destFile));
+				if (file.endsWith('.DS_Store')) continue;
+				const destFile = file.substr(sourceAssetDir.source.length + 1);
+				encodedFiles.push(await encodeFile(file, destFile, outputDir));
 			}
 
 			const hashes = [];
@@ -87,7 +103,7 @@ async function main() {
 			await fs.writeFile(`${outputDir}/index.js`, `module.exports = {\nhash:"${hash}", files: {\n${indexJs.join('\n')}\n}\n};`);
 			await fs.writeFile(`${outputDir}/index.web.js`, `module.exports = ${JSON.stringify({
 				hash,
-				files: files.map(file => toForwardSlashes(path.relative(sourceAssetDir, file))),
+				files: files.map(file => toForwardSlashes(path.relative(sourceAssetDir.source, file))),
 			})}`);
 
 			return;
@@ -115,6 +131,28 @@ async function main() {
 	}
 
 	throw new Error('Could not encode file after multiple attempts. See above for errors.');
+};
+
+async function main() {
+	const fontAwesomeAssetDir = await copyFontAwesomeAssets();
+
+	const sourceAssetDirs = [
+		{
+			source: `${rootDir}/../renderer/assets`,
+		},
+		{
+			source: fontAwesomeAssetDir,
+			destination: `${rootDir}/plugins/pluginUserWebViewAssets/fontawesome`,
+		},
+	];
+
+	try {
+		for (const sourceAssetDir of sourceAssetDirs) {
+			await encodeDirectory(sourceAssetDir);
+		}
+	} finally {
+		await fs.remove(fontAwesomeAssetDir);
+	}
 }
 
 module.exports = main;
