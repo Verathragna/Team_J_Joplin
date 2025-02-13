@@ -432,9 +432,6 @@ class ScreenHeaderComponent extends PureComponent<ScreenHeaderProps, ScreenHeade
 
 					themeId={themeId}
 					description={_('Toggle plugin editor')}
-					accessibilityHint={
-						disabled ? null : _('Toggle plugin editor')
-					}
 					contentWrapperStyle={disabled ? styles.iconButtonDisabled : styles.iconButton}
 
 					iconName='ionicon eye'
