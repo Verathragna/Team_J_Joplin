@@ -105,9 +105,9 @@ export default class MenuUtils {
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 	public commandToStatefulMenuItem(commandName: string, ...args: any[]): MenuItem {
-		const options: WhenClauseContextOptions = {};
-		if (args && args[0] && (typeof args[0] === 'string')) {
-			options.commandFolderId = args[0];
+		let options: WhenClauseContextOptions;
+		if (args && args[0] && args[0].folderId) {
+			options = { commandFolderId: args[0].folderId };
 		}
 
 		const whenClauseContext = this.service.currentWhenClauseContext(options);

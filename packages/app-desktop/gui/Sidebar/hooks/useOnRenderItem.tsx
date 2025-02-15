@@ -264,7 +264,7 @@ const useOnRenderItem = (props: Props) => {
 		} else {
 			if (itemType === BaseModel.TYPE_FOLDER) {
 				menu.append(
-					new MenuItem(menuUtils.commandToStatefulMenuItem('restoreFolder', itemId)),
+					new MenuItem(menuUtils.commandToStatefulMenuItem('restoreFolder', { folderId: itemId })),
 				);
 			}
 		}
