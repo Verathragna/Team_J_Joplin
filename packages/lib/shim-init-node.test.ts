@@ -18,7 +18,7 @@ describe('shim-init-node', () => {
 		expect(resource.mime).toBe('application/pdf');
 	});
 
-	test('should keep file extension from filename if mime type is not recognized', async () => {
+	test('it should preserve the file extension if one is provided regardless of the mime type', async () => {
 		const originalFilePath = `${supportDir}/valid_pdf_without_ext`;
 		const fileWithDifferentExtension = `${originalFilePath}.mscz`;
 		await copyFile(originalFilePath, fileWithDifferentExtension);
