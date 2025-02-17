@@ -2,6 +2,7 @@
 const { shimInit } = require('./shim-init-node');
 import shim from './shim';
 import { setupDatabaseAndSynchronizer, supportDir } from './testing/test-utils';
+import { copyFile } from 'fs-extra';
 
 describe('shim-init-node', () => {
 
@@ -16,4 +17,15 @@ describe('shim-init-node', () => {
 
 		expect(resource.mime).toBe('application/pdf');
 	});
+
+	test('should keep file extension from filename if mime type is not recognized', async () => {
+		const originalFilePath = `${supportDir}/valid_pdf_without_ext`;
+		const fileWithDifferentExtension = `${originalFilePath}.mscz`;
+		await copyFile(originalFilePath, fileWithDifferentExtension);
+
+		const resource = await shim.createResourceFromPath(fileWithDifferentExtension);
+
+		expect(resource.file_extension).toBe('mscz');
+	});
+
 });
