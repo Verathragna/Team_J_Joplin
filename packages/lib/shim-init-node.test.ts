@@ -11,14 +11,14 @@ describe('shim-init-node', () => {
 		shimInit();
 	});
 
-	test('should set mime the correct mime for a PDF file even if the extension is missing', async () => {
+	test('should set the correct mime for a PDF file even if the extension is missing', async () => {
 		const filePath = `${supportDir}/valid_pdf_without_ext`;
 		const resource = await shim.createResourceFromPath(filePath);
 
 		expect(resource.mime).toBe('application/pdf');
 	});
 
-	test('it should preserve the file extension if one is provided regardless of the mime type', async () => {
+	test('should preserve the file extension if one is provided regardless of the mime type', async () => {
 		const originalFilePath = `${supportDir}/valid_pdf_without_ext`;
 		const fileWithDifferentExtension = `${originalFilePath}.mscz`;
 		await copyFile(originalFilePath, fileWithDifferentExtension);
