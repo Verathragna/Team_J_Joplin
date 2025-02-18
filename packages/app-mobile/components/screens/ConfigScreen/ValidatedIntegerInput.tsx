@@ -70,7 +70,7 @@ const ValidatedIntegerInput: FunctionComponent<Props> = props => {
 					autoCapitalize="none"
 					key="control"
 					style={hasErrors() ? { ...styleSheet.settingControl, ...styleSheet.invalidInput } : styleSheet.settingControl}
-					defaultValue={valueState}
+					value={valueState}
 					onChangeText={newValue => {
 						setValueState(newValue);
 						void props.updateSettingValue(props.settingId, validate(newValue, md, props.label) === '' ? newValue : Setting.value(props.settingId));
