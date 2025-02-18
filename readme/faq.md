@@ -159,4 +159,4 @@ Notebooks and notes on iOS are not backed up when [backing up to your Mac](https
 
 ## Why is it named Joplin?
 
-The application is named in honor of composer and pianist [Scott Joplin](https://en.wikipedia.org/wiki/Scott_Joplin), whose music I frequently listen to. His name is also easy to remember and type, making it a fitting choice.
+The application is named in honour of composer and pianist [Scott Joplin](https://en.wikipedia.org/wiki/Scott_Joplin), whose music I frequently listen to. His name is also easy to remember and type, making it a fitting choice.
