@@ -46,6 +46,7 @@
 	],
 	"ignoreDeps": [
 		"@babel/core",
+		"@bam.tech/react-native-image-resizer",
 		"@codemirror/autocomplete",
 		"@codemirror/commands",
 		"@codemirror/lang-cpp",
@@ -62,6 +63,8 @@
 		"@codemirror/search",
 		"@codemirror/state",
 		"@codemirror/view",
+		// Does not use semver
+		"@dr.pogodin/react-native-fs",
 		"@replit/codemirror-vim",
 		"@lezer/common",
 		"@lezer/highlight",
