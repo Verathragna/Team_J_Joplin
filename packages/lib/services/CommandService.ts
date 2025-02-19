@@ -97,6 +97,11 @@ interface CommandByNameOptions {
 	runtimeMustBeRegistered?: boolean;
 }
 
+export interface CommandToMenuItemOptions {
+	commandName: string;
+	whenClauseContextOptions: WhenClauseContextOptions;
+}
+
 export interface SearchResult {
 	commandName: string;
 	title: string;

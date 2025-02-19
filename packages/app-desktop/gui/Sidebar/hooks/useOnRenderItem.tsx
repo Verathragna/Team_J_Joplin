@@ -14,7 +14,7 @@ import { store } from '@joplin/lib/reducer';
 import Folder from '@joplin/lib/models/Folder';
 import bridge from '../../../services/bridge';
 import MenuUtils from '@joplin/lib/services/commands/MenuUtils';
-import CommandService from '@joplin/lib/services/CommandService';
+import CommandService, { CommandToMenuItemOptions } from '@joplin/lib/services/CommandService';
 import { FolderEntity } from '@joplin/lib/services/database/types';
 import InteropService from '@joplin/lib/services/interop/InteropService';
 import InteropServiceHelper from '../../../InteropServiceHelper';
@@ -263,8 +263,14 @@ const useOnRenderItem = (props: Props) => {
 			}
 		} else {
 			if (itemType === BaseModel.TYPE_FOLDER) {
+				const commandOptions: CommandToMenuItemOptions = {
+					commandName: 'restoreFolder',
+					whenClauseContextOptions: {
+						commandFolderId: itemId,
+					},
+				};
 				menu.append(
-					new MenuItem(menuUtils.commandToStatefulMenuItem('restoreFolder', { folderId: itemId })),
+					new MenuItem(menuUtils.commandToStatefulMenuItem(commandOptions, itemId)),
 				);
 			}
 		}

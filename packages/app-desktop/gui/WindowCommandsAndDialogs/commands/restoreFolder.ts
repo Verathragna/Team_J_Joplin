@@ -10,12 +10,10 @@ export const declaration: CommandDeclaration = {
 	iconName: 'fas fa-trash-restore',
 };
 
-type RestoreFolderCommandOptionType = { folderId?: string };
 export const runtime = (): CommandRuntime => {
 	return {
-		execute: async (context: CommandContext, options: RestoreFolderCommandOptionType = {}) => {
-			let { folderId } = options;
-			if (!folderId) folderId = context.state.selectedFolderId;
+		execute: async (context: CommandContext, folderId: string = null) => {
+			if (folderId === null) folderId = context.state.selectedFolderId;
 
 			const folder = await Folder.load(folderId);
 			if (!folder) throw new Error(`No such folder: ${folderId}`);
