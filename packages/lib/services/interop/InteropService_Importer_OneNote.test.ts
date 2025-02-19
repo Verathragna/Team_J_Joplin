@@ -213,6 +213,8 @@ describe('InteropService_Importer_OneNote', () => {
 		const originalIdGenerator = BaseModel.setIdGenerator(() => String(idx++));
 		const notes = await importNote(`${supportDir}/onenote/corrupted_attachment.zip`);
 
+		expect(notes.length).toBe(2);
+
 		for (const note of notes) {
 			expect(note.body).toMatchSnapshot(note.title);
 		}
