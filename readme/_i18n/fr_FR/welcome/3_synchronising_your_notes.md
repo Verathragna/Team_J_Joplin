@@ -12,9 +12,9 @@ Pour l'utiliser, rendez-vous dans l'écran de configuration, puis dans la rubriq
 
 Sélectionnez "Dropbox" comme cible de synchronisation dans l'écran de configuration. Ensuite, pour lancer le processus de synchronisation, cliquez sur le bouton "Synchroniser" dans la barre latérale et suivez les instructions.
 
-## Configuration de la synchronisation Nextcloud
+## Configuration de la synchronisation Nextcloud
 
-Nextcloud est une solution de cloud pouvant être auto-hébergée. Pour le configurer, accédez à l'écran de configuration et sélectionnez Nextcloud comme cible de synchronisation. Saisissez ensuite l'URL WebDAV (pour l'obtenir, rendez-vous sur votre page Nextcloud, cliquez sur Paramètres dans le coin inférieur gauche de la page et copiez l'URL). Notez qu'il doit s'agir de l'**URL complète**, donc par exemple si vous voulez que les notes soient sous `/Joplin`, l'URL serait quelque chose comme `https://example.com/remote.php/webdav /Joplin` (notez que la partie "/Joplin"). Et **assurez-vous de créer le répertoire "/Joplin" dans Nextcloud**. Définissez enfin le nom d'utilisateur et le mot de passe. Si cela ne fonctionne pas, veuillez [voir cette explication](https://github.com/laurent22/joplin/issues/61#issuecomment-373282608) pour plus de détails.
+Nextcloud est une solution de cloud pouvant être auto-hébergée. Pour le configurer, accédez à l'écran d'Options (Outils > Options > Synchronisation) et sélectionnez Nextcloud comme cible de synchronisation. Saisissez ensuite l'URL WebDAV (pour l'obtenir, rendez-vous sur votre page Nextcloud, cliquez sur Paramètres dans le coin inférieur gauche de la page et copiez l'URL). Notez qu'il doit s'agir de l'**URL complète**, donc par exemple si vous voulez que les notes soient sous `/Joplin`, l'URL serait quelque chose comme `https://example.com/remote.php/webdav/Joplin` (notez la partie "/Joplin"). Et **assurez-vous de créer le répertoire "/Joplin" dans Nextcloud**. Définissez enfin le nom d'utilisateur et le mot de passe. Si cela ne fonctionne pas, veuillez [voir cette explication](https://github.com/laurent22/joplin/issues/61#issuecomment-373282608) pour plus de détails.
 
 ## Configuration de la synchronisation OneDrive ou WebDAV
 
