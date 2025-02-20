@@ -37,6 +37,7 @@ import JoplinCloudConfig, { emailToNoteDescription, emailToNoteLabel } from './J
 import shim from '@joplin/lib/shim';
 import SettingsToggle from './SettingsToggle';
 import { UpdateSettingValueCallback } from './types';
+import httpPrefix from '@joplin/lib/utils/httpPrefix';
 
 interface ConfigScreenState {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
@@ -91,6 +92,29 @@ class ConfigScreenComponent extends BaseScreenComponent<ConfigScreenProps, Confi
 
 	private goToJoplinCloudLogin_ = async () => {
 		await NavService.go('JoplinCloudLogin');
+	};
+
+	private goToJoplinServerSamlLogin_ = async () => {
+		// Save the settings to allow for sync when the user completes authentication
+
+		await this.saveButton_press();
+		let link = Setting.value('sync.11.path');
+
+		if (link !== '') {
+			link = `${httpPrefix(link)}/login/sso-saml-app`;
+
+			const canOpen = await Linking.canOpenURL(link);
+			if (canOpen) {
+				await Linking.openURL(link);
+			} else {
+				Alert.alert(_('Warning'), _('No web browser is installed on your device.'));
+			}
+		}
+	};
+
+	private logoutJoplinServerSaml_ = () => {
+		Setting.setValue('sync.11.id', '');
+		Setting.setValue('sync.11.user_id', '');
 	};
 
 	private checkSyncConfig_ = async () => {
@@ -460,6 +484,12 @@ class ConfigScreenComponent extends BaseScreenComponent<ConfigScreenProps, Confi
 
 					if (settings['sync.target'] === SyncTargetRegistry.nameToId('joplinCloud')) {
 						addSettingButton('go_to_joplin_cloud_login_button', _('Connect to Joplin Cloud'), this.goToJoplinCloudLogin_);
+					} else if (settings['sync.target'] === SyncTargetRegistry.nameToId('joplinServerSaml')) {
+						addSettingButton('login_joplin_server_saml_button', _('Connect using your organization account'), this.goToJoplinServerSamlLogin_);
+
+						if (Setting.value('sync.11.id') !== '' || Setting.value('sync.11.user_id') !== '') {
+							addSettingButton('logout_joplin_server_saml_button', _('Log out of Joplin Server'), this.logoutJoplinServerSaml_);
+						}
 					}
 
 					addSettingButton('check_sync_config_button', _('Check synchronisation configuration'), this.checkSyncConfig_, { statusComp: statusComp });

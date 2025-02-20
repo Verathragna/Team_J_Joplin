@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { shell } from 'electron';
 import Sidebar from './Sidebar';
 import ButtonBar from './ButtonBar';
 import Button, { ButtonLevel } from '../Button/Button';
@@ -20,6 +21,7 @@ import MacOSMissingPasswordHelpLink from './controls/MissingPasswordHelpLink';
 const { KeymapConfigScreen } = require('../KeymapConfig/KeymapConfigScreen');
 import SettingComponent, { UpdateSettingValueEvent } from './controls/SettingComponent';
 import shim from '@joplin/lib/shim';
+import httpPrefix from '@joplin/lib/utils/httpPrefix';
 
 
 interface Font {
@@ -253,6 +255,25 @@ class ConfigScreenComponent extends React.Component<any, any> {
 								title={_('Connect to Joplin Cloud')}
 								level={ButtonLevel.Primary}
 								onClick={goToJoplinCloudLogin}
+							/>
+						</div>,
+					);
+				}
+
+				if (settings['sync.target'] === SyncTargetRegistry.nameToId('joplinServerSaml')) {
+					const server = settings['sync.11.path'] as string;
+
+					const goToSamlLogin = async () => {
+						await shell.openExternal(`${httpPrefix(server)}/login/sso-saml-app`);
+					};
+
+					settingComps.push(
+						<div key="connect_to_joplin_server_saml_button" style={this.rowStyle_}>
+							<Button
+								title={_('Connect using your organization account')}
+								level={ButtonLevel.Primary}
+								onClick={goToSamlLogin}
+								disabled={!server || server?.trim().length === 0}
 							/>
 						</div>,
 					);

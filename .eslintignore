@@ -1002,6 +1002,7 @@ packages/lib/RotatingLogs.js
 packages/lib/SyncTargetFilesystem.js
 packages/lib/SyncTargetJoplinCloud.js
 packages/lib/SyncTargetJoplinServer.js
+packages/lib/SyncTargetJoplinServerSAML.js
 packages/lib/SyncTargetNone.js
 packages/lib/SyncTargetOneDrive.js
 packages/lib/SyncTargetRegistry.js
@@ -1020,6 +1021,7 @@ packages/lib/commands/openMasterPasswordDialog.js
 packages/lib/commands/permanentlyDeleteNote.js
 packages/lib/commands/renderMarkup.test.js
 packages/lib/commands/renderMarkup.js
+packages/lib/commands/samlLogin.js
 packages/lib/commands/showEditorPlugin.js
 packages/lib/commands/synchronize.js
 packages/lib/commands/toggleEditorPlugin.js
@@ -1445,6 +1447,7 @@ packages/lib/utils/credentialFiles.js
 packages/lib/utils/dom/makeSandboxedIframe.js
 packages/lib/utils/focusHandler.js
 packages/lib/utils/frontMatter.js
+packages/lib/utils/httpPrefix.js
 packages/lib/utils/ipc/RemoteMessenger.test.js
 packages/lib/utils/ipc/RemoteMessenger.js
 packages/lib/utils/ipc/TestMessenger.js

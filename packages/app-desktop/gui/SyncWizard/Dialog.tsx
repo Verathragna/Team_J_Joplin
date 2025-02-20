@@ -129,6 +129,7 @@ const syncTargetNames: string[] = [
 	'webdav',
 	'amazon_s3',
 	'joplinServer',
+	'joplinServerSaml',
 ];
 
 
