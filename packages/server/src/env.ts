@@ -42,6 +42,9 @@ const defaultEnvValues: EnvVariables = {
 
 	DELTA_INCLUDES_ITEMS: true,
 
+	// Disable the built-in login flow. Useful when Joplin is configured to use SAML.
+	DISABLE_BUILTIN_LOGIN_FLOW: false,
+
 	// ==================================================
 	// URL config
 	// ==================================================
@@ -149,6 +152,14 @@ const defaultEnvValues: EnvVariables = {
 	LDAP_2_BIND_PW: '', // used for user search - leave empty if ldap server allows anonymous bind
 	LDAP_2_TLS_CA_FILE: '', // used for self-signed certificate with ldaps - leave empty if using ldap or server uses CA-issued certificate
 
+	// ==================================================
+	// SAML configuration
+	// ==================================================
+
+	SAML_ENABLED: false,
+	SAML_IDP_CONFIG_FILE: '',
+	SAML_SP_CONFIG_FILE: '',
+	SAML_ORGANIZATION_DISPLAY_NAME: '',
 };
 
 export interface EnvVariables {
@@ -241,6 +252,13 @@ export interface EnvVariables {
 	LDAP_2_BIND_DN: string;
 	LDAP_2_BIND_PW: string;
 	LDAP_2_TLS_CA_FILE: string;
+
+	SAML_ENABLED: boolean;
+	SAML_IDP_CONFIG_FILE: string;
+	SAML_SP_CONFIG_FILE: string;
+	SAML_ORGANIZATION_DISPLAY_NAME: string;
+
+	DISABLE_BUILTIN_LOGIN_FLOW: boolean;
 }
 
 const parseBoolean = (s: string): boolean => {

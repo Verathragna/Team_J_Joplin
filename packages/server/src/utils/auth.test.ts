@@ -1,6 +1,6 @@
-import { hashPassword } from './auth';
+import { checkPassword, hashPassword } from './auth';
 
-describe('hashPassword', () => {
+describe('auth', () => {
 
 	// cSpell:disable
 	it.each(
@@ -17,4 +17,7 @@ describe('hashPassword', () => {
 	});
 	// cSpell:enable
 
+	test('should refuse an empty password', async () => {
+		expect(await checkPassword('', '')).toBe(false);
+	});
 });

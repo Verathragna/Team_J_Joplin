@@ -27,7 +27,7 @@ import changeEmailConfirmationTemplate from '../views/emails/changeEmailConfirma
 import changeEmailNotificationTemplate from '../views/emails/changeEmailNotificationTemplate';
 import { NotificationKey } from './NotificationModel';
 import prettyBytes = require('pretty-bytes');
-import { Config, Env, LdapConfig } from '../utils/types';
+import { Config, Env, LdapConfig, LoginFlow, SamlConfig } from '../utils/types';
 import ldapLogin from '../utils/ldapLogin';
 import { DbConnection } from '../db';
 import { NewModelFactoryHandler } from './factory';
@@ -117,11 +117,15 @@ export function accountTypeToString(accountType: AccountType): string {
 export default class UserModel extends BaseModel<User> {
 
 	private ldapConfig_: LdapConfig[];
+	private samlConfig_: SamlConfig;
+	private disableBuiltinLoginFlow_: boolean;
 
 	public constructor(db: DbConnection, dbSlave: DbConnection, modelFactory: NewModelFactoryHandler, config: Config) {
 		super(db, dbSlave, modelFactory, config);
 
 		this.ldapConfig_ = config.ldap;
+		this.samlConfig_ = config.saml;
+		this.disableBuiltinLoginFlow_ = config.disableBuiltinLoginFlow;
 	}
 
 	public get tableName(): string {
@@ -134,6 +138,11 @@ export default class UserModel extends BaseModel<User> {
 	}
 
 	public async login(email: string, password: string): Promise<User> {
+		// If the built-in login flow is disabled, we do nothing.
+		if (this.disableBuiltinLoginFlow_) {
+			return null;
+		}
+
 		const user = await this.loadByEmail(email);
 
 		for (const config of this.ldapConfig_) {
@@ -154,6 +163,32 @@ export default class UserModel extends BaseModel<User> {
 		return user;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
+	public async samlLogin(samlAttributes: any) {
+		const email: string = samlAttributes['email'];
+
+		if (!email) {
+			return null;
+		}
+
+		let user = await this.loadByEmail(email);
+
+		if (!user) {
+			user = {
+				email: email,
+				full_name: samlAttributes['displayName'],
+				must_set_password: 0,
+				email_confirmed: 1,
+				is_external: 1,
+				password: '',
+			};
+
+			user = await this.save(user, { skipValidation: true });
+		}
+
+		return user;
+	}
+
 	public fromApiInput(object: User): User {
 		const user: User = {};
 
@@ -169,6 +204,7 @@ export default class UserModel extends BaseModel<User> {
 		if ('can_upload' in object) user.can_upload = object.can_upload;
 		if ('account_type' in object) user.account_type = object.account_type;
 		if ('must_set_password' in object) user.must_set_password = object.must_set_password;
+		if ('is_external' in object) user.is_external = object.is_external;
 
 		return user;
 	}
@@ -190,6 +226,10 @@ export default class UserModel extends BaseModel<User> {
 		}
 
 		if (action === AclAction.Update) {
+			if (user.is_external) {
+				throw new ErrorForbidden('users imported from an external source (such as SAML) cannot be modified');
+			}
+
 			const previousResource = await this.load(resource.id);
 
 			if (!user.is_admin && resource.id !== user.id) throw new ErrorForbidden('non-admin user cannot modify another user');
@@ -706,4 +746,22 @@ export default class UserModel extends BaseModel<User> {
 		}, 'UserModel::saveMulti');
 	}
 
+	public getAllowedLoginFlows() {
+		const flows = [] as LoginFlow[];
+
+		if (this.samlConfig_.enabled) {
+			flows.push({
+				type: 'sso-saml',
+				organizationName: this.samlConfig_.organizationDisplayName ? this.samlConfig_.organizationDisplayName : undefined,
+			});
+		}
+
+		if (!this.disableBuiltinLoginFlow_) {
+			flows.push({
+				type: 'builtin',
+			});
+		}
+
+		return flows;
+	}
 }

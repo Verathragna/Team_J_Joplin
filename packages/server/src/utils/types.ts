@@ -144,6 +144,13 @@ export interface LdapConfig {
 	tlsCaFile: string;
 }
 
+export interface SamlConfig {
+	enabled: boolean;
+	identityProviderConfigFile?: string;
+	serviceProviderConfigFile?: string;
+	organizationDisplayName?: string;
+}
+
 export interface Config extends EnvVariables {
 	appVersion: string;
 	joplinServerVersion: string; // May be different from appVersion, if this is a fork of JS
@@ -180,6 +187,8 @@ export interface Config extends EnvVariables {
 	itemSizeHardLimit: number;
 	maxTimeDrift: number;
 	ldap: LdapConfig[];
+	saml: SamlConfig;
+	disableBuiltinLoginFlow: boolean;
 }
 
 export enum HttpMethod {
@@ -200,4 +209,14 @@ export type KoaNext = ()=> Promise<void>;
 
 export interface CommandContext {
 	models: Models;
+}
+
+export interface LoginFlow {
+	type: 'builtin' | 'sso-saml';
+	organizationName?: string;
+}
+
+export interface SamlPostResponse {
+	SAMLResponse: string;
+	RelayState?: 'web-login' | 'app-login';
 }
