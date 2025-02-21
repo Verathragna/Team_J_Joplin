@@ -1,5 +1,5 @@
 import { ServiceProvider, IdentityProvider, setSchemaValidator } from 'samlify';
-import * as validator from '@authenio/samlify-xsd-schema-validator';
+import * as validator from '@authenio/samlify-xmllint-wasm';
 import { readFile } from 'fs-extra';
 import config from '../config';
 import { PostBindingContext } from 'samlify/types/src/entity';

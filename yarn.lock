@@ -258,14 +258,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@authenio/samlify-xsd-schema-validator@npm:1.0.5":
-  version: 1.0.5
-  resolution: "@authenio/samlify-xsd-schema-validator@npm:1.0.5"
+"@authenio/samlify-xmllint-wasm@npm:1.0.1":
+  version: 1.0.1
+  resolution: "@authenio/samlify-xmllint-wasm@npm:1.0.1"
   dependencies:
-    "@authenio/xsd-schema-validator": ^0.7.3
-  peerDependencies:
-    samlify: ">= 2.6.0"
-  checksum: d7954bf0cb46c6a724de43e478dbfa1d58f8d649db7f7c1a3ae76ddf9b0a47831dbeb447d5f5e50b629e84ad6e8802d10aba9fc31210c784b33233c80be94fe5
+    xmllint-wasm: ^4.0.0
+  checksum: 02ba8ad28ccdacc7f41cab9183315eca18ee8cf55a817edfd09ef8cff6ed87b440f07874084e33b901edb5ad8bc4d76e44de7d086ea48ea1ef259b4fb02dc026
   languageName: node
   linkType: hard
 
@@ -277,13 +275,6 @@ __metadata:
     escape-html: ^1.0.3
     xpath: 0.0.32
   checksum: 210b5c32a84d0c944e0e4a9dd8592b7246f23c89deee6fdc979a25625b4fae1ef3f4e802265288fa54c5514d7ef8ce8440f39ec0be8c9123b0a76121786611a8
-  languageName: node
-  linkType: hard
-
-"@authenio/xsd-schema-validator@npm:^0.7.3":
-  version: 0.7.3
-  resolution: "@authenio/xsd-schema-validator@npm:0.7.3"
-  checksum: c0d1ebe60798800e4432b8107c18af00edd8d5bc38b57b3be66de958525ca451d47856d06740e0654d8488d24321c175e2037c5b688594ca55b867e263a0077d
   languageName: node
   linkType: hard
 
@@ -8845,7 +8836,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@joplin/server@workspace:packages/server"
   dependencies:
-    "@authenio/samlify-xsd-schema-validator": 1.0.5
+    "@authenio/samlify-xmllint-wasm": 1.0.1
     "@aws-sdk/client-s3": 3.296.0
     "@fortawesome/fontawesome-free": 5.15.4
     "@joplin/lib": ~3.3
@@ -49612,6 +49603,13 @@ __metadata:
   version: 2.2.0
   resolution: "xmlchars@npm:2.2.0"
   checksum: 8c70ac94070ccca03f47a81fcce3b271bd1f37a591bf5424e787ae313fcb9c212f5f6786e1fa82076a2c632c0141552babcd85698c437506dfa6ae2d58723062
+  languageName: node
+  linkType: hard
+
+"xmllint-wasm@npm:^4.0.0":
+  version: 4.0.2
+  resolution: "xmllint-wasm@npm:4.0.2"
+  checksum: f802920b2a9d6be5ac5923b1608eaff40dde0dbe8a8c2d47381ae370e26a04059d6517306a3728bd8a33b973acadd3fbf4b21b0e4fe6409ea6a2efb2c6a64b08
   languageName: node
   linkType: hard
 
