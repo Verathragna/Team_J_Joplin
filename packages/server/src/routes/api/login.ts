@@ -57,22 +57,22 @@ router.post('api/saml', async (_path: SubPath, ctx: AppContext) => {
 
 		if (fields.RelayState) {
 			switch (fields.RelayState) {
-				case 'web-login': {
-					cookieSet(ctx, 'sessionId', session.id);
-					return redirect(ctx, `${config().baseUrl}/home`);
-				}
+			case 'web-login': {
+				cookieSet(ctx, 'sessionId', session.id);
+				return redirect(ctx, `${config().baseUrl}/home`);
+			}
 
-				case 'app-login': {
-					const view = defaultView('samlAppRedirect', 'Login');
-					const redirectUrl = `joplin://x-callback-url/samlLogin?id=${session.id}&user_id=${session.user_id}`;
+			case 'app-login': {
+				const view = defaultView('samlAppRedirect', 'Login');
+				const redirectUrl = `joplin://x-callback-url/samlLogin?id=${session.id}&user_id=${session.user_id}`;
 
-					view.content = {
-						samlOrganizationName: config().saml.enabled && config().saml.organizationDisplayName ? config().saml.organizationDisplayName : undefined,
-						redirectUrl,
-					};
+				view.content = {
+					samlOrganizationName: config().saml.enabled && config().saml.organizationDisplayName ? config().saml.organizationDisplayName : undefined,
+					redirectUrl,
+				};
 
-					return view;
-				}
+				return view;
+			}
 			}
 		} else {
 			return { id: session.id, user_id: session.user_id };

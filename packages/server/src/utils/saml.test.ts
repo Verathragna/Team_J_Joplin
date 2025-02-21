@@ -23,7 +23,7 @@ describe('getLoginRequest', () => {
 				
 			</md:SPSSODescriptor>
 		</md:EntityDescriptor>`;
-	
+
 		const idpXml = `
 		<?xml version="1.0"?>
 		<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="saml-idp">
