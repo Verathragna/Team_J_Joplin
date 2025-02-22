@@ -1272,7 +1272,7 @@ msgid ""
 "\n"
 "%s"
 msgstr ""
-"Nem lehetett kapcsolódni a Joplin kiszolgálójához. Ellenőrizze a "
+"Nem lehetett kapcsolódni a Joplin-kiszolgálóhoz. Ellenőrizze a "
 "szinkronizálási beállításokat. A teljes hiba a következő volt:\n"
 "\n"
 "%s"
@@ -1296,7 +1296,7 @@ msgid ""
 "\n"
 "The error was: \"%s\""
 msgstr ""
-"Nem lehetett válaszolni a meghívásra. Próbálja meg újra, vagy kérdezze meg a "
+"Nem lehetett válaszolni a meghívásra. Próbálja újra, vagy kérdezze meg a "
 "jegyzetfüzet tulajdonosát, hogy még mindig megosztja-e a jegyzetfüzetet.\n"
 "\n"
 "A hiba a következő volt: „%s”"
@@ -1315,7 +1315,7 @@ msgid ""
 "again when you are connected to the internet."
 msgstr ""
 "Nem lehetett ellenőrizni a jegyzetfüzet megosztási állapotát – megszakítás. "
-"Próbálja meg újra, amikor kapcsolódik az internethez."
+"Próbálja újra, amikor kapcsolódik az internethez."
 
 #: packages/app-mobile/components/biometrics/biometricAuthenticate.ts:30
 msgid "Could not verify your identity: %s"
@@ -1534,14 +1534,14 @@ msgstr "Sor törlése"
 
 #: packages/lib/models/settings/builtInMetadata.ts:1191
 msgid "Delete local data and re-download from sync target"
-msgstr "Helyi adatok törlése és újra letöltése a szinkronizálási célról"
+msgstr "Helyi adatok törlése és újraletöltése a szinkronizálási célról"
 
 #: packages/app-mobile/services/voiceTyping/VoiceTyping.ts:90
 msgid ""
 "Delete model and re-download?\n"
 "This cannot be undone."
 msgstr ""
-"Modell törlése és újra letöltése?  \n"
+"Modell törlése és újraletöltése?  \n"
 "Ez a művelet nem vonható vissza."
 
 #: packages/lib/commands/deleteNote.ts:7
@@ -2729,7 +2729,7 @@ msgstr "Importálás…"
 
 #: packages/app-cli/app/command-import.ts:16
 msgid "Imports data into Joplin."
-msgstr "Adatok importálása a Joplin nevű alkalmazásba."
+msgstr "Adatok importálása a Joplin alkalmazásba."
 
 #: packages/lib/models/settings/builtInMetadata.ts:393
 msgid ""
@@ -2999,7 +2999,7 @@ msgid ""
 msgstr ""
 "A Joplin többször nem tudta visszafejteni ezeket az elemeket, valószínűleg "
 "azért, mert sérültek vagy túl nagyok. Ezek az elemek az eszközön maradnak, "
-"de a Joplin többé nem próbálja meg visszafejteni őket."
+"de a Joplin többé nem próbálja visszafejteni őket."
 
 #: packages/app-desktop/gui/MenuBar.tsx:920
 msgid "Joplin Forum"
@@ -3027,7 +3027,7 @@ msgstr "Joplin-kiszolgáló jelszava"
 
 #: packages/lib/models/settings/builtInMetadata.ts:302
 msgid "Joplin Server URL"
-msgstr "Joplin kiszolgáló webcíme"
+msgstr "Joplin-kiszolgáló webcíme"
 
 #: packages/app-desktop/gui/ClipperConfigScreen.tsx:120
 msgid ""
@@ -4302,7 +4302,7 @@ msgstr "Kilépés"
 
 #: packages/app-mobile/components/voiceTyping/VoiceTypingDialog.tsx:206
 msgid "Re-download model"
-msgstr "Modell újra-letöltése"
+msgstr "Modell újraletöltése"
 
 #: packages/app-desktop/gui/EncryptionConfigScreen/EncryptionConfigScreen.tsx:342
 msgid "Re-encrypt data"
@@ -4314,7 +4314,7 @@ msgstr "Újratitkosítás"
 
 #: packages/app-desktop/gui/MasterPasswordDialog/Dialog.tsx:181
 msgid "Re-enter password"
-msgstr "Jelszó újra-megadása"
+msgstr "Jelszó megerősítése"
 
 #: packages/lib/models/settings/builtInMetadata.ts:1180
 msgid "Re-upload local data to sync target"
@@ -4960,7 +4960,7 @@ msgstr "Solarised világos"
 msgid ""
 "Some attachments could not be downloaded. Please try to download them again."
 msgstr ""
-"Néhány mellékletet nem lehetett letölteni. Próbálja meg újra letölteni őket."
+"Néhány mellékletet nem lehetett letölteni. Próbálja újraletölteni őket."
 
 #: packages/lib/models/settings/settingValidations.ts:18
 msgid ""
@@ -4968,7 +4968,7 @@ msgid ""
 "\"always\" and try again."
 msgstr ""
 "Néhány mellékletet le kell tölteni. Állítsa a mellékletek letöltési módját "
-"„mindig” értékre, és próbálja meg újra."
+"„mindig” értékre, és próbálja újra."
 
 #: packages/app-desktop/gui/MainScreen.tsx:519
 #: packages/app-mobile/components/ScreenHeader/WarningBanner.tsx:52
@@ -4989,8 +4989,8 @@ msgstr ""
 msgid ""
 "Some items could not be synchronised. Please try to synchronise them first."
 msgstr ""
-"Néhány elemet nem lehetett szinkronizálni. Először próbálja meg "
-"szinkronizálni őket."
+"Néhány elemet nem lehetett szinkronizálni. Először próbálja szinkronizálni "
+"őket."
 
 #: packages/app-desktop/gui/ResourceScreen.tsx:92
 msgid "Sort \"%s\" in ascending order"
@@ -5373,7 +5373,7 @@ msgid ""
 "The active profile cannot be deleted. Switch to a different profile and try "
 "again."
 msgstr ""
-"Az aktív profil nem törölhető. Váltson másik profilra, és próbálja meg újra."
+"Az aktív profil nem törölhető. Váltson másik profilra, és próbálja újra."
 
 #: packages/app-desktop/bridge.ts:504
 msgid ""
@@ -5560,7 +5560,7 @@ msgid ""
 "\n"
 "The error was: \"%s\""
 msgstr ""
-"A címzettet nem lehetett törölni a listáról. Próbálja meg újra.\n"
+"A címzettet nem lehetett törölni a listáról. Próbálja újra.\n"
 "\n"
 "A hiba a következő volt: „%s”"
 
@@ -6560,8 +6560,8 @@ msgid ""
 "You may use the tool below to re-encrypt your data, for example if you know "
 "that some of your notes are encrypted with an obsolete encryption method."
 msgstr ""
-"Az alábbi eszközzel újra titkosíthatja adatait, például ha tudja, hogy "
-"néhány jegyzete elavult titkosítási módszerrel van titkosítva."
+"Az alábbi eszközzel újratitkosíthatja adatait, például ha tudja, hogy néhány "
+"jegyzete elavult titkosítási módszerrel van titkosítva."
 
 #: packages/lib/services/joplinCloudUtils.ts:53
 msgid ""
@@ -6569,7 +6569,7 @@ msgid ""
 "and try again. Error:"
 msgstr ""
 "Nem tudott csatlakozni a Joplin Cloudhoz. Ellenőrizze a hitelesítő adatokat, "
-"és próbálja meg újra. Hiba:"
+"és próbálja újra. Hiba:"
 
 #: packages/app-desktop/gui/JoplinCloudConfigScreen.tsx:55
 #: packages/app-mobile/components/screens/ConfigScreen/JoplinCloudConfig.tsx:70
@@ -6582,7 +6582,7 @@ msgstr "Az Ön választása: "
 
 #: packages/lib/components/EncryptionConfigScreen/utils.ts:70
 msgid "Your data is going to be re-encrypted and synced again."
-msgstr "Az adatai újra titkosítva és -szinkronizálva lesznek."
+msgstr "Az adatai újratitkosítva és -szinkronizálva lesznek."
 
 #: packages/app-desktop/gui/MainScreen.tsx:562
 #: packages/app-mobile/components/ScreenHeader/WarningBanner.tsx:55
