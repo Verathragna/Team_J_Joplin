@@ -12,7 +12,6 @@ import toggleRegionFormatGlobally from '../utils/formatting/toggleRegionFormatGl
 import { RegionSpec } from '../utils/formatting/RegionSpec';
 import toggleInlineFormatGlobally from '../utils/formatting/toggleInlineFormatGlobally';
 import stripBlockquote from './utils/stripBlockquote';
-import isIndentationEquivalent from '../utils/formatting/isIndentationEquivalent';
 import growSelectionToNode from '../utils/growSelectionToNode';
 import tabsToSpaces from '../utils/formatting/tabsToSpaces';
 import renumberSelectedLists from './utils/renumberSelectedLists';
@@ -171,21 +170,18 @@ export const toggleList = (listType: ListType): Command => {
 			const originalSel = sel;
 			let fromLine: Line;
 			let toLine: Line;
-			let firstLineIndentation: string;
 			let firstLineInBlockQuote: boolean;
 			let fromLineContent: string;
 			const computeSelectionProps = () => {
 				fromLine = doc.lineAt(sel.from);
 				toLine = doc.lineAt(sel.to);
 				fromLineContent = stripBlockquote(fromLine);
-				firstLineIndentation = fromLineContent.match(startingSpaceRegex)[0];
 				firstLineInBlockQuote = (fromLineContent !== fromLine.text);
 
 				containerType = getContainerType(fromLine);
 			};
 			computeSelectionProps();
 
-			const origFirstLineIndentation = firstLineIndentation;
 			const origContainerType = containerType;
 
 			// Grow `sel` to the smallest containing list, unless the
@@ -199,36 +195,7 @@ export const toggleList = (listType: ListType): Command => {
 
 			// Reset the selection if it seems likely the user didn't want the selection
 			// to be expanded
-			const isIndentationDiff =
-				!isIndentationEquivalent(state, firstLineIndentation, origFirstLineIndentation);
-			if (isIndentationDiff) {
-				const expandedRegionIndentation = firstLineIndentation;
-				sel = originalSel;
-				computeSelectionProps();
-
-				// Use the indentation level of the expanded region if it's greater.
-				// This makes sense in the case where unindented text is being converted to
-				// the same type of list as its container. For example,
-				//     1. Foobar
-				// unindented text
-				// that should be made a part of the above list.
-				//
-				// becoming
-				//
-				//     1. Foobar
-				//     2. unindented text
-				//     3. that should be made a part of the above list.
-				const wasGreaterIndentation = (
-					tabsToSpaces(state, expandedRegionIndentation).length
-						> tabsToSpaces(state, firstLineIndentation).length
-				);
-				if (wasGreaterIndentation) {
-					firstLineIndentation = expandedRegionIndentation;
-				}
-			} else if (
-				(origContainerType !== containerType && (origContainerType ?? null) !== null)
-					|| containerType !== getContainerType(toLine)
-			) {
+			if (containerType !== getContainerType(toLine)) {
 				// If the container type changed, this could be an artifact of checklists/bulleted
 				// lists sharing the same node type.
 				// Find the closest range of the same type of list to the original selection
@@ -273,27 +240,27 @@ export const toggleList = (listType: ListType): Command => {
 				sel = EditorSelection.range(fromLine.from, toLine.to);
 			}
 
-			// Number of the item in the list (e.g. 2 for the 2nd item in the list)
-			let listItemCounter = 1;
+			// Track indentation levels and their list item counters
+			const indentationCounters = new Map<number, number>();
+			// Track the parent counter for each indentation level
+			const parentCounters = new Map<number, number>();
+			let lastIndentLevel = -1;
+
 			for (let lineNum = fromLine.number; lineNum <= toLine.number; lineNum ++) {
 				const line = doc.line(lineNum);
 				const lineContent = stripBlockquote(line);
 				const lineContentFrom = line.to - lineContent.length;
 				const inBlockQuote = (lineContent !== line.text);
 				const indentation = lineContent.match(startingSpaceRegex)[0];
+				const indentLevel = tabsToSpaces(state, indentation).length;
 
-				const wrongIndentation = !isIndentationEquivalent(state, indentation, firstLineIndentation);
-
-				// If not the right list level,
-				if (inBlockQuote !== firstLineInBlockQuote || wrongIndentation) {
-					// We'll be starting a new list
-					listItemCounter = 1;
+				// Skip empty lines
+				if (lineNum !== fromLine.number && line.text.trim().length === 0) {
 					continue;
 				}
 
-				// Don't add list numbers to otherwise empty lines (unless it's the first line)
-				if (lineNum !== fromLine.number && line.text.trim().length === 0) {
-					// Do not reset the counter -- the markdown renderer doesn't!
+				// If in a different blockquote context, skip
+				if (inBlockQuote !== firstLineInBlockQuote) {
 					continue;
 				}
 
@@ -316,15 +283,43 @@ export const toggleList = (listType: ListType): Command => {
 
 				let replacementString;
 
-				if (listType === containerType) {
+				if (listType === currentContainer) {
 					// Delete the existing list if it's the same type as the current
 					replacementString = '';
-				} else if (listType === ListType.OrderedList) {
-					replacementString = `${firstLineIndentation}${listItemCounter}. `;
-				} else if (listType === ListType.CheckList) {
-					replacementString = `${firstLineIndentation}- [ ] `;
 				} else {
-					replacementString = `${firstLineIndentation}- `;
+					// When indentation level changes
+					if (indentLevel !== lastIndentLevel) {
+						// If going deeper, store the parent's counter
+						if (indentLevel > lastIndentLevel && lastIndentLevel >= 0) {
+							parentCounters.set(indentLevel, indentationCounters.get(lastIndentLevel) || 1);
+						} else if (indentLevel < lastIndentLevel) { // If going back to a shallower level
+							// Clear deeper level counters
+							for (const [level] of indentationCounters) {
+								if (level > indentLevel) {
+									indentationCounters.delete(level);
+									parentCounters.delete(level);
+								}
+							}
+						}
+					}
+
+					// Get or initialize the counter for this indentation level
+					const counter = indentationCounters.get(indentLevel) || 1;
+
+					if (listType === ListType.OrderedList) {
+						replacementString = `${indentation}${counter}. `;
+					} else if (listType === ListType.CheckList) {
+						replacementString = `${indentation}- [ ] `;
+					} else {
+						replacementString = `${indentation}- `;
+					}
+
+					// Update counter for this indentation level
+					if (listType === ListType.OrderedList) {
+						indentationCounters.set(indentLevel, counter + 1);
+					}
+
+					lastIndentLevel = indentLevel;
 				}
 
 				changes.push({
@@ -333,8 +328,7 @@ export const toggleList = (listType: ListType): Command => {
 					insert: replacementString,
 				});
 				charsAdded -= deleteTo - deleteFrom;
-				charsAdded += replacementString.length;
-				listItemCounter++;
+				charsAdded += replacementString?.length || 0;
 			}
 
 			// Don't change cursors to selections
@@ -357,7 +351,7 @@ export const toggleList = (listType: ListType): Command => {
 		state = view.state;
 		doc = state.doc;
 
-		// Renumber the list
+		// Renumber the list to ensure consistent numbering
 		view.dispatch(renumberSelectedLists(state));
 
 		return true;
@@ -375,8 +369,8 @@ export const toggleHeaderLevel = (level: number): Command => {
 		// Remove header formatting for any other level
 		let changes = toggleSelectedLinesStartWith(
 			view.state,
+			// Check all numbers of #s lower than [level]
 			new RegExp(
-				// Check all numbers of #s lower than [level]
 				`${level - 1 >= 1 ? `(?:^[#]{1,${level - 1}}\\s)|` : ''
 
 				// Check all number of #s higher than [level]
