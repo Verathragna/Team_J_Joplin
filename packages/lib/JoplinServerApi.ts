@@ -11,11 +11,18 @@ const { stringify } = require('query-string');
 
 const logger = Logger.create('JoplinServerApi');
 
+export enum AuthType {
+	Builtin,
+	Saml,
+}
+
 interface Options {
 	baseUrl(): string;
 	userContentBaseUrl(): string;
 	username(): string;
 	password(): string;
+	type(): AuthType;
+	session(): Session | null;
 	env?: Env;
 }
 
@@ -36,7 +43,7 @@ export interface ExecOptions {
 	source?: string;
 }
 
-interface Session {
+export interface Session {
 	id: string;
 	user_id: string;
 }
@@ -76,6 +83,12 @@ export default class JoplinServerApi {
 	}
 
 	private async session() {
+		const optionSession = this.options_.session();
+
+		if (optionSession) {
+			return optionSession;
+		}
+
 		if (this.session_) return this.session_;
 
 		const clientInfo = await this.getClientInfo();

@@ -1,6 +1,7 @@
 // This is the basic initialization for the Electron MAIN process
 
 const electronApp = require('electron').app;
+const path = require('path');
 require('@electron/remote/main').initialize();
 const ElectronAppWrapper = require('./ElectronAppWrapper').default;
 const { pathExistsSync, readFileSync } = require('fs-extra');
@@ -60,7 +61,14 @@ if (pathExistsSync(settingsPath)) {
 	}
 }
 
-electronApp.setAsDefaultProtocolClient('joplin');
+if (process.defaultApp) {
+	if (process.argv.length >= 2) {
+		electronApp.setAsDefaultProtocolClient('joplin', process.execPath, [path.resolve(process.argv[1])]);
+	}
+} else {
+	electronApp.setAsDefaultProtocolClient('joplin');
+}
+
 void registerCustomProtocols();
 
 const initialCallbackUrl = process.argv.find((arg) => isCallbackUrl(arg));

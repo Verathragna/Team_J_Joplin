@@ -185,7 +185,12 @@ class MainScreenComponent extends React.Component<Props, State> {
 	private openCallbackUrl(url: string) {
 		if (!isCallbackUrl(url)) throw new Error(`Invalid callback URL: ${url}`);
 		const { command, params } = parseCallbackUrl(url);
-		void CommandService.instance().execute(command.toString(), params.id);
+
+		if (Object.keys(params).length === 1 && params.id) {
+			void CommandService.instance().execute(command.toString(), params.id);
+		} else {
+			void CommandService.instance().execute(command.toString(), ...Object.values(params));
+		}
 	}
 
 	private updateLayoutPluginViews(layout: LayoutItem, plugins: PluginStates) {

@@ -11,6 +11,7 @@ import apiSessions from './api/sessions';
 import apiShares from './api/shares';
 import apiShareUsers from './api/share_users';
 import apiUsers from './api/users';
+import apiLogin from './api/login';
 
 import adminDashboard from './admin/dashboard';
 import adminEmails from './admin/emails';
@@ -45,6 +46,8 @@ const routes: Routers = {
 	'api/items': apiItems,
 	'api/locks': apiLocks,
 	'api/ping': apiPing,
+	'api/login_flows': apiLogin,
+	'api/saml': apiLogin,
 	'api/sessions': apiSessions,
 	'api/share_users': apiShareUsers,
 	'api/shares': apiShares,
