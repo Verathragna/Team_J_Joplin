@@ -30,7 +30,7 @@ import handleConflictAction from './services/synchronizer/utils/handleConflictAc
 import resourceRemotePath from './services/synchronizer/utils/resourceRemotePath';
 import syncDeleteStep from './services/synchronizer/utils/syncDeleteStep';
 import { ErrorCode } from './errors';
-import { SyncAction } from './services/synchronizer/utils/types';
+import { SyncAction, SyncReport, ItemCountPerType } from './services/synchronizer/utils/types';
 import checkDisabledSyncItemsNotification from './services/synchronizer/utils/checkDisabledSyncItemsNotification';
 const { sprintf } = require('sprintf-js');
 const { Dirnames } = require('./services/synchronizer/utils/types');
@@ -82,8 +82,7 @@ export default class Synchronizer {
 
 	// eslint-disable-next-line @typescript-eslint/ban-types -- Old code before rule was applied
 	private onProgress_: Function;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
-	private progressReport_: any = {};
+	private progressReport_: SyncReport = {};
 
 	// eslint-disable-next-line @typescript-eslint/ban-types -- Old code before rule was applied
 	public dispatch: Function;
@@ -193,15 +192,62 @@ export default class Synchronizer {
 		return `${duration}ms`;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
-	public static reportToLines(report: any) {
+	public static reportToLines(report: SyncReport) {
+		const formatItemCounts = (counts: ItemCountPerType) => {
+			const modifiedItemNames: string[] = [];
+			let hasOther = false;
+
+			let sum = 0;
+			for (const [key, value] of Object.entries(counts)) {
+				if (value) {
+					sum += value;
+
+					if (key === 'Revision') {
+						modifiedItemNames.push(_('note history'));
+					} else if (key === 'Note') {
+						modifiedItemNames.push(_('notes'));
+					} else if (key === 'Resource') {
+						modifiedItemNames.push(_('resources'));
+					} else if (key === 'Folder') {
+						modifiedItemNames.push(_('notebooks'));
+					} else {
+						hasOther = true;
+					}
+				}
+			}
+
+			// In some cases, no type information is available (e.g. when creating local items).
+			// In these cases, avoid logging "other", because that might be inaccurate.
+			if (hasOther && modifiedItemNames.length > 0) {
+				modifiedItemNames.push(_('other'));
+			}
+
+			if (modifiedItemNames.length > 0) {
+				return _('%d (%s)', sum, modifiedItemNames.join(', '));
+			} else {
+				return _('%d', sum);
+			}
+		};
+
 		const lines = [];
-		if (report.createLocal) lines.push(_('Created local items: %d.', report.createLocal));
-		if (report.updateLocal) lines.push(_('Updated local items: %d.', report.updateLocal));
-		if (report.createRemote) lines.push(_('Created remote items: %d.', report.createRemote));
-		if (report.updateRemote) lines.push(_('Updated remote items: %d.', report.updateRemote));
-		if (report.deleteLocal) lines.push(_('Deleted local items: %d.', report.deleteLocal));
-		if (report.deleteRemote) lines.push(_('Deleted remote items: %d.', report.deleteRemote));
+		if (report.createLocal) {
+			lines.push(_('Created local: %s.', formatItemCounts(report.createLocal)));
+		}
+		if (report.updateLocal) {
+			lines.push(_('Updated local: %s.', formatItemCounts(report.updateLocal)));
+		}
+		if (report.createRemote) {
+			lines.push(_('Created remote: %s.', formatItemCounts(report.createRemote)));
+		}
+		if (report.updateRemote) {
+			lines.push(_('Updated remote: %s.', formatItemCounts(report.updateRemote)));
+		}
+		if (report.deleteLocal) {
+			lines.push(_('Deleted local: %s.', formatItemCounts(report.deleteLocal)));
+		}
+		if (report.deleteRemote) {
+			lines.push(_('Deleted remote: %s.', formatItemCounts(report.deleteRemote)));
+		}
 		if (report.fetchingTotal && report.fetchingProcessed) lines.push(_('Fetched items: %d/%d.', report.fetchingProcessed, report.fetchingTotal));
 		if (report.cancelling && !report.completedTime) lines.push(_('Cancelling...'));
 		if (report.completedTime) lines.push(_('Completed: %s (%s)', time.formatMsToLocal(report.completedTime), this.completionTime(report)));
@@ -216,10 +262,13 @@ export default class Synchronizer {
 		line.push(action);
 		if (message) line.push(message);
 
-		let type = local && local.type_ ? local.type_ : null;
-		if (!type) type = remote && remote.type_ ? remote.type_ : null;
+		const type: ModelType|null = local?.type_ ?? remote?.type_ ?? null;
 
-		if (type) line.push(BaseItem.modelTypeToClassName(type));
+		let modelName = 'unknown';
+		if (type) {
+			modelName = BaseItem.modelTypeToClassName(type);
+			line.push(modelName);
+		}
 
 		if (local) {
 			const s = [];
@@ -241,8 +290,19 @@ export default class Synchronizer {
 
 		if (!['fetchingProcessed', 'fetchingTotal'].includes(action)) syncDebugLog.info(line.join(': '));
 
-		if (!this.progressReport_[action]) this.progressReport_[action] = 0;
-		this.progressReport_[action] += actionCount;
+		// Actions that are categorized by per-item-type
+		const isItemAction = (testAction: string): testAction is SyncAction => {
+			const syncActions: string[] = Object.values(SyncAction);
+			return syncActions.includes(testAction);
+		};
+		if (isItemAction(action)) {
+			this.progressReport_[action] = { ...this.progressReport_[action] };
+			this.progressReport_[action][modelName] ??= 0;
+			this.progressReport_[action][modelName] += actionCount;
+		} else if (action === 'fetchingProcessed' || action === 'fetchingTotal') {
+			this.progressReport_[action] ??= 0;
+			this.progressReport_[action] += actionCount;
+		}
 		this.progressReport_.state = this.state();
 		this.onProgress_(this.progressReport_);
 
@@ -251,13 +311,14 @@ export default class Synchronizer {
 		// for this but for now this simple fix will do.
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
 		const reportCopy: any = {};
-		for (const n in this.progressReport_) reportCopy[n] = this.progressReport_[n];
+		for (const [key, value] of Object.entries(this.progressReport_)) {
+			reportCopy[key] = value;
+		}
 		if (reportCopy.errors) reportCopy.errors = this.progressReport_.errors.slice();
 		this.dispatch({ type: 'SYNC_REPORT_UPDATE', report: reportCopy });
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
-	public async logSyncSummary(report: any) {
+	public async logSyncSummary(report: SyncReport) {
 		logger.info('Operations completed: ');
 		for (const n in report) {
 			if (!report.hasOwnProperty(n)) continue;
@@ -267,7 +328,8 @@ export default class Synchronizer {
 			if (n === 'state') continue;
 			if (n === 'startTime') continue;
 			if (n === 'completedTime') continue;
-			logger.info(`${n}: ${report[n] ? report[n] : '-'}`);
+			const key = n as keyof typeof report;
+			logger.info(`${n}: ${report[key] ? report[key] : '-'}`);
 		}
 		const folderCount = await Folder.count();
 		const noteCount = await Note.count();
