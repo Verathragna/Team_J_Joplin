@@ -1,5 +1,5 @@
 import { MenuItemLocation } from '../plugins/api/types';
-import CommandService from '../CommandService';
+import CommandService, { CommandToMenuItemOptions } from '../CommandService';
 import KeymapService from '../KeymapService';
 import { PluginStates, utils as pluginUtils } from '../plugins/reducer';
 import propsHaveChanged from './propsHaveChanged';
@@ -103,8 +103,16 @@ export default class MenuUtils {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Old code before rule was applied
-	public commandToStatefulMenuItem(commandName: string, ...args: any[]): MenuItem {
-		const whenClauseContext = this.service.currentWhenClauseContext();
+	public commandToStatefulMenuItem(options: string|CommandToMenuItemOptions, ...args: any[]): MenuItem {
+		let whenClauseContext, commandName;
+		if (typeof options === 'string') {
+			commandName = options;
+			whenClauseContext = this.service.currentWhenClauseContext();
+		} else {
+			commandName = options.commandName;
+			const whenClauseContextOptions = options.whenClauseContextOptions;
+			whenClauseContext = this.service.currentWhenClauseContext(whenClauseContextOptions);
+		}
 
 		const menuItem = this.commandToMenuItem(commandName, () => {
 			return this.service.execute(commandName, ...args);
