@@ -654,11 +654,9 @@ packages/app-mobile/components/ScreenHeader/WarningBox.js
 packages/app-mobile/components/ScreenHeader/WebBetaButton.js
 packages/app-mobile/components/ScreenHeader/index.js
 packages/app-mobile/components/SelectDateTimeDialog.js
-packages/app-mobile/components/SideMenu.js
 packages/app-mobile/components/SideMenuContentNote.js
 packages/app-mobile/components/TextInput.js
 packages/app-mobile/components/ToggleSpaceButton.js
-packages/app-mobile/components/accessibility/AccessibleModalMenu.js
 packages/app-mobile/components/accessibility/AccessibleView.js
 packages/app-mobile/components/app-nav.js
 packages/app-mobile/components/base-screen.js
@@ -666,6 +664,7 @@ packages/app-mobile/components/biometrics/BiometricPopup.js
 packages/app-mobile/components/biometrics/biometricAuthenticate.js
 packages/app-mobile/components/biometrics/sensorInfo.js
 packages/app-mobile/components/buttons/FloatingActionButton.js
+packages/app-mobile/components/buttons/LabelledIconButton.js
 packages/app-mobile/components/buttons/TextButton.js
 packages/app-mobile/components/buttons/index.js
 packages/app-mobile/components/getResponsiveValue.test.js
@@ -753,7 +752,8 @@ packages/app-mobile/components/screens/Note/commands/setTags.js
 packages/app-mobile/components/screens/Note/commands/toggleVisiblePanes.js
 packages/app-mobile/components/screens/Note/types.js
 packages/app-mobile/components/screens/NoteTagsDialog.js
-packages/app-mobile/components/screens/Notes.js
+packages/app-mobile/components/screens/Notes/NewNoteButton.js
+packages/app-mobile/components/screens/Notes/Notes.js
 packages/app-mobile/components/screens/SearchScreen/SearchResults.js
 packages/app-mobile/components/screens/SearchScreen/index.js
 packages/app-mobile/components/screens/ShareManager/AcceptedShareItem.js
@@ -767,6 +767,9 @@ packages/app-mobile/components/screens/encryption-config.js
 packages/app-mobile/components/screens/status.js
 packages/app-mobile/components/screens/tags.js
 packages/app-mobile/components/side-menu-content.js
+packages/app-mobile/components/sidebar/AppSideMenu.js
+packages/app-mobile/components/sidebar/BottomDrawer.js
+packages/app-mobile/components/sidebar/SideMenu.js
 packages/app-mobile/components/testing/TestProviderStack.js
 packages/app-mobile/components/voiceTyping/AudioRecordingBanner.js
 packages/app-mobile/components/voiceTyping/RecordingControls.js
@@ -809,6 +812,7 @@ packages/app-mobile/utils/createRootStyle.js
 packages/app-mobile/utils/database-driver-react-native.js
 packages/app-mobile/utils/database-driver-react-native.web.js
 packages/app-mobile/utils/debounce.js
+packages/app-mobile/utils/focusView.js
 packages/app-mobile/utils/fs-driver/constants.js
 packages/app-mobile/utils/fs-driver/fs-driver-rn.js
 packages/app-mobile/utils/fs-driver/fs-driver-rn.web.js
@@ -824,6 +828,7 @@ packages/app-mobile/utils/getVersionInfoText.js
 packages/app-mobile/utils/hooks/useKeyboardVisible.js
 packages/app-mobile/utils/hooks/useOnLongPressProps.js
 packages/app-mobile/utils/hooks/useReduceMotionEnabled.js
+packages/app-mobile/utils/hooks/useSafeAreaPadding.js
 packages/app-mobile/utils/image/fileToImage.web.js
 packages/app-mobile/utils/image/getImageDimensions.js
 packages/app-mobile/utils/image/resizeImage.js
