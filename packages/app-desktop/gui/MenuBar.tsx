@@ -429,6 +429,14 @@ function useMenu(props: Props) {
 				click: () => { void bridge().electronApp().quit(); },
 			};
 
+			// Add a new menu item for testing
+			const testMenuItem = {
+				label: 'Team J test',
+				click: () => {
+					console.log('Test Menu Item clicked');
+				},
+			};
+
 			const sortNoteFolderItems = (type: string) => {
 				const sortItems = [];
 				const sortOptions = Setting.enumOptions(`${type}.sortOrder.field`);
@@ -688,7 +696,9 @@ function useMenu(props: Props) {
 				{
 					type: 'separator',
 				},
-				quitMenuItem],
+				quitMenuItem,
+				
+				testMenuItem],
 			};
 
 			const rootMenuFileMacOs = {
