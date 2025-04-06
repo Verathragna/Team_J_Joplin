@@ -222,7 +222,6 @@ const NoteList = (props: Props) => {
 		for (let i = startNoteIndex; i <= endNoteIndex; i++) {
 			const note = props.notes[i];
 			const isSelected = props.selectedNoteIds.includes(note.id);
-
 			output.push(
 				<NoteListItem
 					key={note.id}
@@ -260,7 +259,6 @@ const NoteList = (props: Props) => {
 	const bottomFillerHeight = (totalLineCount - endLineIndex - 1) * itemSize.height;
 
 	const fillerBaseStyle = useMemo(() => {
-		// return { width: 'auto', border: '1px solid red', backgroundColor: 'green' };
 		return { width: 'auto' };
 	}, []);
 
@@ -356,3 +354,4 @@ const mapStateToProps = (state: AppState, ownProps: ConnectProps) => {
 };
 
 export default connect(mapStateToProps)(NoteList);
+
