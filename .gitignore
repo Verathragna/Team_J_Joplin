@@ -1085,7 +1085,6 @@ packages/lib/models/Revision.test.js
 packages/lib/models/Revision.js
 packages/lib/models/Search.js
 packages/lib/models/Setting.test.js
-packages/lib/models/Setting.js
 packages/lib/models/SmartFilter.js
 packages/lib/models/Tag.test.js
 packages/lib/models/Tag.js
@@ -1602,3 +1601,23 @@ packages/tools/website/utils/render.js
 packages/tools/website/utils/types.js
 # AUTO-GENERATED - EXCLUDED TYPESCRIPT BUILD
 
+packages/app-mobile/components/screens/Note/commands/index.ts
+devbox.lock
+packages/app-desktop/commands/index.ts
+packages/app-desktop/gui/NoteEditor/commands/index.ts
+packages/app-desktop/gui/NoteEditor/commands/index.ts
+packages/app-desktop/gui/NoteEditor/NoteBody/TinyMCE/supportedLocales.js
+packages/app-desktop/gui/NoteList/commands/index.ts
+packages/app-desktop/gui/NoteListControls/commands/index.ts
+packages/app-desktop/gui/Sidebar/commands/index.ts
+packages/app-desktop/gui/WindowCommandsAndDialogs/commands/index.ts
+packages/app-mobile/commands/index.ts
+packages/app-mobile/components/screens/Note/commands/index.ts
+packages/app-mobile/pluginAssets/index.js
+packages/lib/commands/index.ts
+packages/lib/models/Setting.js
+packages/lib/services/database/migrations/index.ts
+packages/renderer/assets/highlight.js/atom-one-dark-reasonable.css
+packages/renderer/assets/highlight.js/atom-one-light.css
+packages/renderer/assets/katex/katex.css
+packages/renderer/assets/mermaid/mermaid.min.js
