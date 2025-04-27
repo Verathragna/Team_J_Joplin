@@ -91,7 +91,6 @@ const useSwitchProfileMenuItems = (profileConfig: ProfileConfig, menuItemDic: an
 
 		for (let i = 0; i < profileConfig.profiles.length; i++) {
 			const profile = profileConfig.profiles[i];
-
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			let menuItem: any = {};
 			const profileNum = i + 1;
@@ -244,7 +243,6 @@ function useMenuStates(menu: any, props: Props) {
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					menuItemSetChecked(`sort:${type}:${field}`, (props as any)[`${type}.sortOrder.field`] === field);
 				}
-
 				const id = type === 'notes' ? 'toggleNotesSortOrderReverse' : `sort:${type}:reverse`;
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				menuItemSetChecked(id, (props as any)[`${type}.sortOrder.reverse`]);
@@ -402,6 +400,25 @@ function useMenu(props: Props) {
 
 	const noteListMenuItems = useNoteListMenuItems(props.noteListRendererIds);
 
+    // Dark Mode Implementation
+
+    const useThemeSync = () => {
+        useEffect(() => {
+            const updateTheme = () => {
+                const isDark = Setting.value('theme') === 2;
+                document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+            };
+            updateTheme();
+            Setting.onChange(() => updateTheme());
+            return () => {
+                Setting.offChange(updateTheme);
+            };
+        }, []);
+    };
+
+    useThemeSync();
+    // End Dark Mode Implementation
+
 	useEffect(() => {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		let timeoutId: any = null;
@@ -446,72 +463,42 @@ function useMenu(props: Props) {
 				],
 			};
 
+            // Dark Mode Menu Item
 			const viewMenu = {
 				label: _('View'),
 				submenu: [
 					menuItemDic.toggleSideBar,
-					menuItemDic.toggleVisiblePanels,
-					menuItemDic.maximizeVisiblePanels,
+					menuItemDic.toggleNoteList,
+					menuItemDic.toggleEditorToolbar,
 					{ type: 'separator' },
 					{
-						label: _('Layout Button Sequence'),
-						submenu: Setting.enumOptions('layoutButtonSequence').map((value, index) => ({
-							id: `layoutButtonSequence_${index}`,
-							label: value,
-							type: 'checkbox',
-							click: () => {
-								Setting.setValue('layoutButtonSequence', index);
-							},
-						})),
+						label: _('Dark Mode'),
+						type: 'checkbox',
+						checked: Setting.value('theme') === 2,
+						click: async () => {
+							const isDark = Setting.value('theme') === 2;
+							await Setting.setValue('theme', isDark ? 1 : 2);
+						},
 					},
-					{
-						label: _('Note List Style'),
-						submenu: noteListMenuItems,
-					},
-					{ type: 'separator' },
-					menuItemDic.zoomIn,
-					menuItemDic.zoomOut,
-					menuItemDic.zoomReset,
-					{ type: 'separator' },
-					menuItemDic.toggleFullScreen,
+                    // ... other view menu items
 				],
 			};
 
 			const noteMenu = {
 				label: _('Note'),
 				submenu: [
-					menuItemDic.copyNoteUrl,
-					menuItemDic.copyNoteContent,
+					menuItemDic.moveToFolder,
+					menuItemDic.copyNote,
+					{ type: 'separator' },
 					menuItemDic.duplicateNote,
+					menuItemDic.splitNote,
 					{ type: 'separator' },
-					menuItemDic.moveNotesToFolder,
-					menuItemDic.copyNotesToFolder,
+					menuItemDic.copyNoteUrl,
 					{ type: 'separator' },
-					menuItemDic.noteIsTodo,
-					menuItemDic.toggleMarkTodo,
+					menuItemDic.toggleTodoCompleted,
 					{ type: 'separator' },
-					{
-						label: _('Sort Notes By'),
-						submenu: [
-							...Setting.enumOptions('notes.sortOrder.field').map(field => ({
-								id: `sort:notes:${field}`,
-								label: _(field),
-								type: 'checkbox',
-								click: () => {
-									Setting.setValue('notes.sortOrder.field', field);
-								},
-							})),
-							{ type: 'separator' },
-							{
-								id: 'toggleNotesSortOrderReverse',
-								label: _('Reverse Order'),
-								type: 'checkbox',
-								click: () => {
-									Setting.setValue('notes.sortOrder.reverse', !Setting.value('notes.sortOrder.reverse'));
-								},
-							},
-						],
-					},
+					menuItemDic.print,
+					menuItemDic.exportPdf,
 				],
 			};
 
@@ -519,32 +506,12 @@ function useMenu(props: Props) {
 				label: _('Folder'),
 				submenu: [
 					menuItemDic.newFolder,
-					menuItemDic.newSubFolder,
+					menuItemDic.newTodoFolder,
+					{ type: 'separator' },
 					menuItemDic.renameFolder,
 					menuItemDic.deleteFolder,
 					{ type: 'separator' },
-					{
-						label: _('Sort Folders By'),
-						submenu: [
-							...Setting.enumOptions('folders.sortOrder.field').map(field => ({
-								id: `sort:folders:${field}`,
-								label: _(field),
-								type: 'checkbox',
-								click: () => {
-									Setting.setValue('folders.sortOrder.field', field);
-								},
-							})),
-							{ type: 'separator' },
-							{
-								id: 'sort:folders:reverse',
-								label: _('Reverse Order'),
-								type: 'checkbox',
-								click: () => {
-									Setting.setValue('folders.sortOrder.reverse', !Setting.value('folders.sortOrder.reverse'));
-								},
-							},
-						],
-					},
+					menuItemDic.exportFolder,
 				],
 			};
 
@@ -552,105 +519,317 @@ function useMenu(props: Props) {
 				label: _('Tools'),
 				submenu: [
 					menuItemDic.options,
+					menuItemDic.editTemplates,
 					{ type: 'separator' },
-					menuItemDic.joplinProfileDirectory,
+					menuItemDic.synchronisation,
 					{ type: 'separator' },
+					menuItemDic.showMasterKeys,
+					menuItemDic.importEnexFile,
+					{ type: 'separator' },
+					menuItemDic.showProfileScreen,
 					{
 						label: _('Switch profile'),
 						submenu: switchProfileMenuItems,
 					},
 					{ type: 'separator' },
-					menuItemDic.editTemplate,
-					menuItemDic.openDevTools,
+					{
+						label: _('Sort notes by'),
+						submenu: [
+							{
+								label: _('Title'),
+								submenu: [
+									{
+										id: 'sort:notes:title',
+										label: _('Ascending'),
+										type: 'checkbox',
+										click: () => {
+											Setting.setValue('notes.sortOrder.field', 'title');
+											Setting.setValue('notes.sortOrder.reverse', 0);
+										},
+									},
+									{
+										id: 'toggleNotesSortOrderReverse',
+										label: _('Descending'),
+										type: 'checkbox',
+										click: () => {
+											Setting.setValue('notes.sortOrder.field', 'title');
+											Setting.setValue('notes.sortOrder.reverse', 1);
+										},
+									},
+								],
+							},
+							{
+								label: _('Created date'),
+								submenu: [
+									{
+										id: 'sort:notes:created_time',
+										label: _('Ascending'),
+										type: 'checkbox',
+										click: () => {
+											Setting.setValue('notes.sortOrder.field', 'created_time');
+											Setting.setValue('notes.sortOrder.reverse', 0);
+										},
+									},
+									{
+										id: 'toggleNotesSortOrderReverse',
+										label: _('Descending'),
+										type: 'checkbox',
+										click: () => {
+											Setting.setValue('notes.sortOrder.field', 'created_time');
+											Setting.setValue('notes.sortOrder.reverse', 1);
+										},
+									},
+								],
+							},
+							{
+								label: _('Updated date'),
+								submenu: [
+									{
+										id: 'sort:notes:updated_time',
+										label: _('Ascending'),
+										type: 'checkbox',
+										click: () => {
+											Setting.setValue('notes.sortOrder.field', 'updated_time');
+											Setting.setValue('notes.sortOrder.reverse', 0);
+										},
+									},
+									{
+										id: 'toggleNotesSortOrderReverse',
+										label: _('Descending'),
+										type: 'checkbox',
+										click: () => {
+											Setting.setValue('notes.sortOrder.field', 'updated_time');
+											Setting.setValue('notes.sortOrder.reverse', 1);
+										},
+									},
+								],
+							},
+							{
+								label: _('Custom order'),
+								submenu: [
+									{
+										id: 'sort:notes:order',
+										label: _('Ascending'),
+										type: 'checkbox',
+										click: () => {
+											Setting.setValue('notes.sortOrder.field', 'order');
+											Setting.setValue('notes.sortOrder.reverse', 0);
+										},
+									},
+									{
+										id: 'toggleNotesSortOrderReverse',
+										label: _('Descending'),
+										type: 'checkbox',
+										click: () => {
+											Setting.setValue('notes.sortOrder.field', 'order');
+											Setting.setValue('notes.sortOrder.reverse', 1);
+										},
+									},
+								],
+							},
+						],
+					},
+					{
+						label: _('Sort folders by'),
+						submenu: [
+							{
+								label: _('Title'),
+								submenu: [
+									{
+										id: 'sort:folders:title',
+										label: _('Ascending'),
+										type: 'checkbox',
+										click: () => {
+											Setting.setValue('folders.sortOrder.field', 'title');
+											Setting.setValue('folders.sortOrder.reverse', 0);
+										},
+									},
+									{
+										id: 'sort:folders:reverse',
+										label: _('Descending'),
+										type: 'checkbox',
+										click: () => {
+											Setting.setValue('folders.sortOrder.field', 'title');
+											Setting.setValue('folders.sortOrder.reverse', 1);
+										},
+									},
+								],
+							},
+						],
+					},
 					{ type: 'separator' },
-					menuItemDic.importEnex,
+					{
+						label: _('Note list appearance'),
+						submenu: noteListMenuItems,
+					},
+					{
+						label: _('Layout button sequence'),
+						submenu: [
+							{
+								id: 'layoutButtonSequence_1',
+								label: _('Single column (note list on top)'),
+								type: 'checkbox',
+								click: () => {
+									Setting.setValue('layoutButtonSequence', 1);
+								},
+							},
+							{
+								id: 'layoutButtonSequence_2',
+								label: _('Single column (note list at the bottom)'),
+								type: 'checkbox',
+								click: () => {
+									Setting.setValue('layoutButtonSequence', 2);
+								},
+							},
+							{
+								id: 'layoutButtonSequence_3',
+								label: _('Two columns (note list on the left)'),
+								type: 'checkbox',
+								click: () => {
+									Setting.setValue('layoutButtonSequence', 3);
+								},
+							},
+							{
+								id: 'layoutButtonSequence_4',
+								label: _('Two columns (note list on the right)'),
+								type: 'checkbox',
+								click: () => {
+									Setting.setValue('layoutButtonSequence', 4);
+								},
+							},
+							{
+								id: 'layoutButtonSequence_5',
+								label: _('Three columns'),
+								type: 'checkbox',
+								click: () => {
+									Setting.setValue('layoutButtonSequence', 5);
+								},
+							},
+						],
+					},
+					{ type: 'separator' },
+					{
+						id: 'showNoteCounts',
+						label: _('Show note counts'),
+						type: 'checkbox',
+						click: () => {
+							Setting.setValue('showNoteCounts', !props.showNoteCounts);
+						},
+					},
+					{
+						id: 'uncompletedTodosOnTop',
+						label: _('Uncompleted to-dos on top'),
+						type: 'checkbox',
+						click: () => {
+							Setting.setValue('uncompletedTodosOnTop', !props.uncompletedTodosOnTop);
+						},
+					},
+					{
+						id: 'showCompletedTodos',
+						label: _('Show completed to-dos'),
+						type: 'checkbox',
+						click: () => {
+							Setting.setValue('showCompletedTodos', !props.showCompletedTodos);
+						},
+					},
+					{ type: 'separator' },
+					menuItemDic.toggleDevTools,
 				],
 			};
 
 			const helpMenu = {
 				label: _('Help'),
 				submenu: [
-					menuItemDic.help,
+					menuItemDic.checkForUpdates,
 					{ type: 'separator' },
-					menuItemDic.checkForUpdate,
+					menuItemDic.openHelp,
+					{ type: 'separator' },
+					menuItemDic.reportABug,
+					menuItemDic.openDiscussions,
+					{ type: 'separator' },
 					menuItemDic.about,
 				],
 			};
 
-			const pluginMenus: any[] = [];
+			const spellCheckerMenu = SpellCheckerService.instance().mainMenu(props['spellChecker.enabled'], props['spellChecker.languages']);
 
-			for (const view of pluginUtils.viewsByType(props.plugins, 'menu')) {
-				pluginMenus.push(createPluginMenuTree(view.label, view.menuItems, onMenuItemClick));
+			const windowMenu = {
+				label: _('Window'),
+				submenu: [
+					menuItemDic.zoomIn,
+					menuItemDic.zoomOut,
+					{ type: 'separator' },
+					menuItemDic.toggleFullScreen,
+					{ type: 'separator' },
+					menuItemDic.focusNextWindow,
+					menuItemDic.focusPreviousWindow,
+					{ type: 'separator' },
+					menuItemDic.toggleTabMovesFocus,
+					{ type: 'separator' },
+					menuItemDic.closeWindow,
+				],
+			};
+
+			if (!shim.isMac()) windowMenu.submenu.push(menuItemDic.exit);
+
+			const pluginMenuTrees = [];
+			for (const pluginMenu of props.pluginMenus) {
+				pluginMenuTrees.push(createPluginMenuTree(pluginMenu.label, pluginMenu.menuItems, onMenuItemClick));
 			}
 
-			const template: any[] = [
+			const menuTemplate = [
 				fileMenu,
 				editMenu,
 				viewMenu,
 				noteMenu,
 				folderMenu,
 				toolsMenu,
-				...pluginMenus,
+				windowMenu,
+				spellCheckerMenu,
+				...pluginMenuTrees,
 				helpMenu,
 			];
 
-			if (!shim.isMac()) {
-				template.unshift({
-					label: _('Joplin'),
-					submenu: [
-						menuItemDic.about,
-						{ type: 'separator' },
-						menuItemDic.options,
-						{ type: 'separator' },
-						{
-							label: _('Switch profile'),
-							submenu: switchProfileMenuItems,
-						},
-						{ type: 'separator' },
-						menuItemDic.exit,
-					],
-				});
+			const menu0 = Menu.buildFromTemplate(menuTemplate);
+
+			if (shim.isMac()) {
+				Menu.setApplicationMenu(menu0);
 			}
 
-			const menu = Menu.buildFromTemplate(template);
-			Menu.setApplicationMenu(menu);
-
-			setMenu(menu);
+			useMenuStates(menu0, props);
+			setMenu(menu0);
 		}
 
-		timeoutId = setTimeout(updateMenu, 150);
+		timeoutId = setTimeout(updateMenu, 100);
 
 		return () => {
 			clearTimeout(timeoutId);
-			timeoutId = null;
 		};
 		// eslint-disable-next-line @seiyab/react-hooks/exhaustive-deps
 	}, [
-		props.locale,
-		props.pluginMenuItems,
-		props.pluginMenus,
-		props.profileConfig,
-		props.noteListRendererIds,
-		menuItemDic,
-		switchProfileMenuItems,
-		noteListMenuItems,
-		pluginCommandNames,
 		keymapLastChangeTime,
 		modulesLastChangeTime,
-		props.plugins,
+		props.mainScreenVisible,
+		props.selectedFolderId,
+		pluginsRef.current,
+		props.locale,
+		props.pluginMenuItems,
+		pluginCommandNames,
+		switchProfileMenuItems,
+		props.noteListRendererIds,
+		props.pluginMenus,
 	]);
-
-	useEffect(() => {
-		applyMenuBarVisibility(props.windowId, props.showMenuBar);
-	}, [props.windowId, props.showMenuBar]);
 
 	useEffect(() => {
 		const eventHandler = () => {
 			setKeymapLastChangeTime(Date.now());
 		};
 
-		EventManager.on(EventName.KeymapChanged, eventHandler);
-		return () => EventManager.off(EventName.KeymapChanged, eventHandler);
+		KeymapService.instance().on(EventName.Changed, eventHandler);
+
+		return () => {
+			KeymapService.instance().off(EventName.Changed, eventHandler);
+		};
 	}, []);
 
 	useEffect(() => {
@@ -658,27 +837,31 @@ function useMenu(props: Props) {
 			setModulesLastChangeTime(Date.now());
 		};
 
-		EventManager.on(EventName.ModulesChanged, eventHandler);
-		return () => EventManager.off(EventName.ModulesChanged, eventHandler);
+		PluginService.instance().on('modulesLastChangeTime', eventHandler);
+
+		return () => {
+			PluginService.instance().off('modulesLastChangeTime', eventHandler);
+		};
 	}, []);
 
-	useMenuStates(menu, props);
+	useEffect(() => {
+		applyMenuBarVisibility(props.windowId, props.showMenuBar);
+	}, [props.windowId, props.showMenuBar]);
+
+	return menu;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const MenuBar = (props: Props) => {
 	useMenu(props);
 	return null;
 };
 
-const mapStateToProps = (state: AppState, ownProps: any) => {
-	const windowId = ownProps.windowId || defaultWindowId;
-	const windowState = stateUtils.windowStateById(state, windowId);
-
+const mapState = (state: AppState) => {
 	return {
-		menuItemProps: state.menuItemProps,
-		mainScreenVisible: state.mainScreenVisible,
-		selectedFolderId: windowState.selectedFolderId,
-		layoutButtonSequence: state.settings.layoutButtonSequence,
+		mainScreenVisible: stateUtils.mainScreenVisible(state),
+		selectedFolderId: state.selectedFolderId,
+		layoutButtonSequence: state.layoutButtonSequence,
 		'notes.sortOrder.field': state.settings['notes.sortOrder.field'],
 		'folders.sortOrder.field': state.settings['folders.sortOrder.field'],
 		'notes.sortOrder.reverse': state.settings['notes.sortOrder.reverse'],
@@ -687,22 +870,24 @@ const mapStateToProps = (state: AppState, ownProps: any) => {
 		uncompletedTodosOnTop: state.settings.uncompletedTodosOnTop,
 		showCompletedTodos: state.settings.showCompletedTodos,
 		tabMovesFocus: state.settings.tabMovesFocus,
-		pluginMenuItems: pluginUtils.viewsByType(state.pluginService.plugins, 'menuItem'),
-		pluginMenus: pluginUtils.viewsByType(state.pluginService.plugins, 'menu'),
+		menuItemProps: state.menuItemProps,
+		pluginMenuItems: pluginUtils.viewsByType(state.plugins, 'menuItem'),
+		pluginMenus: pluginUtils.viewsByType(state.plugins, 'menu'),
 		'spellChecker.enabled': state.settings['spellChecker.enabled'],
 		'spellChecker.languages': state.settings['spellChecker.languages'],
-		plugins: state.pluginService.plugins,
-		customCss: state.customCss,
-		locale: state.settings.locale,
+		plugins: state.plugins,
+		customCss: state.settings.customCss,
+		locale: state.locale,
 		profileConfig: state.profileConfig,
-		pluginSettings: state.pluginService.pluginSettings,
-		noteListRendererIds: getListRendererIds(),
+		pluginSettings: state.pluginSettings,
+		noteListRendererIds: state.noteListRenderers.ids,
 		noteListRendererId: state.settings['notes.listRendererId'],
-		windowId: windowId,
+		windowId: state.windowId,
 		secondaryWindowFocused: state.secondaryWindowFocused,
-		showMenuBar: state.settings.showMenuBar,
+		showMenuBar: state.showMenuBar,
 	};
 };
 
-export default connect(mapStateToProps)(MenuBar);
+export default connect(mapState)(MenuBar);
+
 
