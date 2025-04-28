@@ -56,6 +56,8 @@ import PluginService from '@joplin/lib/services/plugins/PluginService';
 import EditorPluginHandler from '@joplin/lib/services/plugins/EditorPluginHandler';
 import useResourceUnwatcher from './utils/useResourceUnwatcher';
 import StatusBar from './StatusBar';
+import { marked } from 'marked';
+
 
 const debounce = require('debounce');
 
@@ -74,6 +76,8 @@ function NoteEditorContent(props: NoteEditorProps) {
 	const [showRevisions, setShowRevisions] = useState(false);
 	const [titleHasBeenManuallyChanged, setTitleHasBeenManuallyChanged] = useState(false);
 	const [isReadOnly, setIsReadOnly] = useState<boolean>(false);
+	const [markdownInput, setMarkdownInput] = useState('');
+	const [markdownPreview, setMarkdownPreview] = useState('');
 
 	const editorRef = useRef<NoteBodyEditorRef>();
 	const titleInputRef = useRef<HTMLInputElement>();
@@ -610,9 +614,9 @@ function NoteEditorContent(props: NoteEditorProps) {
 
 	const renderPluginEditor = () => {
 		if (!editorPlugin) return null;
-
+	
 		const html = props.pluginHtmlContents[editorPlugin.id]?.[editorView.id] ?? '';
-
+	
 		return <UserWebview
 			key={editorView.id}
 			viewId={editorView.id}
@@ -624,16 +628,41 @@ function NoteEditorContent(props: NoteEditorProps) {
 			fitToContent={false}
 		/>;
 	};
-
+	
 	if (formNote.encryption_applied || !formNote.id || !effectiveNoteId) {
 		return renderNoNotes(styles.root);
 	}
-
+	
 	const theme = themeStyle(props.themeId);
-
+	
 	return (
 		<div style={styles.root} onDragOver={onDragOver} onDrop={onDrop} ref={containerRef}>
 			<div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+	
+				<div style={{ padding: '10px', backgroundColor: '#e0f7fa', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+					<strong style={{ textAlign: 'center' }}>Team J: Markdown Preview</strong>
+	
+					<div style={{ padding: '10px' }}>
+						<h3>Markdown Input:</h3>
+						<textarea
+							value={markdownInput}
+							onChange={(e) => {
+								setMarkdownInput(e.target.value);
+								setMarkdownPreview(marked.parse(e.target.value));
+							}}
+							style={{ width: '100%', height: '100px' }}
+						></textarea>
+					</div>
+	
+					<div style={{ padding: '10px' }}>
+						<h3>Markdown Preview:</h3>
+						<div
+							style={{ border: '1px solid #ccc', padding: '10px' }}
+							dangerouslySetInnerHTML={{ __html: markdownPreview }}
+						></div>
+					</div>
+				</div>
+	
 				{renderResourceWatchingNotification()}
 				{renderResourceInSearchResultsNotification()}
 				<NoteTitleBar
@@ -646,6 +675,7 @@ function NoteEditorContent(props: NoteEditorProps) {
 					onTitleChange={onTitleChange}
 					disabled={isReadOnly}
 				/>
+	
 				{renderSearchInfo()}
 				<div style={{ display: 'flex', flex: 1, paddingLeft: theme.editorPaddingLeft, maxHeight: '100%', minHeight: '0' }}>
 					{editor}
